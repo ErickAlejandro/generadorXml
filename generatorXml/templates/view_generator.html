@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Xml</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+        integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="container">
+        <br>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">Generar XML</div>
+                    <div class="card-body">
+                        <form>
+                            <div class="form-group">
+                                <label for="addedFile">Agregar un nuevo archivo</label>
+                                <input type="file" class="form-control-file" id="addedFile">
+                            </div>
+                            <button type="button" class="btn btn-info" id="btnGenerateXml">Generar Xml</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    const btnGenerateXml = document.getElementById('btnGenerateXml');
+    const addedFile = document.getElementById('addedFile');
+
+    btnGenerateXml.addEventListener('click', function () {
+        if (addedFile.files.length > 0) {
+            var file = addedFile.files[0];
+            var reader = new FileReader();
+            console.log(file)
+        }
+    })
+
+    function processFileData(fileData) {
+        
+    }
+</script>
+
+</html>
