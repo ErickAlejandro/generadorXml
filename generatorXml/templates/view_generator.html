@@ -7,6 +7,8 @@
     <title>Generador de Xml</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
         integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.3/xlsx.full.min.js"></script>
+
 </head>
 
 <body>
@@ -32,19 +34,64 @@
 </body>
 <script>
     const btnGenerateXml = document.getElementById('btnGenerateXml');
-    const addedFile = document.getElementById('addedFile');
 
     btnGenerateXml.addEventListener('click', function () {
-        if (addedFile.files.length > 0) {
-            var file = addedFile.files[0];
+        var input = document.getElementById('addedFile');
+        var file = input.files[0];
+
+        if (file) {
             var reader = new FileReader();
-            console.log(file)
+
+            reader.onload = function (e) {
+                var data = new Uint8Array(e.target.result);
+
+                try {
+                    var workbook = XLSX.read(data, { type: 'array' });
+
+                    if (workbook && workbook.SheetNames && workbook.SheetNames.length > 0) {
+                        // Obtener la primera hoja del libro de trabajo
+                        var sheetName = workbook.SheetNames[0];
+                        var sheet = workbook.Sheets[sheetName];
+
+                        // Crear el elemento raíz del XML
+                        var root = document.createElement('rdep');
+                        
+                        XLSX.utils.sheet_to_json(sheet, { header: 1 }).forEach(function (row, rowIndex) {
+                            if (rowIndex > 0) {
+                                var rowElement = document.createElement('row');
+
+                                var columnNames = [];
+                                var range = XLSX.utils.decode_range(sheet['!ref']);
+                                for (var col = range.s.c; col <= range.e.c; col++) {
+                                    var cellAddress = { c: col, r: 0 }; // Fila A1
+                                    var cellRef = XLSX.utils.encode_cell(cellAddress);
+                                    var columnName = sheet[cellRef].v;
+                                    columnNames.push(columnName);
+                                }
+
+                                // Crear el elemento raíz del XML
+                                var root = document.createElement('rdep');
+
+                                // Iterar sobre las filas
+                                XLSX.utils.sheet_to_json(sheet, { header: 1 }).forEach(function (row, rowIndex) {
+                                    
+                                })
+                            }
+                        })
+                    } else {
+                        console.error('El libro de trabajo no contiene hojas.');
+                    }
+                } catch (error) {
+                    console.error('Error al leer el libro de trabajo:', error);
+                }
+            };
+
+            reader.readAsArrayBuffer(file);
+        } else {
+            alert('Selecciona un archivo Excel válido.');
         }
     })
 
-    function processFileData(fileData) {
-        
-    }
 </script>
 
 </html>
