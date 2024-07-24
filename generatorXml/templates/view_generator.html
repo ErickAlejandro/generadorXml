@@ -7,12 +7,22 @@
     <title>Generador de Xml</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
         integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.3/xlsx.full.min.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
 </head>
 
-<body>
+<body style="margin: 0; padding: 0;">
     <div class="container">
+        <br>
+        <div class="row">
+            <div class="col-md-6">
+                <button type="button" id="btnGetForm" class="btn btn-dark btn-block">Llenar formulario</button>
+            </div>
+            <div class="col-md-6">
+                <button type="button" id="btnGetFile" class="btn btn-success btn-block">Transformar archivo XML</button>
+            </div>
+        </div>
+    </div>
+    <div class="container" id="containerXML" style="display: none;">
         <br>
         <div class="row">
             <div class="col-md-12">
@@ -21,8 +31,8 @@
                     <div class="card-body">
                         <form>
                             <div class="form-group">
-                                <label for="addedFile">Agregar un nuevo archivo</label>
-                                <input type="file" class="form-control-file" id="addedFile">
+                                <label for="inputAddFile">Agregar un nuevo archivo</label>
+                                <input type="file" class="form-control-file" id="inputAddFile">
                             </div>
                             <button type="button" class="btn btn-info" id="btnGenerateXml">Generar Xml</button>
                         </form>
@@ -31,66 +41,1239 @@
             </div>
         </div>
     </div>
+    <div class="container" id="containerFormRDEP" style="display: none;">
+        <br>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card" style="margin-bottom: 20px;">
+                    <div class="card-header">Formulario RDEP</div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                    <div class="custom-file">
+                                      <input type="file" class="custom-file-input" id="inputGetExcel" aria-describedby="inputGroupFileAddon01">
+                                      <label class="custom-file-label" for="inputGetExcel">Escoger archivo</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="divInfoExcel"  style="display: none;">
+                            <br>
+                            <hr>
+                            <h3>Información del Empleador</h3>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label for="inputIdEmpleadorRuc">Ruc</label>
+                                    <input type="number" class="form-control form-control-sm" id="inputIdEmpleadorRuc">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="inputRazonSocial">Razón Social</label>
+                                    <input type="text" class="form-control form-control-sm" id="inputRazonSocial">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="inputDireccion">Dirección</label>
+                                    <input type="text" class="form-control form-control-sm" id="inputDireccion">
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <select class="custom-select" id="inputSelectAnio">
+                                        <option value="" selected>Escoger el año</option>
+                                        <!-- Resto de años desde el 2006 hasta el 2024 -->
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <select class="custom-select" id="selectTipoEmpleador">
+                                        <option value="" selected>Tipo empleador</option>
+                                        <option value="PRIVADO_MIXTO">Privado o Mixto</option>
+                                        <option value="PUBLICO_IFIS">Público o IFIS</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <select class="custom-select" id="selectSeguridadSocial">
+                                        <option value="" selected>Ente de Seguridad Social </option>
+                                        <option value="IESS">IESS</option>
+                                        <option value="ISSFA/USSPOL">ISSFA/USSPOL</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <table class="table table-sm table-hover">
+                                        <thead>
+                                          <tr>
+                                            <th scope="col">RUC</th>
+                                            <th scope="col">Nombres completos</th>
+                                            <th scope="col">Establecimiento</th>
+                                            <th scope="col">Sueldo y Salarios</th>
+                                            <th scope="col"> Base imponible</th>
+                                            <th scope="col">IR Causado</th>
+                                            <th scope="col">Valor Retenido</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody id="tbodyTableEmpleados">
+                                            <!-- TABLA DE INFORMACION -->
+                                        </tbody>
+                                      </table>
+                                </div>
+                            </div>
+                            <br>
+                        </div>
+                        <div id="detailEmpleado" style="display: none;">
+                            <button class="btn btn-dark btn-sm" id="btnBack" style="margin-top: 15px; margin-bottom: 15px;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style="fill: white; width: 15px; height: 15px;"><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></button><h2>Detalles de Empleado</h2>
+                            <!-- Botones para las particiones -->
+                            <div class="row g-1">
+                                <div class="col-md-3">
+                                    <button type="button" id="btnDatosTrabajador" class="btn btn-link">Datos del trabajador</button>
+                                </div>
+                                <div class="col-md-3">
+                                    <button type="button" id="btnIngresos" class="btn btn-link">Ingresos</button>
+                                </div>
+                                <div class="col-md-3">
+                                    <button type="button" id="btnGastosDeduccionesExo" class="btn btn-link">Gastos, deducciones y exoneraciones</button>
+                                </div>
+                                <div class="col-md-3">
+                                    <button type="button" id="btnResumenImp" class="btn btn-link">Resumen Impositivo</button>
+                                </div>
+                            </div>
+                            <hr>
+                            <!-- Informacion de los trabajador -->
+                             <div id="divInfoTrabajador">
+                                <h3>INFORMACIÓN DEL TRABAJADOR</h3>
+                                 <div class="row">
+                                     <div class="col-md-6">
+                                         <label>Beneficio provincia de Galápagos</label>
+                                         <div class="form-check">
+                                             <input class="form-check-input" type="radio" name="exampleRadios" id="radioNoBenGalpg" value="NO">
+                                             <label class="form-check-label" for="radioNoBenGalpg">
+                                               No
+                                             </label>
+                                           </div>
+                                           <div class="form-check">
+                                             <input class="form-check-input" type="radio" name="exampleRadios" id="radioSiBenGalpg" value="SI">
+                                             <label class="form-check-label" for="radioSiBenGalpg">
+                                               Si
+                                             </label>
+                                         </div>
+                                     </div>
+                                     <div class="col-md-6">
+                                         <label>Trabajador con o a cargo de personas con enfermedades catastróficas, raras y/o huérfanas</label>
+                                         <div class="form-check">
+                                             <input class="form-check-input" type="radio" name="exampleRadiosEnfCatastro" id="radioNoEnfCatastro" value="NO">
+                                             <label class="form-check-label" for="radioNoEnfCatastro">
+                                               No
+                                             </label>
+                                           </div>
+                                           <div class="form-check">
+                                             <input class="form-check-input" type="radio" name="exampleRadiosEnfCatastro" id="radioSiEnfCatastro" value="SI">
+                                             <label class="form-check-label" for="radioSiEnfCatastro">
+                                               Si
+                                             </label>
+                                         </div>
+                                     </div>
+                                 </div>
+                                 <div class="row">
+                                     <div class="col-md-6">
+                                         <label>Número de cargas familiares para rebaja de gastos personales</label>
+                                         <select class="custom-select custom-select-sm" id="selectTrabCargFam">
+                                             <option value="" selected>Escoger una opción</option>
+                                             
+                                         </select>
+                                     </div>
+                                     <div class="col-md-6">
+                                         <label>Tipo de identificación del trabajador</label>
+                                         <select class="custom-select custom-select-sm" id="selectTipoIdentEmpleado">
+                                             <option value="" selected>Escoger una opción</option>
+                                             <option value="C">CÉDULA</option>
+                                             <option value="ITE">IDENTIFICACIÓN TRIBUTARIA DEL EXTERIOR</option>
+                                             <option value="P">PASAPORTE</option>
+                                         </select>
+                                     </div>
+                                 </div>
+                                 <div class="row">
+                                     <div class="col-md-3">
+                                         <div class="form-group">
+                                             <label for="inputNumCedulaEmpleado">Número de Identificación del trabajador</label>
+                                             <input type="text" class="form-control form-control-sm" id="inputNumCedulaEmpleado">
+                                         </div>
+                                     </div>
+                                     <div class="col-md-3">
+                                         <div class="form-group">
+                                             <label for="inputApellidoTrabajador">Apellidos del trabajador</label>
+                                             <input type="text" class="form-control form-control-sm" id="inputApellidoTrabajador">
+                                         </div>
+                                     </div>
+                                     <div class="col-md-3">
+                                         <div class="form-group">
+                                             <label for="inputNombreTrabajador">Nombres del trabajador</label>
+                                             <input type="text" class="form-control form-control-sm" id="inputNombreTrabajador">
+                                         </div>
+                                     </div>
+                                     <div class="col-md-3">
+                                         <div class="form-group">
+                                             <label for="inputCodEstablecimiento">Código del establecimiento</label>
+                                             <input type="text" class="form-control form-control-sm" id="inputCodEstablecimiento">
+                                         </div>
+                                     </div>
+                                 </div>
+                                 <div class="row">
+                                     <div class="col-md-4">
+                                         <label>Residencia del trabajador</label>
+                                         <select class="custom-select custom-select-sm" id="selectResidenTrab">
+                                             <option value="" selected>Escoger una opción</option>
+                                             <option value="01">RESIDENTE LOCAL</option>
+                                             <option value="02">RESIDENTE EN EL EXTERIOR</option>
+                                         </select>
+                                     </div>
+                                     <div class="col-md-4">
+                                         <label>País de residencia del trabajador</label>
+                                         <select class="custom-select custom-select-sm" id="selectPaisResidenTrab">
+                                             <option value="" selected>Escoger una opción</option>
+                                             
+                                         </select>
+                                     </div>
+                                     <div class="col-md-4">
+                                         <label>Aplica convenio para evitar doble imposición</label>
+                                         <select class="custom-select custom-select-sm" id="selectApConvEvitDobImposi">
+                                             <option value="NA" selected> </option>
+                                             <option value="CC">CON CONVENIO</option>
+                                             <option value="SC">SIN CONVENIO</option>
+                                         </select>
+                                     </div>
+                                 </div>
+                                 <div class="row">
+                                     <div class="col-md-3">
+                                         <label>Condición del trabajador respecto a discapacidades</label>
+                                         <select class="custom-select custom-select-sm" id="selectCondtrabRespDis">
+                                             <option value="01" selected>NO APLICA</option>
+                                             <option value="02">TRABAJADOR CON DISCAPACIDAD</option>
+                                             <option value="03">TRABAJADOR QUE ACTÚA EN CALIDAD DE SUSTITUTO DE UNA PERSONA CON DISCAPACIDAD</option>
+                                             <option value="04">TRABAJADOR TIENE CÓNYUGE, PAREJA, EN UN ÚNION DE HECHO O HIJO CON DISCAPACIDAD Y SE ENCUENTRA BAJO SU CUIDADO Y/O RESPONSABILIDAD</option>
+                                         </select>
+                                     </div>
+                                     <div class="col-md-3">
+                                         <div class="form-group">
+                                             <label for="inputProceDisc">Porcentaje de discapacidad</label>
+                                             <input type="text" class="form-control form-control-sm" id="inputProceDisc">
+                                         </div>
+                                     </div>
+                                     <div class="col-md-3">
+                                         <label>Tipo de identificación de la persona con discapacidad a quien sustituye o representa</label>
+                                         <select class="custom-select custom-select-sm" id="selectTipIdenPersDisSustRep">
+                                             <option value="N" selected> </option>
+                                             <option value="C">CÉDULA</option>
+                                             <option value="ITE">IDENTIFICACIÓN TRIBUTARIA DEL EXTERIOR</option>
+                                             <option value="P">PASAPORTE</option>
+                                         </select>
+                                     </div>
+                                     <div class="col-md-3">
+                                         <div class="form-group">
+                                             <label for="inputNumIdentificacionPerDisSusRep">Número de Identificación de la persona con discapacidad a quien sustituye o representa</label>
+                                             <input type="text" class="form-control form-control-sm" id="inputNumIdentificacionPerDisSusRep">
+                                         </div>
+                                     </div>
+                                 </div>
+                             </div>
+                             <div id="divIngresos" style="display: none;">
+                                <h3>INGRESOS</h3>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="inputSueldosSalarios">Sueldos y salarios</label>
+                                            <input type="number" class="form-control form-control-sm" id="inputSueldosSalarios">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="inputSobreComiBonosOtrIng">Sobresueldos, comisiones, bonos y otros ingresos gravados</label>
+                                            <input type="number" class="form-control form-control-sm" id="inputSobreComiBonosOtrIng">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="inputPartUtil">Participación utilidades</label>
+                                            <input type="number" class="form-control form-control-sm" id="inputPartUtil">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="inputIngGravGenEmp">Ingresos gravados generados con otros empleadores</label>
+                                            <input type="number" class="form-control form-control-sm" id="inputIngGravGenEmp">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="inputImpRentAsuEmp">Impuestos a la renta asumido por este empleador</label>
+                                            <input type="number" class="form-control form-control-sm" id="inputImpRentAsuEmp">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="inputDeciTer">Décimo Tercer sueldo</label>
+                                            <input type="number" class="form-control form-control-sm" id="inputDeciTer">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="inputDecCuaSue">Décimo cuarto sueldo</label>
+                                            <input type="number" class="form-control form-control-sm" id="inputDecCuaSue">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="inputFondoRes">Fondo de reserva</label>
+                                            <input type="number" class="form-control form-control-sm" id="inputFondoRes">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="inputComEcoSalDig">Compensación Económica Salario Digno</label>
+                                            <input type="number" class="form-control form-control-sm" id="inputComEcoSalDig">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="inputOtrRelDepConsMatGravImpRen">Otros ingresos en relación de dependencia que no constituyen materia gravada de impuesto a la renta</label>
+                                            <input type="number" class="form-control form-control-sm" id="inputOtrRelDepConsMatGravImpRen">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="ingGravEmp">Ingresos gravados con este empleador</label>
+                                            <input type="number" class="form-control form-control-sm" id="ingGravEmp" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                             </div>
+                             <div id="divGastos" style="display: none;">
+                                <h3>GASTOS, DEDUCCIONES y EXONERACIONES</h3>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label>Sistema de salario neto</label>
+                                        <select id="selectSisSalNet" class="custom-select custom-select-sm">
+                                            <option value="" selected>Escoge alguna opcion</option>
+                                            <option value="1">SIN SISTEMA DE SALARIO NETO</option>
+                                            <option value="2">CON SISTEMA DE SALARIO NETO</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="inputApoPerIesEmp">Aporte personal IESS con este empleador (únicamente pagado por el trabajador)</label>
+                                            <input type="number" class="form-control form-control-sm" id="inputApoPerIesEmp" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="inputApoPerIesOtrEmp">Aporte personal IESS con otros empleadores (únicamente pagado por el trabajador)</label>
+                                            <input type="number" class="form-control form-control-sm" id="inputApoPerIesOtrEmp">
+                                        </div>
+                                    </div>
+                                </div>
+                                <h5>GASTOS PERSONALES</h5>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="inputVivienda">Vivienda</label>
+                                            <input type="number" class="form-control form-control-sm" id="inputVivienda">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="inputSalud">Salud</label>
+                                            <input type="number" class="form-control form-control-sm" id="inputSalud">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="inputEducacionArtCult">Educación Arte y Cultura</label>
+                                            <input type="number" class="form-control form-control-sm" id="inputEducacionArtCult">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="inputAlimentacion">Alimentación</label>
+                                            <input type="number" class="form-control form-control-sm" id="inputAlimentacion">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="inputVestimenta">Vestimenta</label>
+                                            <input type="number" class="form-control form-control-sm" id="inputVestimenta">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="inputTurismo">Turismo</label>
+                                            <input type="number" class="form-control form-control-sm" id="inputTurismo">
+                                        </div>
+                                    </div>
+                                </div>
+                                <h5>EXONERACIONES</h5>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="inputDiscapacidad">Discapacidad</label>
+                                            <input type="number" class="form-control form-control-sm" id="inputDiscapacidad">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="inputTerceraEdad">Tercera Edad</label>
+                                            <input type="number" class="form-control form-control-sm" id="inputTerceraEdad">
+                                        </div>
+                                    </div>
+                                </div>
+                             </div>
+                             <div id="divResumenImp" style="display: none;">
+                                <h3>RESUMEN IMPOSITIVO</h3>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="inputBasImpGrav">Base Imponible gravada</label>
+                                            <input type="number" class="form-control form-control-sm" id="inputBasImpGrav" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="inputImpRenCau">Impuesto a la renta causado</label>
+                                            <input type="number" class="form-control form-control-sm" id="inputImpRenCau" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="inputValImpRetAsuOtrEmpPerDec">Valor del impuesto retenido y asumido por otros empleadores durante el periodo declarado</label>
+                                            <input type="number" class="form-control form-control-sm" id="inputValImpRetAsuOtrEmpPerDec">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="inputValImpAsuEmp">Valor del impuesto asumido por este empleador</label>
+                                            <input type="number" class="form-control form-control-sm" id="inputValImpAsuEmp">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="inputValImpRetTrabEmp">Valor del impuesto retenido al trabajador por este empleador</label>
+                                            <input type="number" class="form-control form-control-sm" id="inputValImpRetTrabEmp">
+                                        </div>
+                                    </div>
+                                </div>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
+
+<!-- Script General -->
+<script>
+    const btnGetForm = document.getElementById("btnGetForm");
+    const containerFormRDEP = document.getElementById("containerFormRDEP");
+
+    const rowBtnSuccess = document.getElementById("rowBtnSuccess");
+    
+    const divInfoExcel = document.getElementById("divInfoExcel");
+    const inputIdEmpleadorRuc = document.getElementById("inputIdEmpleadorRuc");
+    const inputRazonSocial = document.getElementById("inputRazonSocial");
+    const inputDireccion = document.getElementById("inputDireccion");
+
+    const inputSelectAnio = document.getElementById("inputSelectAnio");
+    const selectTipoEmpleador = document.getElementById("selectTipoEmpleador");
+    const selectSeguridadSocial = document.getElementById("selectSeguridadSocial");
+    const radioNoBenGalpg = document.getElementById("radioNoBenGalpg");
+    const radioSiBenGalpg = document.getElementById("radioSiBenGalpg");
+    const tbodyTableEmpleados = document.getElementById("tbodyTableEmpleados");
+    const btnBack = document.getElementById("btnBack");
+    const radioNoEnfCatastro = document.getElementById("radioNoEnfCatastro");
+    const radioSiEnfCatastro = document.getElementById("radioSiEnfCatastro");
+
+    const detailEmpleado = document.getElementById("detailEmpleado");
+
+    const selectTrabCargFam = document.getElementById("selectTrabCargFam");
+    const selectTipoIdentEmpleado = document.getElementById("selectTipoIdentEmpleado");
+    const inputNumCedulaEmpleado = document.getElementById("inputNumCedulaEmpleado");
+    const inputApellidoTrabajador = document.getElementById("inputApellidoTrabajador");
+    const inputNombreTrabajador = document.getElementById("inputNombreTrabajador");
+    const inputCodEstablecimiento = document.getElementById("inputCodEstablecimiento");
+    const selectResidenTrab = document.getElementById("selectResidenTrab");
+    const selectPaisResidenTrab = document.getElementById("selectPaisResidenTrab");
+    const selectApConvEvitDobImposi = document.getElementById("selectApConvEvitDobImposi");
+    const inputProceDisc = document.getElementById("inputProceDisc");
+    const selectTipIdenPersDisSustRep = document.getElementById("selectTipIdenPersDisSustRep");
+    const inputNumIdentificacionPerDisSusRep = document.getElementById("inputNumIdentificacionPerDisSusRep");
+    const selectCondtrabRespDis = document.getElementById("selectCondtrabRespDis");
+
+    const inputSueldosSalarios = document.getElementById("inputSueldosSalarios");
+    const inputSobreComiBonosOtrIng = document.getElementById("inputSobreComiBonosOtrIng");
+    const inputPartUtil = document.getElementById("inputPartUtil");
+    const inputIngGravGenEmp = document.getElementById("inputIngGravGenEmp");
+    const inputImpRentAsuEmp = document.getElementById("inputImpRentAsuEmp");
+    const inputDeciTer = document.getElementById("inputDeciTer");
+    const inputDecCuaSue = document.getElementById("inputDecCuaSue");
+    const inputFondoRes = document.getElementById("inputFondoRes");
+    const inputComEcoSalDig = document.getElementById("inputComEcoSalDig");
+    const inputOtrRelDepConsMatGravImpRen = document.getElementById("inputOtrRelDepConsMatGravImpRen");
+    const ingGravEmp = document.getElementById("ingGravEmp");
+
+    const divInfoTrabajador = document.getElementById("divInfoTrabajador");
+    const divIngresos = document.getElementById("divIngresos");
+    const divGastos = document.getElementById("divGastos");
+    const divResumenImp = document.getElementById("divResumenImp");
+
+    const btnDatosTrabajador = document.getElementById("btnDatosTrabajador");
+    const btnIngresos = document.getElementById("btnIngresos");
+    const btnGastosDeduccionesExo = document.getElementById("btnGastosDeduccionesExo");
+    const btnResumenImp = document.getElementById("btnResumenImp");
+
+    const selectSisSalNet = document.getElementById("selectSisSalNet");
+    const inputApoPerIesEmp = document.getElementById("inputApoPerIesEmp");
+    const inputApoPerIesOtrEmp = document.getElementById("inputApoPerIesOtrEmp");
+    const inputVivienda = document.getElementById("inputVivienda");
+    const inputSalud = document.getElementById("inputSalud");
+    const inputEducacionArtCult = document.getElementById("inputEducacionArtCult");
+    const inputAlimentacion = document.getElementById("inputAlimentacion");
+    const inputVestimenta = document.getElementById("inputVestimenta");
+    const inputTurismo = document.getElementById("inputTurismo");
+    const inputDiscapacidad = document.getElementById("inputDiscapacidad");
+    const inputTerceraEdad = document.getElementById("inputTerceraEdad");
+
+    const inputBasImpGrav = document.getElementById("inputBasImpGrav");
+    const inputImpRenCau = document.getElementById("inputImpRenCau");
+    const inputValImpRetAsuOtrEmpPerDec = document.getElementById("inputValImpRetAsuOtrEmpPerDec");
+    const inputValImpAsuEmp = document.getElementById("inputValImpAsuEmp");
+    const inputValImpRetTrabEmp = document.getElementById("inputValImpRetTrabEmp");
+
+    btnGetForm.addEventListener("click", function(){
+        containerFormRDEP.style.display = "";
+    })
+
+    btnBack.addEventListener("click", function(){
+        detailEmpleado.style.display = "none";
+        divInfoExcel.style.display = "";
+    })
+
+    // Funciona que carga el los selects
+    for(i = 2006; i <= 2024; i++){
+        const option = document.createElement("option");
+        option.value = i;
+        option.text = i;
+        inputSelectAnio.appendChild(option)
+    }
+    // Funcionamiento desde 1 a 5 o más
+    for(i = 0; i<= 5; i++){
+        const option = document.createElement("option");
+        if(i == 5){
+            option.text = "5 o más";
+            option.value = "5+";
+        }else{
+            option.value = i;
+            option.text = i;
+        }
+        selectTrabCargFam.appendChild(option);
+    }
+
+    const paisesConCodigos = [
+        { nombre: "Afganistán", codigo: "93" },
+        { nombre: "Albania", codigo: "355" },
+        { nombre: "Alemania", codigo: "49" },
+        { nombre: "Andorra", codigo: "376" },
+        { nombre: "Angola", codigo: "244" },
+        { nombre: "Antigua y Barbuda", codigo: "1-268" },
+        { nombre: "Arabia Saudita", codigo: "966" },
+        { nombre: "Argelia", codigo: "213" },
+        { nombre: "Argentina", codigo: "54" },
+        { nombre: "Armenia", codigo: "374" },
+        { nombre: "Australia", codigo: "61" },
+        { nombre: "Austria", codigo: "43" },
+        { nombre: "Azerbaiyán", codigo: "994" },
+        { nombre: "Bahamas", codigo: "1-242" },
+        { nombre: "Baréin", codigo: "973" },
+        { nombre: "Bangladés", codigo: "880" },
+        { nombre: "Barbados", codigo: "1-246" },
+        { nombre: "Belice", codigo: "501" },
+        { nombre: "Benín", codigo: "229" },
+        { nombre: "Bielorrusia", codigo: "375" },
+        { nombre: "Birmania", codigo: "95" },
+        { nombre: "Bolivia", codigo: "591" },
+        { nombre: "Bosnia y Herzegovina", codigo: "387" },
+        { nombre: "Botsuana", codigo: "267" },
+        { nombre: "Brasil", codigo: "55" },
+        { nombre: "Brunéi", codigo: "673" },
+        { nombre: "Bulgaria", codigo: "359" },
+        { nombre: "Burkina Faso", codigo: "226" },
+        { nombre: "Burundi", codigo: "257" },
+        { nombre: "Bután", codigo: "975" },
+        { nombre: "Cabo Verde", codigo: "238" },
+        { nombre: "Camboya", codigo: "855" },
+        { nombre: "Camerún", codigo: "237" },
+        { nombre: "Canadá", codigo: "1" },
+        { nombre: "Chad", codigo: "235" },
+        { nombre: "Chile", codigo: "56" },
+        { nombre: "China", codigo: "86" },
+        { nombre: "Colombia", codigo: "57" },
+        { nombre: "Comoras", codigo: "269" },
+        { nombre: "Congo", codigo: "242" },
+        { nombre: "Corea del Norte", codigo: "850" },
+        { nombre: "Corea del Sur", codigo: "82" },
+        { nombre: "Costa Rica", codigo: "506" },
+        { nombre: "Croacia", codigo: "385" },
+        { nombre: "Cuba", codigo: "53" },
+        { nombre: "Chipre", codigo: "357" },
+        { nombre: "Dinamarca", codigo: "45" },
+        { nombre: "Dominica", codigo: "1-767" },
+        { nombre: "República Dominicana", codigo: "1-809" },
+        { nombre: "Ecuador", codigo: "593" },
+        { nombre: "Egipto", codigo: "20" },
+        { nombre: "El Salvador", codigo: "503" },
+        { nombre: "Emiratos Árabes Unidos", codigo: "971" },
+        { nombre: "Eritrea", codigo: "291" },
+        { nombre: "Eslovaquia", codigo: "421" },
+        { nombre: "Eslovenia", codigo: "386" },
+        { nombre: "España", codigo: "34" },
+        { nombre: "Estados Unidos", codigo: "1" },
+        { nombre: "Estonia", codigo: "372" },
+        { nombre: "Eswatini", codigo: "268" },
+        { nombre: "Etiopía", codigo: "251" },
+        { nombre: "Fiji", codigo: "679" },
+        { nombre: "Filipinas", codigo: "63" },
+        { nombre: "Finlandia", codigo: "358" },
+        { nombre: "Francia", codigo: "33" },
+        { nombre: "Gabón", codigo: "241" },
+        { nombre: "Gambia", codigo: "220" },
+        { nombre: "Georgia", codigo: "995" },
+        { nombre: "Ghana", codigo: "233" },
+        { nombre: "Granada", codigo: "1-473" },
+        { nombre: "Grecia", codigo: "30" },
+        { nombre: "Guatemala", codigo: "502" },
+        { nombre: "Guinea", codigo: "224" },
+        { nombre: "Guinea-Bisáu", codigo: "245" },
+        { nombre: "Guyana", codigo: "592" },
+        { nombre: "Haití", codigo: "509" },
+        { nombre: "Holanda", codigo: "31" },
+        { nombre: "Honduras", codigo: "504" },
+        { nombre: "Hungría", codigo: "36" },
+        { nombre: "India", codigo: "91" },
+        { nombre: "Indonesia", codigo: "62" },
+        { nombre: "Irán", codigo: "98" },
+        { nombre: "Iraq", codigo: "964" },
+        { nombre: "Irlanda", codigo: "353" },
+        { nombre: "Islas Marshall", codigo: "692" },
+        { nombre: "Islas Salomón", codigo: "677" },
+        { nombre: "Islas Seychelles", codigo: "248" },
+        { nombre: "Islas Vírgenes Británicas", codigo: "1-284" },
+        { nombre: "Israel", codigo: "972" },
+        { nombre: "Italia", codigo: "39" },
+        { nombre: "Jamaica", codigo: "1-876" },
+        { nombre: "Japón", codigo: "81" },
+        { nombre: "Jordania", codigo: "962" },
+        { nombre: "Kazajistán", codigo: "7" },
+        { nombre: "Kenia", codigo: "254" },
+        { nombre: "Kirguistán", codigo: "996" },
+        { nombre: "Kiribati", codigo: "686" },
+        { nombre: "Kuwait", codigo: "965" },
+        { nombre: "Laos", codigo: "856" },
+        { nombre: "Lesoto", codigo: "266" },
+        { nombre: "Letonia", codigo: "371" },
+        { nombre: "Líbano", codigo: "961" },
+        { nombre: "Liberia", codigo: "231" },
+        { nombre: "Libia", codigo: "218" },
+        { nombre: "Liechtenstein", codigo: "423" },
+        { nombre: "Lituania", codigo: "370" },
+        { nombre: "Luxemburgo", codigo: "352" },
+        { nombre: "Madagascar", codigo: "261" },
+        { nombre: "Malasia", codigo: "60" },
+        { nombre: "Malawi", codigo: "265" },
+        { nombre: "Maldivas", codigo: "960" },
+        { nombre: "Mali", codigo: "223" },
+        { nombre: "Malta", codigo: "356" },
+        { nombre: "Marruecos", codigo: "212" },
+        { nombre: "Mauricio", codigo: "230" },
+        { nombre: "Mauritania", codigo: "222" },
+        { nombre: "México", codigo: "52" },
+        { nombre: "Micronesia", codigo: "691" },
+        { nombre: "Mónaco", codigo: "377" },
+        { nombre: "Mongolia", codigo: "976" },
+        { nombre: "Montenegro", codigo: "382" },
+        { nombre: "Mozambique", codigo: "258" },
+        { nombre: "Namibia", codigo: "264" },
+        { nombre: "Nauru", codigo: "674" },
+        { nombre: "Nepal", codigo: "977" },
+        { nombre: "Nicaragua", codigo: "505" },
+        { nombre: "Níger", codigo: "227" },
+        { nombre: "Nigeria", codigo: "234" },
+        { nombre: "Noruega", codigo: "47" },
+        { nombre: "Nueva Zelanda", codigo: "64" },
+        { nombre: "Omán", codigo: "968" },
+        { nombre: "Países Bajos", codigo: "31" },
+        { nombre: "Pakistán", codigo: "92" },
+        { nombre: "Palau", codigo: "680" },
+        { nombre: "Panamá", codigo: "507" },
+        { nombre: "Papúa Nueva Guinea", codigo: "675" },
+        { nombre: "Paraguay", codigo: "595" },
+        { nombre: "Perú", codigo: "51" },
+        { nombre: "Polonia", codigo: "48" },
+        { nombre: "Portugal", codigo: "351" },
+        { nombre: "Qatar", codigo: "974" },
+        { nombre: "Reino Unido", codigo: "44" },
+        { nombre: "República Centroafricana", codigo: "236" },
+        { nombre: "República Checa", codigo: "420" },
+        { nombre: "República del Congo", codigo: "242" },
+        { nombre: "República Democrática del Congo", codigo: "243" },
+        { nombre: "República Dominicana", codigo: "1-809" },
+        { nombre: "Rumania", codigo: "40" },
+        { nombre: "Rusia", codigo: "7" },
+        { nombre: "Ruanda", codigo: "250" },
+        { nombre: "San Cristóbal y Nieves", codigo: "1-869" },
+        { nombre: "San Marino", codigo: "378" },
+        { nombre: "Santa Lucía", codigo: "1-758" },
+        { nombre: "Santa Elena", codigo: "290" },
+        { nombre: "Santo Tomé y Príncipe", codigo: "239" },
+        { nombre: "Senegal", codigo: "221" },
+        { nombre: "Serbia", codigo: "381" },
+        { nombre: "Seychelles", codigo: "248" },
+        { nombre: "Sierra Leona", codigo: "232" },
+        { nombre: "Singapur", codigo: "65" },
+        { nombre: "Siria", codigo: "963" },
+        { nombre: "Somalia", codigo: "252" },
+        { nombre: "Sri Lanka", codigo: "94" },
+        { nombre: "Suazilandia", codigo: "268" },
+        { nombre: "Sudán", codigo: "249" },
+        { nombre: "Sudán del Sur", codigo: "211" },
+        { nombre: "Suecia", codigo: "46" },
+        { nombre: "Suiza", codigo: "41" },
+        { nombre: "Surinam", codigo: "597" },
+        { nombre: "Tailandia", codigo: "66" },
+        { nombre: "Timor Oriental", codigo: "670" },
+        { nombre: "Togo", codigo: "228" },
+        { nombre: "Tonga", codigo: "676" },
+        { nombre: "Trinidad y Tobago", codigo: "1-868" },
+        { nombre: "Túnez", codigo: "216" },
+        { nombre: "Turkmenistán", codigo: "993" },
+        { nombre: "Turquía", codigo: "90" },
+        { nombre: "Tuvalu", codigo: "688" },
+        { nombre: "Ucrania", codigo: "380" },
+        { nombre: "Uganda", codigo: "256" },
+        { nombre: "Uruguay", codigo: "598" },
+        { nombre: "Uzbekistán", codigo: "998" },
+        { nombre: "Vanuatu", codigo: "678" },
+        { nombre: "Vaticano", codigo: "379" },
+        { nombre: "Venezuela", codigo: "58" },
+        { nombre: "Vietnam", codigo: "84" },
+        { nombre: "Yemen", codigo: "967" },
+        { nombre: "Zambia", codigo: "260" },
+        { nombre: "Zimbabue", codigo: "263" }
+    ];
+
+    btnDatosTrabajador.addEventListener("click", function(){
+        divInfoTrabajador.style.display = "";
+        divIngresos.style.display = "none";
+        divGastos.style.display = "none";
+        divResumenImp.style.display = "none";
+    });
+    btnIngresos.addEventListener("click", function(){
+        divIngresos.style.display = "";
+        divInfoTrabajador.style.display = "none";
+        divGastos.style.display = "none";
+        divResumenImp.style.display = "none";
+    });
+    btnGastosDeduccionesExo.addEventListener("click", function(){
+        divGastos.style.display = "";
+        divIngresos.style.display = "none";
+        divInfoTrabajador.style.display = "none";
+        divResumenImp.style.display = "none";
+    });
+    btnResumenImp.addEventListener("click", function(){
+        divResumenImp.style.display = "";
+        divGastos.style.display = "none";
+        divIngresos.style.display = "none";
+        divInfoTrabajador.style.display = "none";
+    })
+
+    paisesConCodigos.forEach(pais =>{
+        const option = document.createElement("option");
+        option.value = pais.codigo;
+        option.textContent = pais.nombre;
+        selectPaisResidenTrab.appendChild(option)
+    });
+
+    function generateInfoEmpresa(array, arrayContent){
+        if(array.length != 0 && arrayContent.length != 0){
+            inputIdEmpleadorRuc.value = arrayContent[1][0] == "" ? "" : arrayContent[1][0];
+            inputRazonSocial.disabled = false; 
+            inputDireccion.disabled = false;
+            divInfoExcel.style.display = "";
+
+            inputSelectAnio.value = arrayContent[1][1];
+            selectTipoEmpleador.value = arrayContent[1][2];
+            selectSeguridadSocial.value = arrayContent[1][3];
+            
+            // Carga de tablas
+            Object.keys(arrayContent).forEach(key =>{
+                if(arrayContent[key][8] == '' || (arrayContent[key][9] == undefined && arrayContent[key][10] == undefined )){
+                    return;
+                }
+                const row = document.createElement("tr");
+                const rucEmpleado = document.createElement("td");
+                const nombreEmpleado = document.createElement("td");
+                const establecimiento = document.createElement("td");
+                const sueldoSalarios = document.createElement("td");
+                const baseImponible = document.createElement("td");
+                const IRCausado = document.createElement("td");
+                const valRetenido = document.createElement("td");
+
+                rucEmpleado.textContent = arrayContent[key][8];
+                nombreEmpleado.textContent = `${arrayContent[key][9]} ${arrayContent[key][10]}`;
+                establecimiento.textContent = arrayContent[key][11];
+                sueldoSalarios.textContent = arrayContent[key][19];
+                baseImponible.textContent = arrayContent[key][41];
+                IRCausado.textContent = arrayContent[key][42];
+                valRetenido.textContent = arrayContent[key][47];
+
+                // Funcionalidad y estilo de la fila
+                row.style.cursor = "pointer";
+                row.style.textAlign = "center";
+                
+                // Restricciones en caso de que el RUC de la empresa se encuentre vacio
+                const empleado = arrayContent[key];
+
+                // Funcionalidad de la fila
+                row.addEventListener("click", function(){
+                    const infoEmpleado = arrayContent[key];
+
+                    detailEmpleado.style.display = "";
+                    divInfoExcel.style.display = "none";
+                    
+                    // Llenar el formulario
+                    if(infoEmpleado[4] == "NO"){
+                        radioNoBenGalpg.checked = true
+                        radioSiBenGalpg.checked = false
+                    }else{
+                        radioSiBenGalpg.checked = true
+                        radioNoBenGalpg.checked = false
+                    }
+                    if(infoEmpleado[5] == "NO"){
+                        radioNoEnfCatastro.checked = true;
+                        radioSiEnfCatastro.checked = false;
+                    }else{
+                        radioSiEnfCatastro.checked = true;
+                        radioNoEnfCatastro.checked = false;
+                    }
+
+                    selectTrabCargFam.value = "";
+                    selectTrabCargFam.value = infoEmpleado[6];
+
+                    selectTipoIdentEmpleado.value = "";
+                    selectTipoIdentEmpleado.value = infoEmpleado[7];
+
+                    inputNumCedulaEmpleado.value = ""
+                    inputNumCedulaEmpleado.value = infoEmpleado[8];
+
+                    inputApellidoTrabajador.value = "";
+                    inputApellidoTrabajador.value = infoEmpleado[9];
+
+                    inputNombreTrabajador.value = "";
+                    inputNombreTrabajador.value = infoEmpleado[10];
+
+                    inputCodEstablecimiento.value = "";
+                    inputCodEstablecimiento.value = infoEmpleado[11];
+
+                    selectResidenTrab.value = "";
+                    selectResidenTrab.value = infoEmpleado[12];
+
+                    selectPaisResidenTrab.value = "";
+                    selectPaisResidenTrab.value = infoEmpleado[13];
+                    
+                    selectApConvEvitDobImposi.value = "";
+                    selectApConvEvitDobImposi.value = infoEmpleado[14];
+
+                    selectCondtrabRespDis.value = "";
+                    selectCondtrabRespDis.value = infoEmpleado[15];
+
+                    inputProceDisc.value = "";
+                    inputProceDisc.value = infoEmpleado[16];
+                    
+                    selectTipIdenPersDisSustRep.value = "";
+                    selectTipIdenPersDisSustRep.value = infoEmpleado[17];
+
+                    // Variables para los calculos
+                    var valSueldoSalarios, valSobreComiBonosOtrIng, valPartUtil, valImpRentAsuEmp, valIngGravGenEmp, totalVal, totalValResImp
+
+                    inputSueldosSalarios.value = "";
+                    inputSueldosSalarios.value = infoEmpleado[19];
+                    valSueldoSalarios = parseFloat(inputSueldosSalarios.value);
+
+                    inputSobreComiBonosOtrIng.value = "";
+                    inputSobreComiBonosOtrIng.value = infoEmpleado[20];
+                    valSobreComiBonosOtrIng = parseFloat(inputSobreComiBonosOtrIng.value);
+
+                    inputPartUtil.value = "";
+                    inputPartUtil.value = infoEmpleado[21];
+                    valPartUtil = parseFloat(inputPartUtil.value);
+
+                    inputIngGravGenEmp.value = "";
+                    inputIngGravGenEmp.value = infoEmpleado[22];
+                    valIngGravGenEmp = parseFloat(inputIngGravGenEmp.value);
+
+                    inputImpRentAsuEmp.value = "";
+                    inputImpRentAsuEmp.value = infoEmpleado[23];
+                    valImpRentAsuEmp = parseFloat(inputImpRentAsuEmp.value);
+
+                    inputDeciTer.value = "";
+                    inputDeciTer.value = infoEmpleado[24];
+
+                    inputDecCuaSue.value = "";
+                    inputDecCuaSue.value = infoEmpleado[25];
+
+                    inputFondoRes.value = "";
+                    inputFondoRes.value = infoEmpleado[26];
+
+                    inputComEcoSalDig.value = "";
+                    inputComEcoSalDig.value = infoEmpleado[27];
+
+                    inputOtrRelDepConsMatGravImpRen.value = "";
+                    inputOtrRelDepConsMatGravImpRen.value = infoEmpleado[28];
+
+                    // Valor total para ing Grav Emp
+                    totalVal = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valImpRentAsuEmp;
+                    totalValResImp = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valIngGravGenEmp + valImpRentAsuEmp
+
+                    ingGravEmp.value = "";
+                    ingGravEmp.value = totalVal;
+
+                    // GASTOS, DEDUCCIONES Y EXONERACIONES
+                    selectSisSalNet.value = "";
+                    selectSisSalNet.value = infoEmpleado[30];
+
+                    inputApoPerIesEmp.value = "";
+                    inputApoPerIesEmp.value = infoEmpleado[31];
+
+                    inputApoPerIesOtrEmp.value = "";
+                    inputApoPerIesOtrEmp.value = infoEmpleado[32];
+
+                    inputVivienda.value = "";
+                    inputVivienda.value = infoEmpleado[33];
+
+                    inputSalud.value = "";
+                    inputSalud.value = infoEmpleado[34];
+
+                    inputEducacionArtCult.value = "";
+                    inputEducacionArtCult.value = infoEmpleado[35];
+
+                    inputAlimentacion.value = "";
+                    inputAlimentacion.value = infoEmpleado[36];
+
+                    inputVestimenta.value = "";
+                    inputVestimenta.value = infoEmpleado[37];
+
+                    inputTurismo.value = "";
+                    inputTurismo.value = infoEmpleado[38];
+
+                    inputDiscapacidad.value = "";
+                    inputDiscapacidad.value = infoEmpleado[39];
+
+                    inputTerceraEdad.value = "";
+                    inputTerceraEdad.value = infoEmpleado[40];
+
+                    // Funcionalidad de los inputs para el calculo -----------------------------
+                    inputSueldosSalarios.addEventListener("input", function(){
+                        valSueldoSalarios = parseFloat(inputSueldosSalarios.value);
+                        totalVal = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valImpRentAsuEmp;
+                        totalValResImp = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valIngGravGenEmp + valImpRentAsuEmp;
+                        ingGravEmp.value = totalVal;
+                        inputBasImpGrav.value = totalValResImp;
+                    });
+                    inputSobreComiBonosOtrIng.addEventListener("input", function(){
+                        valSobreComiBonosOtrIng = parseFloat(inputSobreComiBonosOtrIng.value);
+                        totalVal = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valImpRentAsuEmp;
+                        totalValResImp = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valIngGravGenEmp + valImpRentAsuEmp;
+                        ingGravEmp.value = totalVal;
+                        inputBasImpGrav.value = totalValResImp;
+                    });
+                    inputPartUtil.addEventListener("input", function(){
+                        valPartUtil = parseFloat(inputPartUtil.value);
+                        totalVal = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valImpRentAsuEmp;
+                        totalValResImp = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valIngGravGenEmp + valImpRentAsuEmp;
+                        ingGravEmp.value = totalVal;
+                        inputBasImpGrav.value = totalValResImp;
+                    });
+                    inputIngGravGenEmp.addEventListener("input", function(){
+                        valIngGravGenEmp = parseFloat(inputIngGravGenEmp.value);
+                        totalValResImp = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valIngGravGenEmp + valImpRentAsuEmp;
+                        inputBasImpGrav.value = totalValResImp;
+                    })
+                    inputBasImpGrav.addEventListener("input", function(){
+                        valIngGravGenEmp = parseFloat(inputBasImpGrav.value);
+                        totalValResImp = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valIngGravGenEmp + valImpRentAsuEmp;
+                        inputBasImpGrav.value = totalValResImp;
+                    });
+                    inputImpRentAsuEmp.addEventListener("input", function(){
+                        valImpRentAsuEmp = parseFloat(inputImpRentAsuEmp.value);
+                        totalVal = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valImpRentAsuEmp;
+                        totalValResImp = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valIngGravGenEmp + valImpRentAsuEmp;
+                        ingGravEmp.value = totalVal;
+                        inputBasImpGrav.value = totalValResImp;
+                    });
+
+                    // RESUMEN IMPONIBLE GRAVADA
+                    inputBasImpGrav.value = "";
+                    inputBasImpGrav.value = totalValResImp;
+
+                    inputImpRenCau.value = "";
+                    inputImpRenCau.value = infoEmpleado[42];
+
+                    inputValImpRetAsuOtrEmpPerDec.value = "";
+                    inputValImpRetAsuOtrEmpPerDec.value = infoEmpleado[44];
+
+                    inputValImpAsuEmp.value = "";
+                    inputValImpAsuEmp.value = infoEmpleado[45];
+
+                    inputValImpRetTrabEmp.value = "";
+                    inputValImpRetTrabEmp.value = infoEmpleado[46];
+                });
+
+                row.appendChild(rucEmpleado);
+                row.appendChild(nombreEmpleado);
+                row.appendChild(establecimiento);
+                row.appendChild(sueldoSalarios);
+                row.appendChild(baseImponible);
+                row.appendChild(IRCausado);
+                row.appendChild(valRetenido);
+
+                tbodyTableEmpleados.appendChild(row);
+            });
+        }else{
+            alert("El archivo no contiene datos que se puedan utilizar")
+        }
+    }
+
+    
+</script>
+
+<!-- Script para el formulario de generacion del Excel para el cliente -->
+<script>
+
+</script>
+
+<!-- Script para tomar un archivo excel -->
+ <script>
+    const inputGetExcel = document.getElementById("inputGetExcel");
+
+    inputGetExcel.addEventListener("change", function(event){
+        const file = event.target.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function(event) {
+            const data = new Uint8Array(event.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const firstSheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheetName];
+            const jsonSheet = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+            // Obtener la primera fila
+            const arrayCabecera = jsonSheet[0];
+
+            const rowsObject = {};
+            for (let rowIndex = 1; rowIndex < jsonSheet.length; rowIndex++) {
+                const rowData = jsonSheet[rowIndex];
+                const rowValues = rowData.map(value => value);
+                rowsObject[rowIndex] = rowValues; // Usar rowIndex para las filas a partir de 1
+            }
+            generateInfoEmpresa(arrayCabecera, rowsObject)
+        };
+        reader.readAsArrayBuffer(file);
+    });
+ </script>
+
+<!-- Script para el generador de XML -->
 <script>
     const btnGenerateXml = document.getElementById('btnGenerateXml');
+    const inputAddFile = document.getElementById('inputAddFile');
 
     btnGenerateXml.addEventListener('click', function () {
-        var input = document.getElementById('addedFile');
-        var file = input.files[0];
-
-        if (file) {
+        if (inputAddFile.files.length > 0) {
+            var file = inputAddFile.files[0];
             var reader = new FileReader();
-
             reader.onload = function (e) {
-                var data = new Uint8Array(e.target.result);
-
-                try {
-                    var workbook = XLSX.read(data, { type: 'array' });
-
-                    if (workbook && workbook.SheetNames && workbook.SheetNames.length > 0) {
-                        // Obtener la primera hoja del libro de trabajo
-                        var sheetName = workbook.SheetNames[0];
-                        var sheet = workbook.Sheets[sheetName];
-
-                        // Crear el elemento raíz del XML
-                        var root = document.createElement('rdep');
-                        
-                        XLSX.utils.sheet_to_json(sheet, { header: 1 }).forEach(function (row, rowIndex) {
-                            if (rowIndex > 0) {
-                                var rowElement = document.createElement('row');
-
-                                var columnNames = [];
-                                var range = XLSX.utils.decode_range(sheet['!ref']);
-                                for (var col = range.s.c; col <= range.e.c; col++) {
-                                    var cellAddress = { c: col, r: 0 }; // Fila A1
-                                    var cellRef = XLSX.utils.encode_cell(cellAddress);
-                                    var columnName = sheet[cellRef].v;
-                                    columnNames.push(columnName);
-                                }
-
-                                // Crear el elemento raíz del XML
-                                var root = document.createElement('rdep');
-
-                                // Iterar sobre las filas
-                                XLSX.utils.sheet_to_json(sheet, { header: 1 }).forEach(function (row, rowIndex) {
-                                    
-                                })
-                            }
-                        })
-                    } else {
-                        console.error('El libro de trabajo no contiene hojas.');
-                    }
-                } catch (error) {
-                    console.error('Error al leer el libro de trabajo:', error);
-                }
-            };
-
-            reader.readAsArrayBuffer(file);
-        } else {
-            alert('Selecciona un archivo Excel válido.');
+                var workbook = XLSX.read(e.target.result, { type: 'binary' });
+                var sheetName = workbook.SheetNames[0];
+                var sheetData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+                var xmlContent = generateXmlFromSheet(sheetData);
+                downloadXmlFile(xmlContent);
+            }
+            reader.readAsBinaryString(file);
         }
     })
+
+    function generateXmlFromSheet(sheetData) {
+        var xml = '<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>\n<rdep>\n';
+        // Verificar si las etiquetas numRuc, anio, tipoEmpleador y enteSegSocial son iguales en todas las columnas
+        var firstRow = sheetData[0];
+        var commonAttributes = {
+            numRuc: null,
+            anio: null,
+            tipoEmpleador: null,
+            enteSegSocial: null
+        };
+        for (var key in commonAttributes) {
+            if (firstRow.hasOwnProperty(key)) {
+                var firstValue = firstRow[key].toString().trim();
+                // Verificar si el valor de la etiqueta es el mismo en todas las columnas
+                var isCommon = sheetData.every(function (rowData) {
+                    return rowData[key].toString().trim() === firstValue;
+                });
+                if (isCommon) {
+                    // Establecer el valor común en el objeto commonAttributes
+                    commonAttributes[key] = firstValue;
+                }
+            }
+        }
+        // Si hay valores comunes, agregar las etiquetas entre <rdep> y <datRetRelDep>
+        if (Object.values(commonAttributes).some(value => value !== null)) {
+            xml += '    <numRuc>' + commonAttributes.numRuc + '</numRuc>\n';
+            xml += '    <anio>' + commonAttributes.anio + '</anio>\n';
+            xml += '    <tipoEmpleador>' + commonAttributes.tipoEmpleador + '</tipoEmpleador>\n';
+            xml += '    <enteSegSocial>' + commonAttributes.enteSegSocial + '</enteSegSocial>\n';
+            xml += '\n\n';
+        }
+        // Agregar la etiqueta <retRelDep> como contenedor para <datRetRelDep>
+        xml += '<retRelDep>\n';
+        // Iterar sobre cada fila de datos en la hoja de cálculo
+        for (var i = 0; i < sheetData.length; i++) {
+            var rowData = sheetData[i];
+            // Agregar dos saltos de línea antes de la primera <datRetRelDep> (excepto para la primera fila)
+            if (i !== 0) {
+                xml += '\n\n';
+            }
+            // Agregar la etiqueta <datRetRelDep> para cada fila
+            xml += '<datRetRelDep>\n';
+            // Agregar la etiqueta <empleado> con 4 espacios de sangría
+            xml += '    <empleado>\n';
+            // Iterar sobre cada propiedad (columna) en la fila hasta llegar a <suelSal>
+            for (var key in rowData) {
+                if (rowData.hasOwnProperty(key)) {
+                    var tagName = key.trim();
+                    var tagValue = rowData[key].toString().trim();
+                    // Omitir las etiquetas que están fuera de <empleado>
+                    if (tagName === 'numRuc' || tagName === 'anio' || tagName === 'tipoEmpleador' || tagName === 'enteSegSocial') {
+                        continue;
+                    }
+                    // Detener la iteración cuando llegamos a <suelSal>
+                    if (tagName === 'suelSal') {
+                        break;
+                    }
+                    // Generar etiquetas XML para cada propiedad dentro de <empleado>
+                    if (tagName === 'estab') {
+                        tagValue = padWithZeros(tagValue, 2);
+                    }
+                    if (tagName === 'residenciaTrab') {
+                        tagValue = padWithZerosOne(tagValue, 2);
+                    }
+                    if (tagName === 'idRet') {
+                        tagValue = padWithZerosOne(tagValue, 10);
+                    }
+                    if (tagName === 'tipoTrabajDiscap') {
+                        tagValue = padWithZerosOne(tagValue, 2);
+                    }
+                    // Generar etiquetas XML para cada propiedad dentro de <empleado>
+                    xml += '        <' + tagName + '>' + tagValue + '</' + tagName + '>\n';
+                }
+            }
+            // Cerrar la etiqueta </empleado> antes de las etiquetas desde <suelSal> hasta <valRet>
+            xml += '    </empleado>\n';
+            // Iterar sobre cada propiedad (columna) en la fila desde <suelSal> hasta <valRet>
+            var insideEmpleado = false;
+            for (var key in rowData) {
+                if (rowData.hasOwnProperty(key)) {
+                    var tagName = key.trim();
+                    var tagValue = rowData[key].toString().trim();
+                    // Iniciar la inclusión de etiquetas cuando llegamos a <suelSal>
+                    if (tagName === 'suelSal') {
+                        insideEmpleado = true;
+                    }
+                    if (insideEmpleado) {
+                        // Omitir las etiquetas que están dentro de <empleado>
+                        if (tagName === 'benGalpg' || tagName === 'enfcatastro' || tagName === 'numCargRebGastPers' || tagName === 'tipIdRet' || tagName === 'idRet' || tagName === 'apellidoTrab' || tagName === 'nombreTrab' || tagName === 'estab' || tagName === 'residenciaTrab' || tagName === 'paisResidencia' || tagName === 'aplicaConvenio' || tagName === 'tipoTrabajDiscap' || tagName === 'porcentajeDiscap' || tagName === 'tipIdDiscap') {
+                            continue;
+                        }
+
+                        // Generar etiquetas XML para cada propiedad fuera de <empleado>
+                        xml += '    <' + tagName + '>' + addTwoDecimals(tagName, tagValue) + '</' + tagName + '>\n';
+
+                        // Detener la iteración cuando llegamos a <valRet>
+                        if (tagName === 'valRet') {
+                            insideEmpleado = false;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // Cerrar las etiquetas </datRetRelDep> al final de la fila
+            xml += '</datRetRelDep>\n';
+        }
+
+        // Cerrar la etiqueta </retRelDep> después de todas las filas
+        xml += '</retRelDep>\n';
+
+        xml += '</rdep>';
+        return xml;
+
+        // Función para agregar dos decimales en 0 si es necesario
+        function addTwoDecimals(tagName, value) {
+            var floatValue = parseFloat(value);
+
+            // Verificar si la etiqueta es "sisSalNet"
+            if (tagName === 'sisSalNet') {
+                // No agregar ".00" a sisSalNet
+                return value.toString();
+            }
+
+            // Agregar ".00" solo si el valor es 0 o no tiene decimales
+            return floatValue.toFixed(2);
+        }
+    }
+
+    function padWithZeros(value, length) {
+        value = value.toString();
+        while (value.length < length) {
+            value = '00' + value;
+        }
+        return value;
+    }
+
+    function padWithZerosOne(value, length) {
+        value = value.toString();
+        while (value.length < length) {
+            value = '0' + value;
+        }
+        return value;
+    }
+
+    function downloadXmlFile(xmlContent) {
+        var blob = new Blob([xmlContent], { type: 'text/plain' });
+        var a = document.createElement('a');
+        a.href = window.URL.createObjectURL(blob);
+        a.download = 'archivo.xml';
+
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
 
 </script>
 
