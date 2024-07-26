@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
         integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 
 <body style="margin: 0; padding: 0;">
@@ -368,7 +369,7 @@
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="inputApoPerIesEmp">Aporte personal IESS con este empleador (únicamente pagado por el trabajador)</label>
-                                            <input type="number" class="form-control form-control-sm" id="inputApoPerIesEmp" readonly>
+                                            <input type="number" class="form-control form-control-sm" id="inputApoPerIesEmp">
                                         </div>
                                     </div>
                                     <div class="col-md-4">
@@ -474,6 +475,9 @@
                              </div>
                         </div>
                     </div>
+                    <div class="card-footer">
+                        <button class="btn btn-dark" id="btnGenerateXSL" style="display: none;">Generar archivo XSL</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -483,7 +487,9 @@
 <!-- Script General -->
 <script>
     const btnGetForm = document.getElementById("btnGetForm");
+    const btnGetFile = document.getElementById("btnGetFile")
     const containerFormRDEP = document.getElementById("containerFormRDEP");
+    const containerXML = document.getElementById("containerXML");
 
     const rowBtnSuccess = document.getElementById("rowBtnSuccess");
     
@@ -558,8 +564,16 @@
     const inputValImpAsuEmp = document.getElementById("inputValImpAsuEmp");
     const inputValImpRetTrabEmp = document.getElementById("inputValImpRetTrabEmp");
 
+    const btnGenerateXSL = document.getElementById("btnGenerateXSL");
+
     btnGetForm.addEventListener("click", function(){
         containerFormRDEP.style.display = "";
+        containerXML.style.display = "none";
+    })
+
+    btnGetFile.addEventListener("click", function(){
+        containerFormRDEP.style.display = "none";
+        containerXML.style.display = "";
     })
 
     btnBack.addEventListener("click", function(){
@@ -813,14 +827,9 @@
 
     function generateInfoEmpresa(array, arrayContent){
         if(array.length != 0 && arrayContent.length != 0){
-            inputIdEmpleadorRuc.value = arrayContent[1][0] == "" ? "" : arrayContent[1][0];
             inputRazonSocial.disabled = false; 
             inputDireccion.disabled = false;
             divInfoExcel.style.display = "";
-
-            inputSelectAnio.value = arrayContent[1][1];
-            selectTipoEmpleador.value = arrayContent[1][2];
-            selectSeguridadSocial.value = arrayContent[1][3];
             
             // Carga de tablas
             Object.keys(arrayContent).forEach(key =>{
@@ -839,8 +848,10 @@
                 rucEmpleado.textContent = arrayContent[key][8];
                 nombreEmpleado.textContent = `${arrayContent[key][9]} ${arrayContent[key][10]}`;
                 establecimiento.textContent = arrayContent[key][11];
-                sueldoSalarios.textContent = arrayContent[key][19];
-                baseImponible.textContent = arrayContent[key][41];
+                var salario = parseFloat(arrayContent[key][19])
+                sueldoSalarios.textContent = salario.toFixed(2);
+                var baseImp = parseFloat(arrayContent[key][41]);
+                baseImponible.textContent = baseImp.toFixed(2);
                 IRCausado.textContent = arrayContent[key][42];
                 valRetenido.textContent = arrayContent[key][47];
 
@@ -848,9 +859,64 @@
                 row.style.cursor = "pointer";
                 row.style.textAlign = "center";
                 
-                // Restricciones en caso de que el RUC de la empresa se encuentre vacio
+                // Restricciones en caso de que alguna informacion de la empresa se encuentre vacio
                 const empleado = arrayContent[key];
-
+                for(let i = 0; i < empleado.length; i++){
+                    switch (i) {
+                        case 0:
+                            if(empleado[i] == "" || empleado[i] == undefined){
+                                const propField = prompt("No se ha encontrado el RUC de la empresa, por favor ingresar: ")
+                                // Agregar la funcion para que en todo el arreglo se cambien los datos del ruc
+                                arrayContent = changeFieldEmpleador(arrayContent, i, propField, (i+1))
+                            }else{
+                                break;
+                            }
+                        case 1:
+                            if(empleado[i] == "" || empleado[i] == undefined){
+                                const propField = prompt("No se ha encontrado el año, por favor ingresar: ")
+                                // Agregar la funcion para que en todo el arreglo se cambien los datos del ruc
+                                arrayContent = changeFieldEmpleador(arrayContent, i, propField, (i+1))
+                            }else{
+                                break;
+                            }
+                        case 2:
+                            if(empleado[i] == "" || empleado[i] == undefined){
+                                const propField = alertSelected('No se ha encontrado el tipo de Empleador:\n1. PRIVADO O MIXTO \n2. PÚBLICO O IFIS \n', ['PRIVADO_MIXTO', 'PUBLICO_IFIS']);
+                                arrayContent = changeFieldEmpleador(arrayContent, i, propField, (i+1))
+                            }else{
+                                break;
+                            }
+                        case 3:
+                            if(empleado[i] == "" || empleado[i] == undefined){
+                                const propField = alertSelected('No se ha encontrado el tipo de ente de Seguro Social:\n1. IESS \n2. ISSFA/USSPOL \n', ['IESS', 'ISSFA_USSPOL']);
+                                arrayContent = changeFieldEmpleador(arrayContent, i, propField, (i+1))
+                            }else{
+                                break;
+                            }
+                    }
+                }
+                // Condicion en caso de que el salario no corresponda con la base imponible
+                var aporteIess = arrayContent[key][31];
+                var porcentajeIess = parseFloat(arrayContent[key][19]) * 0.0945;
+                if(aporteIess === porcentajeIess){
+                    alert("El procentaje corresponde correctamente con el salario definido.")
+                }else{
+                    let messageContinueWithPorcenta = confirm(`En la fila ${key} el valor del porcentaje IESS no corresponde con el 9.45% del valor del salario ${salario}.Desea corregirlo ?`)
+                    if(confirm){
+                        alert("Se ha corregido los valores de Aporte a IESS.")
+                        arrayContent[key][31] = porcentajeIess;
+                        arrayContent[key][41] = arrayContent[key][19] + arrayContent[key][20] + arrayContent[key][21] + arrayContent[key][22] - (arrayContent[key][31])
+                    }else{
+                        alert("No se ha realizado ningun cambio, continuando operación ...")
+                    }
+                }
+                var numRuc = empleado[0].replace(/\s+/g, '');
+                // Agregar los nuevos campos
+                inputIdEmpleadorRuc.value = numRuc == "" ? "" : numRuc;
+                inputSelectAnio.value = empleado[1];
+                selectTipoEmpleador.value = empleado[2];
+                selectSeguridadSocial.value = empleado[3];
+                
                 // Funcionalidad de la fila
                 row.addEventListener("click", function(){
                     const infoEmpleado = arrayContent[key];
@@ -866,6 +932,17 @@
                         radioSiBenGalpg.checked = true
                         radioNoBenGalpg.checked = false
                     }
+                    // Funcionalidad del check en caso de que su valor cambie
+                    radioNoBenGalpg.addEventListener("change", function(){
+                        if(this.checked){
+                            arrayContent[key][4] = "NO"
+                        }
+                    })
+                    radioSiBenGalpg.addEventListener("change", function(){
+                        if(this.checked){
+                            arrayContent[key][4] = "SI"
+                        }
+                    })
                     if(infoEmpleado[5] == "NO"){
                         radioNoEnfCatastro.checked = true;
                         radioSiEnfCatastro.checked = false;
@@ -873,48 +950,95 @@
                         radioSiEnfCatastro.checked = true;
                         radioNoEnfCatastro.checked = false;
                     }
+                    radioNoEnfCatastro.addEventListener("change", function(){
+                        if(this.checked){
+                            arrayContent[key][5] = "NO"
+                        }
+                    })
+                    radioSiEnfCatastro.addEventListener("change", function(){
+                        if(this.checked){
+                            arrayContent[key][5] = "SI"
+                        }
+                    })
 
                     selectTrabCargFam.value = "";
                     selectTrabCargFam.value = infoEmpleado[6];
+                    selectTrabCargFam.addEventListener("change", function(){
+                        arrayContent[key][6] = selectTrabCargFam.value
+                    })
 
                     selectTipoIdentEmpleado.value = "";
                     selectTipoIdentEmpleado.value = infoEmpleado[7];
+                    selectTipoIdentEmpleado.addEventListener("change", function(){
+                        arrayContent[key][7] = selectTipoIdentEmpleado.value;
+                    });
 
                     inputNumCedulaEmpleado.value = ""
                     inputNumCedulaEmpleado.value = infoEmpleado[8];
+                    inputNumCedulaEmpleado.addEventListener("input", function(){
+                        arrayContent[key][8] =  inputNumCedulaEmpleado.value;
+                    })
 
                     inputApellidoTrabajador.value = "";
                     inputApellidoTrabajador.value = infoEmpleado[9];
+                    inputApellidoTrabajador.addEventListener("input", function(){
+                        arrayContent[key][9] = inputApellidoTrabajador.value;
+                    })
 
                     inputNombreTrabajador.value = "";
                     inputNombreTrabajador.value = infoEmpleado[10];
+                    inputNombreTrabajador.addEventListener("input", function(){
+                        arrayContent[key][10] = inputNombreTrabajador.value;
+                    })
 
                     inputCodEstablecimiento.value = "";
                     inputCodEstablecimiento.value = infoEmpleado[11];
+                    inputCodEstablecimiento.addEventListener("input", function(){
+                        arrayContent[key][11] = inputCodEstablecimiento.value;
+                    })
 
                     selectResidenTrab.value = "";
                     selectResidenTrab.value = infoEmpleado[12];
+                    selectResidenTrab.addEventListener("change", function(){
+                        arrayContent[key][12] = selectResidenTrab.value;
+                    })
 
                     selectPaisResidenTrab.value = "";
                     selectPaisResidenTrab.value = infoEmpleado[13];
+                    selectPaisResidenTrab.addEventListener("change", function(){
+                        arrayContent[key][13] = selectPaisResidenTrab.value;
+                    })
                     
                     selectApConvEvitDobImposi.value = "";
                     selectApConvEvitDobImposi.value = infoEmpleado[14];
+                    selectApConvEvitDobImposi.addEventListener("change", function(){
+                        arrayContent[key][14] = selectApConvEvitDobImposi.value;
+                    })
 
                     selectCondtrabRespDis.value = "";
                     selectCondtrabRespDis.value = infoEmpleado[15];
+                    selectCondtrabRespDis.addEventListener("change", function(){
+                        arrayContent[key][15] = selectCondtrabRespDis.value
+                    })
 
                     inputProceDisc.value = "";
                     inputProceDisc.value = infoEmpleado[16];
+                    inputProceDisc.addEventListener("input", function(){
+                        arrayContent[key][16] = inputProceDisc.value
+                    })
                     
                     selectTipIdenPersDisSustRep.value = "";
                     selectTipIdenPersDisSustRep.value = infoEmpleado[17];
+                    selectTipIdenPersDisSustRep.addEventListener("change", function(){
+                        arrayContent[key][17] = selectTipIdenPersDisSustRep.value;
+                    })
 
                     // Variables para los calculos
-                    var valSueldoSalarios, valSobreComiBonosOtrIng, valPartUtil, valImpRentAsuEmp, valIngGravGenEmp, totalVal, totalValResImp
+                    var valSueldoSalarios, valSobreComiBonosOtrIng, valPartUtil, valImpRentAsuEmp, valIngGravGenEmp, totalVal, totalValResImp, valApoPerIessConEstEmp
 
                     inputSueldosSalarios.value = "";
-                    inputSueldosSalarios.value = infoEmpleado[19];
+                    var salario = parseFloat(infoEmpleado[19]);
+                    inputSueldosSalarios.value = salario.toFixed(2);
                     valSueldoSalarios = parseFloat(inputSueldosSalarios.value);
 
                     inputSobreComiBonosOtrIng.value = "";
@@ -934,23 +1058,46 @@
                     valImpRentAsuEmp = parseFloat(inputImpRentAsuEmp.value);
 
                     inputDeciTer.value = "";
-                    inputDeciTer.value = infoEmpleado[24];
+                    var decimoTer = parseFloat(infoEmpleado[24]);
+                    inputDeciTer.value = decimoTer.toFixed(2);
+                    inputDeciTer.addEventListener("input", function(){
+                        arrayContent[key][24] = inputDeciTer.value;
+                    })
 
                     inputDecCuaSue.value = "";
-                    inputDecCuaSue.value = infoEmpleado[25];
+                    var decimoCuar = parseFloat(infoEmpleado[25])
+                    inputDecCuaSue.value = decimoCuar.toFixed(2);
+                    inputDecCuaSue.addEventListener("input", function(){
+                        arrayContent[key][25] = inputDecCuaSue.value
+                    })
 
                     inputFondoRes.value = "";
-                    inputFondoRes.value = infoEmpleado[26];
+                    var fondoRes = parseFloat(infoEmpleado[26]);
+                    inputFondoRes.value = fondoRes.toFixed(2);
+                    inputFondoRes.addEventListener("input", function(){
+                        arrayContent[key][26] = inputFondoRes.value;
+                    })
 
                     inputComEcoSalDig.value = "";
                     inputComEcoSalDig.value = infoEmpleado[27];
+                    inputComEcoSalDig.addEventListener("input", function(){
+                        arrayContent[key][27] = inputComEcoSalDig.value;
+                    })
 
                     inputOtrRelDepConsMatGravImpRen.value = "";
                     inputOtrRelDepConsMatGravImpRen.value = infoEmpleado[28];
+                    inputOtrRelDepConsMatGravImpRen.addEventListener("input", function(){
+                        arrayContent[key][28] = inputOtrRelDepConsMatGravImpRen.value;
+                    })
 
+                    inputApoPerIesEmp.value = "";
+                    var aportePerIessEmp = parseFloat(infoEmpleado[31])
+                    inputApoPerIesEmp.value = aportePerIessEmp.toFixed(2);
+                    valApoPerIessConEstEmp = inputApoPerIesEmp.value;
+                    
                     // Valor total para ing Grav Emp
                     totalVal = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valImpRentAsuEmp;
-                    totalValResImp = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valIngGravGenEmp + valImpRentAsuEmp
+                    totalValResImp = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valIngGravGenEmp + valImpRentAsuEmp - (valApoPerIessConEstEmp)
 
                     ingGravEmp.value = "";
                     ingGravEmp.value = totalVal;
@@ -958,92 +1105,173 @@
                     // GASTOS, DEDUCCIONES Y EXONERACIONES
                     selectSisSalNet.value = "";
                     selectSisSalNet.value = infoEmpleado[30];
-
-                    inputApoPerIesEmp.value = "";
-                    inputApoPerIesEmp.value = infoEmpleado[31];
+                    selectSisSalNet.addEventListener("change", function(){
+                        arrayContent[key][30] = selectSisSalNet.value;
+                    })
 
                     inputApoPerIesOtrEmp.value = "";
                     inputApoPerIesOtrEmp.value = infoEmpleado[32];
+                    inputApoPerIesOtrEmp.addEventListener("input", function(){
+                        arrayContent[key][32] = inputApoPerIesOtrEmp.value;
+                    })
 
                     inputVivienda.value = "";
                     inputVivienda.value = infoEmpleado[33];
+                    inputVivienda.addEventListener("input", function(){
+                        arrayContent[key][33] = inputVivienda.value;
+                    })
 
                     inputSalud.value = "";
                     inputSalud.value = infoEmpleado[34];
+                    inputSalud.addEventListener("input", function(){
+                        arrayContent[key][34] = inputSalud.value;
+                    })
 
                     inputEducacionArtCult.value = "";
                     inputEducacionArtCult.value = infoEmpleado[35];
+                    inputEducacionArtCult.addEventListener("input", function(){
+                        arrayContent[key][35] = inputEducacionArtCult.value;
+                    })
 
                     inputAlimentacion.value = "";
                     inputAlimentacion.value = infoEmpleado[36];
+                    inputAlimentacion.addEventListener("input", function(){
+                        arrayContent[key][36] = inputAlimentacion.value;
+                    })
 
                     inputVestimenta.value = "";
                     inputVestimenta.value = infoEmpleado[37];
+                    inputVestimenta.addEventListener("input", function(){
+                        arrayContent[key][37] = inputVestimenta.value;
+                    })
 
                     inputTurismo.value = "";
                     inputTurismo.value = infoEmpleado[38];
+                    inputTurismo.addEventListener("input", function(){
+                        arrayContent[key][38] = inputTurismo.value;
+                    })
 
                     inputDiscapacidad.value = "";
                     inputDiscapacidad.value = infoEmpleado[39];
+                    inputDiscapacidad.addEventListener("input", function(){
+                        arrayContent[key][39] = inputDiscapacidad.value;
+                    })
 
                     inputTerceraEdad.value = "";
                     inputTerceraEdad.value = infoEmpleado[40];
+                    inputTerceraEdad.addEventListener("input", function(){
+                        arrayContent[key][40] = inputTerceraEdad.value;
+                    })
 
                     // Funcionalidad de los inputs para el calculo -----------------------------
                     inputSueldosSalarios.addEventListener("input", function(){
-                        valSueldoSalarios = parseFloat(inputSueldosSalarios.value);
+                        valSueldoSalarios = parseFloat(inputSueldosSalarios.value == "" ? 0 : inputSueldosSalarios.value);
                         totalVal = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valImpRentAsuEmp;
-                        totalValResImp = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valIngGravGenEmp + valImpRentAsuEmp;
+                        totalVal = totalVal.toFixed(2);
+                        totalValResImp = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valIngGravGenEmp + valImpRentAsuEmp - (valApoPerIessConEstEmp);
+                        totalValResImp = totalValResImp.toFixed(2);
                         ingGravEmp.value = totalVal;
                         inputBasImpGrav.value = totalValResImp;
+                        arrayContent[key][19] = inputSueldosSalarios.value;
+                        arrayContent[key][29] = totalVal;
+                        arrayContent[key][41] =  totalValResImp
+                        arrayContent[key][31] = inputApoPerIesEmp.value;
                     });
                     inputSobreComiBonosOtrIng.addEventListener("input", function(){
-                        valSobreComiBonosOtrIng = parseFloat(inputSobreComiBonosOtrIng.value);
+                        valSobreComiBonosOtrIng = parseFloat(inputSobreComiBonosOtrIng.value == "" ? 0 : inputSobreComiBonosOtrIng.value);
                         totalVal = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valImpRentAsuEmp;
-                        totalValResImp = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valIngGravGenEmp + valImpRentAsuEmp;
+                        totalVal = totalVal.toFixed(2);
+                        totalValResImp = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valIngGravGenEmp + valImpRentAsuEmp - (valApoPerIessConEstEmp);
+                        totalValResImp = totalValResImp.toFixed(2)
                         ingGravEmp.value = totalVal;
                         inputBasImpGrav.value = totalValResImp;
+                        arrayContent[key][20] =  inputSobreComiBonosOtrIng.value;
+                        arrayContent[key][29] = totalVal;
+                        arrayContent[key][41] =  totalValResImp
+                        arrayContent[key][31] = inputApoPerIesEmp.value;
                     });
                     inputPartUtil.addEventListener("input", function(){
-                        valPartUtil = parseFloat(inputPartUtil.value);
+                        valPartUtil = parseFloat(inputPartUtil.value == "" ? 0 : inputPartUtil.value);
                         totalVal = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valImpRentAsuEmp;
-                        totalValResImp = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valIngGravGenEmp + valImpRentAsuEmp;
+                        totalVal = totalVal.toFixed(2);
+                        totalValResImp = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valIngGravGenEmp + valImpRentAsuEmp - (valApoPerIessConEstEmp);
+                        totalValResImp = totalValResImp.toFixed(2);
                         ingGravEmp.value = totalVal;
                         inputBasImpGrav.value = totalValResImp;
+                        arrayContent[key][21] = inputPartUtil.value;
+                        arrayContent[key][29] = totalVal;
+                        arrayContent[key][41] =  totalValResImp;
+                        arrayContent[key][31] = inputApoPerIesEmp.value;
                     });
                     inputIngGravGenEmp.addEventListener("input", function(){
-                        valIngGravGenEmp = parseFloat(inputIngGravGenEmp.value);
-                        totalValResImp = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valIngGravGenEmp + valImpRentAsuEmp;
+                        valIngGravGenEmp = parseFloat(inputIngGravGenEmp.value == "" ? 0 : inputIngGravGenEmp.value);
+                        totalValResImp = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valIngGravGenEmp + valImpRentAsuEmp - (valApoPerIessConEstEmp);
+                        totalValResImp = totalValResImp.toFixed(2);
                         inputBasImpGrav.value = totalValResImp;
+                        arrayContent[key][22] = inputIngGravGenEmp.value;
+                        arrayContent[key][41] =  totalValResImp;
+                        arrayContent[key][31] = inputApoPerIesEmp.value;
                     })
                     inputBasImpGrav.addEventListener("input", function(){
-                        valIngGravGenEmp = parseFloat(inputBasImpGrav.value);
-                        totalValResImp = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valIngGravGenEmp + valImpRentAsuEmp;
+                        valIngGravGenEmp = parseFloat(inputBasImpGrav.value == "" ? 0 : inputBasImpGrav.value);
+                        totalValResImp = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valIngGravGenEmp + valImpRentAsuEmp - (valApoPerIessConEstEmp);
+                        totalValResImp = totalValResImp.toFixed(2);
                         inputBasImpGrav.value = totalValResImp;
                     });
                     inputImpRentAsuEmp.addEventListener("input", function(){
-                        valImpRentAsuEmp = parseFloat(inputImpRentAsuEmp.value);
+                        valImpRentAsuEmp = parseFloat(inputImpRentAsuEmp.value == "" ? 0 : inputImpRentAsuEmp.value);
                         totalVal = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valImpRentAsuEmp;
-                        totalValResImp = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valIngGravGenEmp + valImpRentAsuEmp;
+                        totalVal = totalVal.toFixed(2);
+                        totalValResImp = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valIngGravGenEmp + valImpRentAsuEmp - (valApoPerIessConEstEmp);
+                        totalValResImp = totalValResImp.toFixed(2);
                         ingGravEmp.value = totalVal;
                         inputBasImpGrav.value = totalValResImp;
+                        arrayContent[key][23] = inputImpRentAsuEmp.value;
+                        arrayContent[key][29] = totalVal;
+                        arrayContent[key][41] =  totalValResImp;
+                        arrayContent[key][31] = inputApoPerIesEmp.value;
                     });
+                    inputApoPerIesEmp.addEventListener("input", function(){
+                        valApoPerIessConEstEmp = parseFloat(inputApoPerIesEmp.value == "" ? 0 : inputApoPerIesEmp.value);
+                        totalVal = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valImpRentAsuEmp;
+                        totalVal = totalVal.toFixed(2);
+                        totalValResImp = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valIngGravGenEmp + valImpRentAsuEmp - (valApoPerIessConEstEmp);
+                        totalValResImp = totalValResImp.toFixed(2);
+                        inputBasImpGrav.value = totalValResImp;
+                        ingGravEmp.value = totalVal;
+                        arrayContent[key][23] = inputImpRentAsuEmp.value;
+                        arrayContent[key][29] = totalVal;
+                        arrayContent[key][41] =  totalValResImp;
+                        arrayContent[key][31] = inputApoPerIesEmp.value;
+                    })
 
                     // RESUMEN IMPONIBLE GRAVADA
                     inputBasImpGrav.value = "";
-                    inputBasImpGrav.value = totalValResImp;
+                    inputBasImpGrav.value = totalValResImp.toFixed(2);
 
                     inputImpRenCau.value = "";
                     inputImpRenCau.value = infoEmpleado[42];
+                    inputImpRenCau.addEventListener("input", function(){
+                        arrayContent[key][42] = inputImpRenCau.value;
+                    })
 
                     inputValImpRetAsuOtrEmpPerDec.value = "";
-                    inputValImpRetAsuOtrEmpPerDec.value = infoEmpleado[44];
+                    inputValImpRetAsuOtrEmpPerDec.value = infoEmpleado[45];
+                    inputValImpRetAsuOtrEmpPerDec.addEventListener("input", function(){
+                        arrayContent[key][45] = inputValImpRetAsuOtrEmpPerDec.value;
+                    })
 
                     inputValImpAsuEmp.value = "";
-                    inputValImpAsuEmp.value = infoEmpleado[45];
+                    inputValImpAsuEmp.value = infoEmpleado[46];
+                    inputValImpAsuEmp.addEventListener("input", function(){
+                        arrayContent[key][46] = inputValImpAsuEmp.value;
+                    })
 
                     inputValImpRetTrabEmp.value = "";
-                    inputValImpRetTrabEmp.value = infoEmpleado[46];
+                    inputValImpRetTrabEmp.value = infoEmpleado[47];
+                    inputValImpRetTrabEmp.addEventListener("input", function(){
+                        arrayContent[key][47] = inputValImpRetTrabEmp.value;
+                    })
                 });
 
                 row.appendChild(rucEmpleado);
@@ -1056,11 +1284,70 @@
 
                 tbodyTableEmpleados.appendChild(row);
             });
+            console.log(arrayContent)
+            // Funcionalidad del boton para generar el XLS
+            btnGenerateXSL.style.display = "";
+            btnGenerateXSL.addEventListener("click", function(){
+                var wb = XLSX.utils.book_new();
+                wb.Props = {
+                    Title: `Informe ${inputRazonSocial.value == "" ? "SN" : inputRazonSocial.value}`,
+                    Subject: "Reporte Generado",
+                    Author: `${inputRazonSocial.value == "" ? "SN" : inputRazonSocial.value}`,
+                    CreatedDate: new Date()
+                };
+                var filteredArrayContent = {};
+                for (var key in arrayContent) {
+                    if (arrayContent.hasOwnProperty(key)) {
+                        // Verificar si la fila contiene un campo vacío
+                        var row = arrayContent[key];
+                        var hasEmptyField = row.some(field => field === "" || field === null || field === undefined);
+                        if (!hasEmptyField) {
+                            filteredArrayContent[key] = row;
+                        }
+                    }
+                }
+                var ws_data = [array];
+                for (var key in filteredArrayContent) {
+                    if (filteredArrayContent.hasOwnProperty(key)) {
+                        ws_data.push(filteredArrayContent[key]);
+                    }
+                }
+                var ws = XLSX.utils.aoa_to_sheet(ws_data);
+                XLSX.utils.book_append_sheet(wb, ws, "Reporte");
+                XLSX.writeFile(wb, `${inputRazonSocial.value == "" ? "SN" : inputRazonSocial.value}.xlsx`);
+            })
         }else{
+            btnGenerateXSL.style.display = "none";
             alert("El archivo no contiene datos que se puedan utilizar")
         }
     }
 
+    function changeFieldEmpleador(obj, position, newField, propierty){
+        let array
+        Object.keys(obj).forEach(prop =>{
+            array = obj[prop]
+            array[position] = newField
+        })
+        return(obj)
+    }
+
+    function alertSelected( info,arrayOptions){
+        var userChoice = prompt(info);
+        var result;
+        switch(userChoice) {
+                case '1':
+                    result = arrayOptions[0];
+                    break;
+                case '2':
+                    result = arrayOptions[1];
+                    break;
+            }
+        return result;
+    }
+
+    function changeBaseImp(obj, valueBaseImp){
+        console.log(obj, valueBaseImp)
+    }
     
 </script>
 
@@ -1093,6 +1380,7 @@
                 const rowValues = rowData.map(value => value);
                 rowsObject[rowIndex] = rowValues; // Usar rowIndex para las filas a partir de 1
             }
+            
             generateInfoEmpresa(arrayCabecera, rowsObject)
         };
         reader.readAsArrayBuffer(file);
