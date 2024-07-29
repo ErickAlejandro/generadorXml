@@ -1034,7 +1034,7 @@
                     })
 
                     // Variables para los calculos
-                    var valSueldoSalarios, valSobreComiBonosOtrIng, valPartUtil, valImpRentAsuEmp, valIngGravGenEmp, totalVal, totalValResImp, valApoPerIessConEstEmp
+                    var valSueldoSalarios, valSobreComiBonosOtrIng, valPartUtil, valImpRentAsuEmp, valIngGravGenEmp, totalVal, totalValResImp, valApoPerIessConEstEmp, ValApoPerIesOtrEmp
 
                     inputSueldosSalarios.value = "";
                     var salario = parseFloat(infoEmpleado[19]);
@@ -1094,10 +1094,14 @@
                     var aportePerIessEmp = parseFloat(infoEmpleado[31])
                     inputApoPerIesEmp.value = aportePerIessEmp.toFixed(2);
                     valApoPerIessConEstEmp = inputApoPerIesEmp.value;
+
+                    inputApoPerIesOtrEmp.value = "";
+                    inputApoPerIesOtrEmp.value = infoEmpleado[32];
+                    ValApoPerIesOtrEmp = inputApoPerIesOtrEmp.value;
                     
                     // Valor total para ing Grav Emp
                     totalVal = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valImpRentAsuEmp;
-                    totalValResImp = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valIngGravGenEmp + valImpRentAsuEmp - (valApoPerIessConEstEmp)
+                    totalValResImp = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valIngGravGenEmp + valImpRentAsuEmp - (valApoPerIessConEstEmp + ValApoPerIesOtrEmp)
 
                     ingGravEmp.value = "";
                     ingGravEmp.value = totalVal;
@@ -1107,12 +1111,6 @@
                     selectSisSalNet.value = infoEmpleado[30];
                     selectSisSalNet.addEventListener("change", function(){
                         arrayContent[key][30] = selectSisSalNet.value;
-                    })
-
-                    inputApoPerIesOtrEmp.value = "";
-                    inputApoPerIesOtrEmp.value = infoEmpleado[32];
-                    inputApoPerIesOtrEmp.addEventListener("input", function(){
-                        arrayContent[key][32] = inputApoPerIesOtrEmp.value;
                     })
 
                     inputVivienda.value = "";
@@ -1181,7 +1179,7 @@
                         valSobreComiBonosOtrIng = parseFloat(inputSobreComiBonosOtrIng.value == "" ? 0 : inputSobreComiBonosOtrIng.value);
                         totalVal = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valImpRentAsuEmp;
                         totalVal = totalVal.toFixed(2);
-                        totalValResImp = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valIngGravGenEmp + valImpRentAsuEmp - (valApoPerIessConEstEmp);
+                        totalValResImp = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valIngGravGenEmp + valImpRentAsuEmp - (valApoPerIessConEstEmp + ValApoPerIesOtrEmp);
                         totalValResImp = totalValResImp.toFixed(2)
                         ingGravEmp.value = totalVal;
                         inputBasImpGrav.value = totalValResImp;
@@ -1194,7 +1192,7 @@
                         valPartUtil = parseFloat(inputPartUtil.value == "" ? 0 : inputPartUtil.value);
                         totalVal = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valImpRentAsuEmp;
                         totalVal = totalVal.toFixed(2);
-                        totalValResImp = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valIngGravGenEmp + valImpRentAsuEmp - (valApoPerIessConEstEmp);
+                        totalValResImp = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valIngGravGenEmp + valImpRentAsuEmp - (valApoPerIessConEstEmp + ValApoPerIesOtrEmp);
                         totalValResImp = totalValResImp.toFixed(2);
                         ingGravEmp.value = totalVal;
                         inputBasImpGrav.value = totalValResImp;
@@ -1205,7 +1203,7 @@
                     });
                     inputIngGravGenEmp.addEventListener("input", function(){
                         valIngGravGenEmp = parseFloat(inputIngGravGenEmp.value == "" ? 0 : inputIngGravGenEmp.value);
-                        totalValResImp = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valIngGravGenEmp + valImpRentAsuEmp - (valApoPerIessConEstEmp);
+                        totalValResImp = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valIngGravGenEmp + valImpRentAsuEmp - (valApoPerIessConEstEmp + ValApoPerIesOtrEmp);
                         totalValResImp = totalValResImp.toFixed(2);
                         inputBasImpGrav.value = totalValResImp;
                         arrayContent[key][22] = inputIngGravGenEmp.value;
@@ -1214,7 +1212,7 @@
                     })
                     inputBasImpGrav.addEventListener("input", function(){
                         valIngGravGenEmp = parseFloat(inputBasImpGrav.value == "" ? 0 : inputBasImpGrav.value);
-                        totalValResImp = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valIngGravGenEmp + valImpRentAsuEmp - (valApoPerIessConEstEmp);
+                        totalValResImp = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valIngGravGenEmp + valImpRentAsuEmp - (valApoPerIessConEstEmp + ValApoPerIesOtrEmp);
                         totalValResImp = totalValResImp.toFixed(2);
                         inputBasImpGrav.value = totalValResImp;
                     });
@@ -1222,7 +1220,7 @@
                         valImpRentAsuEmp = parseFloat(inputImpRentAsuEmp.value == "" ? 0 : inputImpRentAsuEmp.value);
                         totalVal = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valImpRentAsuEmp;
                         totalVal = totalVal.toFixed(2);
-                        totalValResImp = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valIngGravGenEmp + valImpRentAsuEmp - (valApoPerIessConEstEmp);
+                        totalValResImp = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valIngGravGenEmp + valImpRentAsuEmp - (valApoPerIessConEstEmp + ValApoPerIesOtrEmp);
                         totalValResImp = totalValResImp.toFixed(2);
                         ingGravEmp.value = totalVal;
                         inputBasImpGrav.value = totalValResImp;
@@ -1235,7 +1233,7 @@
                         valApoPerIessConEstEmp = parseFloat(inputApoPerIesEmp.value == "" ? 0 : inputApoPerIesEmp.value);
                         totalVal = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valImpRentAsuEmp;
                         totalVal = totalVal.toFixed(2);
-                        totalValResImp = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valIngGravGenEmp + valImpRentAsuEmp - (valApoPerIessConEstEmp);
+                        totalValResImp = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valIngGravGenEmp + valImpRentAsuEmp - (valApoPerIessConEstEmp + ValApoPerIesOtrEmp);
                         totalValResImp = totalValResImp.toFixed(2);
                         inputBasImpGrav.value = totalValResImp;
                         ingGravEmp.value = totalVal;
@@ -1243,6 +1241,19 @@
                         arrayContent[key][29] = totalVal;
                         arrayContent[key][41] =  totalValResImp;
                         arrayContent[key][31] = inputApoPerIesEmp.value;
+                    });
+                    inputApoPerIesOtrEmp.addEventListener("input", function(){
+                        ValApoPerIesOtrEmp = parseFloat(inputApoPerIesOtrEmp.value == "" ? 0 : inputApoPerIesOtrEmp.value);
+                        totalVal = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valImpRentAsuEmp;
+                        totalVal = totalVal.toFixed(2);
+                        totalValResImp = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valIngGravGenEmp + valImpRentAsuEmp - (parseFloat(valApoPerIessConEstEmp) + parseFloat(ValApoPerIesOtrEmp));
+                        totalValResImp = totalValResImp.toFixed(2);
+                        inputBasImpGrav.value = totalValResImp;
+                        ingGravEmp.value = totalVal;
+                        arrayContent[key][23] = inputImpRentAsuEmp.value;
+                        arrayContent[key][29] = totalVal;
+                        arrayContent[key][41] =  totalValResImp;
+                        arrayContent[key][32] = inputApoPerIesOtrEmp.value;
                     })
 
                     // RESUMEN IMPONIBLE GRAVADA
