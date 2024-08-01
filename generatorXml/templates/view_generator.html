@@ -895,6 +895,19 @@
                             }
                     }
                 }
+                // Condicion individual para el beneficiario a galapagos
+                var infoBenGalp = arrayContent[key][4];
+                var fullName = `${arrayContent[key][9]} ${arrayContent[key][10]}`
+                if(infoBenGalp != 'NO' || infoBenGalp != 'SI' || infoBenGalp != ''){
+                    const propField = alertSelected(`El valor del beneficio provincia de galapagos para el empleado (${arrayContent[key][8]} ${fullName}) es incorrecto, cambiar con:\n1. NO \n2. SI`, ['NO','SI'])
+                    arrayContent[key][4] = propField
+                }
+                var infoEnfCatastro = arrayContent[key][5];
+                if(infoEnfCatastro != 'NO' || infoEnfCatastro != 'SI' || infoEnfCatastro != ''){
+                    const propField = alertSelected(`El valor de la información si el trabajador esta a cargo de personas con enfermedades catastróficas, raras y/o huérfanas del empleado (${arrayContent[key][8]} ${fullName}) es incorrecto, cambiar con: \n1. NO \n2. SI`, ['NO', 'SI'])
+                    arrayContent[key][5] = propField
+                }
+
                 // Condicion en caso de que el salario no corresponda con la base imponible
                 var aporteIess = arrayContent[key][31];
                 var porcentajeIess = parseFloat(arrayContent[key][19]) * 0.0945;
@@ -905,7 +918,7 @@
                     if(confirm){
                         alert("Se ha corregido los valores de Aporte a IESS.")
                         arrayContent[key][31] = porcentajeIess;
-                        arrayContent[key][41] = arrayContent[key][19] + arrayContent[key][20] + arrayContent[key][21] + arrayContent[key][22] - (arrayContent[key][31])
+                        arrayContent[key][41] = arrayContent[key][19] + arrayContent[key][20] + arrayContent[key][21] + arrayContent[key][22] - (arrayContent[key][31] + arrayContent[key][32])
                     }else{
                         alert("No se ha realizado ningun cambio, continuando operación ...")
                     }
@@ -1345,20 +1358,21 @@
     function alertSelected( info,arrayOptions){
         var userChoice = prompt(info);
         var result;
-        switch(userChoice) {
-                case '1':
-                    result = arrayOptions[0];
-                    break;
-                case '2':
-                    result = arrayOptions[1];
-                    break;
-            }
+        if(userChoice != ''){
+            switch(userChoice) {
+                    case '1':
+                        result = arrayOptions[0];
+                        break;
+                    case '2':
+                        result = arrayOptions[1];
+                        break;
+                }
+        }else{
+            result = arrayOptions[0];
+        }
         return result;
     }
 
-    function changeBaseImp(obj, valueBaseImp){
-        console.log(obj, valueBaseImp)
-    }
     
 </script>
 
