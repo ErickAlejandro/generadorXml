@@ -678,11 +678,11 @@ def seleccionar_y_guardar(sheets_data):
         return "No se seleccionó ningún archivo. Los datos no se han guardado."
 
 def main():
-    directory_compras = r'C:\Users\DESA03\Desktop\FrutGarden\2024\Factura'
-    directory_retenciones = r'C:\Users\DESA03\Desktop\FrutGarden\2024\Comprobante Retencion'
-    directory_notas_credito = r'C:\Users\DESA03\Desktop\FrutGarden\2024\Notas de Credito'
-    directory_notas_debito = r'C:\Users\DESA03\Documents\SRIBOT\XML\EMITIDAS\Notas de Débito'
-    directory_liquidacion = r'C:\Users\DESA03\Documents\SRIBOT\XML\EMITIDAS\Liquidación de compra de bienes y prestación de servicios'
+    directory_compras = r'C:\IA\SRIBOT\XML\RECIBIDAS\Facturas'
+    directory_retenciones = r'C:\IA\SRIBOT\XML\RECIBIDAS\Retenciones'
+    directory_notas_credito = r'C:\IA\SRIBOT\XML\RECIBIDAS\NotasCredito'
+    directory_notas_debito = r'C:\IA\SRIBOT\XML\RECIBIDAS\NotasDebito'
+    directory_liquidacion = r'C:\IA\SRIBOT\XML\RECIBIDAS\Liquidaciones'
 
     xml_files_compras = obtener_archivos_xml(directory_compras)
     xml_files_retenciones = obtener_archivos_xml(directory_retenciones)

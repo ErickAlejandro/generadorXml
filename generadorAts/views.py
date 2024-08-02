@@ -27,8 +27,8 @@ def ejecutar_script(username, password):
 
 def ejecutar_script_botemitidos(username, password):
     script_path = os.path.join(os.path.dirname(__file__), '..', 'scripts', 'BOTEMITIDOS.py')
-    python_executable = os.path.join(os.path.dirname(__file__), '..', 'venv', 'Scripts', 'python.exe')
-
+    python_executable = os.path.join(os.path.dirname(__file__), '..', '..', 'venv', 'Scripts', 'python.exe')
+    
     try:
         result = subprocess.run([python_executable, script_path, username, password], capture_output=True, text=True)
         if result.returncode == 0:
@@ -43,7 +43,7 @@ def ejecutar_script_botemitidos(username, password):
 
 def ejecutar_script_reporterecibidos():
     script_path = os.path.join(os.path.dirname(__file__), '..', 'scripts', 'ReporteRecibidos.py')
-    python_executable = os.path.join(os.path.dirname(__file__), '..', 'venv', 'Scripts', 'python.exe')
+    python_executable = os.path.join(os.path.dirname(__file__), '..', '..', 'venv', 'Scripts', 'python.exe')
     result_message = ""
 
     try:
@@ -64,7 +64,7 @@ def ejecutar_script_reporterecibidos():
 
 def ejecutar_script_reporteemitidos():
     script_path = os.path.join(os.path.dirname(__file__), '..', 'scripts', 'ReporteEmitidos.py')
-    python_executable = os.path.join(os.path.dirname(__file__), '..', 'venv', 'Scripts', 'python.exe')
+    python_executable = os.path.join(os.path.dirname(__file__), '..', '..','venv', 'Scripts', 'python.exe')
     result_message = ""
 
     try:
@@ -148,7 +148,7 @@ def check_xml_files_emitidos(request):
     if request.method == 'POST':
         button_id = request.POST.get('button_id')
         directory = os.path.join('C:\\', 'ia', 'SRIBOT', 'XML', 'EMITIDAS', button_id)
-
+        
         # Imprimir el directorio para verificar que es correcto
         print(f"Directorio a verificar: {directory}")
 
