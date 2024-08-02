@@ -1331,7 +1331,7 @@
             btnGenerateXSL.addEventListener("click", function(){
                 var wb = XLSX.utils.book_new();
                 wb.Props = {
-                    Title: `Informe ${inputRazonSocial.value == "" ? "SN" : inputRazonSocial.value}`,
+                    Title: `Informe ${inputRazonSocial.value == "" ? inputIdEmpleadorRuc.value : inputRazonSocial.value}`,
                     Subject: "Reporte Generado",
                     Author: `${inputRazonSocial.value == "" ? "SN" : inputRazonSocial.value}`,
                     CreatedDate: new Date()
@@ -1342,7 +1342,7 @@
                         // Verificar si la fila contiene un campo vacío
                         var row = arrayContent[key];
                         var hasEmptyField = row.some(field => field === "" || field === null || field === undefined);
-                        if (!hasEmptyField) {
+                        if (!hasEmptyField && row.length >= 47) {
                             filteredArrayContent[key] = row;
                         }
                     }
