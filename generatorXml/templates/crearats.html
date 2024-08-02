@@ -76,7 +76,7 @@
                             </div>
                             <div class="col-md-3 text-right">
                                 <button id="btnNext" class="btn btn-dark btn-sm"
-                                        style="margin-top: 15px; margin-bottom: 15px;">
+                                        style="margin-top: 15px; margin-bottom: 15px;" disabled>
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"
                                          style="fill: white; width: 15px; height: 15px;">
                                         <path d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32h306.8L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"/>
@@ -266,6 +266,15 @@
             togglePassword.querySelector('i').classList.toggle('fa-eye');
             togglePassword.querySelector('i').classList.toggle('fa-eye-slash');
         });
+
+        passwordInput.addEventListener("input", function(){
+            var passwordVal = passwordInput.value
+            if(usernameInput.value != '' && passwordVal.length >= 4 ){
+                btnNext.disabled = false
+            }else{
+                btnNext.disabled = true
+            }
+        })
 
         usernameInput.addEventListener('input', function (e) {
             this.value = this.value.replace(/[^0-9]/g, '').slice(0, 13);
