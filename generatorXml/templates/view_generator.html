@@ -14,12 +14,24 @@
 <body style="margin: 0; padding: 0;">
     <div class="container">
         <br>
-        <div class="row">
-            <div class="col-md-6">
-                <button type="button" id="btnGetForm" class="btn btn-dark btn-block">Llenar formulario</button>
+        <div class="card">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-md-10">
+                        <button type="button" style="margin-right: 10px;" id="btnGoGenerateAts" class="btn btn-dark"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style="fill: white; width: 16px;"><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></button>
+                        Generador XML
+                    </div>
+                </div>
             </div>
-            <div class="col-md-6">
-                <button type="button" id="btnGetFile" class="btn btn-success btn-block">Transformar archivo XML</button>
+            <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 text-center">
+                    <button type="button" id="btnGetForm" class="btn btn-dark btn-block">Llenar formulario</button>
+                </div>
+                <div class="col-md-6 text-center">
+                    <button type="button" id="btnGetFile" class="btn btn-success btn-block">Transformar archivo XML</button>
+                </div>
+            </div>
             </div>
         </div>
     </div>
@@ -490,6 +502,7 @@
     const btnGetFile = document.getElementById("btnGetFile")
     const containerFormRDEP = document.getElementById("containerFormRDEP");
     const containerXML = document.getElementById("containerXML");
+    const btnGoGenerateAts = document.getElementById("btnGoGenerateAts");
 
     const rowBtnSuccess = document.getElementById("rowBtnSuccess");
     
@@ -600,6 +613,10 @@
         }
         selectTrabCargFam.appendChild(option);
     }
+    // Funcionalidad para el boton de regreso
+    btnGoGenerateAts.addEventListener("click", function(){
+        window.location.href = "/";
+    })
 
     const paisesConCodigos = [
         { nombre: "Afganistán", codigo: "93" },

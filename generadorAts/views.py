@@ -12,8 +12,8 @@ import threading
 
 def ejecutar_script(username, password):
     script_path = os.path.join(os.path.dirname(__file__), '..', 'scripts', 'BOTATS.py')
-    python_executable = os.path.join(os.path.dirname(__file__), '..', 'venv', 'Scripts', 'python.exe')
-
+    python_executable = os.path.join(os.path.dirname(__file__), '..', '..', 'venv', 'Scripts', 'python.exe')
+    print(os.path.join(os.path.dirname(__file__)))
     try:
         result = subprocess.run([python_executable, script_path, username, password], capture_output=True, text=True)
         if result.returncode == 0:
@@ -84,6 +84,8 @@ def ejecutar_script_reporteemitidos():
     return result_message
 
 
+def go_view_generatoXML(request):
+    return render(request, 'view_generator.html')
 
 
 def crearats(request):
@@ -111,7 +113,6 @@ def crearats(request):
         return JsonResponse({'output': result_message})
 
     return render(request, 'crearats.html')
-
 
 
 

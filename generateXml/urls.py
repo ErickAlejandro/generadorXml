@@ -17,10 +17,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from generatorXml import views
+from generadorAts import views
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.view_generator, name="view_generator"),
+    path('', views.crearats, name="crearats"),
     path('', include('generadorAts.urls')),
+    path('/generateXml', views.go_view_generatoXML, name='go_view_generatoXML')
 ]

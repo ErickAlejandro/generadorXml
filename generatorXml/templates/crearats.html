@@ -37,14 +37,19 @@
                 <div class="card-header">Formulario ATS</div>
                 <div class="card-body">
                     <div class="row">
+                        <div class="col-md-12 text-center">
+                            <img src="{% static 'logoishida.png' %}" alt="Logo" class="img-fluid"
+                                 style="max-width: 150px; margin-bottom: 5px;">
+                        </div>
+                    </div>
+                    <div class="row">
                         <div class="col-md-3 d-flex justify-content-start align-items-center">
                             <button type="button" class="btn btn-success" data-toggle="modal"
                                     data-target="#reportModal">Generar Reportes
                             </button>
                         </div>
                         <div class="col-md-6 text-center">
-                            <img src="{% static 'logoishida.png' %}" alt="Logo" class="img-fluid"
-                                 style="max-width: 150px; margin-bottom: 5px;">
+                            <button class="btn btn-dark" type="button" id="btnRedep">REDEP</button>
                         </div>
                         <div class="col-md-3 d-flex justify-content-end align-items-center">
                             <button type="button" class="btn btn-danger">Generar ATS</button>
@@ -247,6 +252,12 @@
         const passwordInput = document.getElementById('password');
         const togglePassword = document.getElementById('togglePassword');
         const usernameInput = document.getElementById('username');
+        const btnRedep = document.getElementById('btnRedep');
+
+        // Funcionalidad de envio a la aplicacion para generar el XML
+        btnRedep.addEventListener('click', function(){
+            window.location.href = "{% url 'go_view_generatoXML' %}";
+        })
 
         togglePassword.addEventListener('click', (e) => {
             e.preventDefault();
