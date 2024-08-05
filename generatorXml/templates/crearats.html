@@ -52,7 +52,7 @@
                             <button class="btn btn-dark" type="button" id="btnRedep">REDEP</button>
                         </div>
                         <div class="col-md-3 d-flex justify-content-end align-items-center">
-                            <button type="button" class="btn btn-danger">Generar ATS</button>
+                            <button type="button" class="btn btn-danger" id="btnCrearAts">Generar ATS</button>
                         </div>
                     </div>
                     <hr>
@@ -207,6 +207,34 @@
                                         <button type="button" id="btnEmitidos" class="btn btn-dark btn-block mt-3">
                                             Descargar
                                         </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="divAnulados" style="display: none;">
+                                <h3>Comprobantes Anulados</h3>
+                                <div class="row justify-content-center">
+                                    <div class="col-md-12">
+                                        <div class="card text-white bg-secondary mb-3">
+                                            <div class="card-header">Formulario de Comprobantes Anulados</div>
+                                            <div class="card-body">
+                                                <div class="form-group">
+                                                    <label for="tipoComprobante">Tipo de Comprobante</label>
+                                                    <select class="form-control" id="tipoComprobante" name="tipoComprobante">
+                                                        <option value="18">Factura</option>
+                                                        <option value="07">Retención</option>
+                                                        <option value="05">Nota de Débito</option>
+                                                        <option value="04">Nota de Crédito</option>
+                                                        <option value="03">Liquidación</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="autorizacion">Autorización</label>
+                                                    <input type="text" class="form-control" id="autorizacion" name="autorizacion"
+                                                           placeholder="Ingrese la autorización">
+                                                </div>
+                                                <button type="submit" class="btn btn-primary btn-block" id="btnGuardarAnulado">Guardar</button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -444,10 +472,13 @@
         const btnBack = document.getElementById('btnBack');
         const btnNext = document.getElementById('btnNext');
         const btnDownload = document.getElementById('btnDownload');
+        const btnCrearAts = document.getElementById('btnCrearAts')
         const btnEmitidos = document.getElementById('btnEmitidos');
+        const btnGuardarAnulado = document.getElementById('btnGuardarAnulado');
         const divIniciarSesion = document.getElementById('divIniciarSesion');
         const divRecibidos = document.getElementById('divRecibidos');
         const divEmitidos = document.getElementById('divEmitidos');
+        const divAnulados = document.getElementById('divAnulados');
         const atsForm = document.getElementById('atsForm');
 
         // Botones en divEmitidos
@@ -461,9 +492,10 @@
         const btnNotasCreditoE = document.getElementById('NotasCreditoE');
         const btnNotasDebitoE = document.getElementById('NotasDebitoE');
         const btnRetencionesE = document.getElementById('RetencionesE');
+        const autorizacionInput = document.getElementById('autorizacion');
 
         let currentSection = 0;
-        const sections = [divIniciarSesion, divRecibidos, divEmitidos];
+        const sections = [divIniciarSesion, divRecibidos, divEmitidos, divAnulados];
 
         function showSection(index) {
             sections.forEach((section, i) => {
@@ -530,6 +562,31 @@
                 }
             });
         });
+        
+        btnGuardarAnulado.addEventListener('click', (event) => {
+            event.preventDefault();
+            const formData = new FormData(atsForm);
+            formData.append('action', 'guardar_anulados');
+
+            fetch("{% url 'guardar_anulados' %}", {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                toastr.success(data.output);
+                autorizacionInput.value = ''; // Limpiar el campo de autorización
+            })
+            .catch(error => {
+                toastr.error('Error al guardar el comprobante anulado.');
+            });
+        });
+
+        
+
 
         btnDownload.addEventListener('click', () => {
             const username = document.getElementById('username').value;
@@ -565,6 +622,27 @@
                     data: $(atsForm).serialize() + '&action=BOTEMITIDOS',
                     success: function (response) {
                         toastr.success(response.message, "Éxito");
+                    },
+                    error: function (response) {
+                        toastr.error('Error al iniciar el script.', "Error");
+                    }
+                });
+            }
+        });
+
+        btnCrearAts.addEventListener('click', () => {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (!username || !password) {
+                toastr.warning("Por favor, complete los campos de usuario y contraseña.", "Advertencia");
+            } else {
+                $.ajax({
+                    type: 'POST',
+                    url: atsForm.action,
+                    data: $(atsForm).serialize() + '&action=CrearAts',
+                    success: function (response) {
+                        toastr.success(response.output, "Éxito");
                     },
                     error: function (response) {
                         toastr.error('Error al iniciar el script.', "Error");
