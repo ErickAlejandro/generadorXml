@@ -163,6 +163,16 @@
                                             Descargar
                                         </button>
                                     </div>
+                                    <div class="col-md-6">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width: 20px;height: 20px;"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24l0 112c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-112c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg><b> Nota:</b>
+                                        <ol>
+                                            <li>Ejecutar el botón "Descargar".</li>
+                                            <li>Se abrirá automaticamente el portal del SRI y una ventana solicitando el mes, día y tipo de comprobante.</li>
+                                            <li>
+                                                <i>La interacción del usuario termina en esta parte, se recomienda dejar que el proceso concluya automaticamente</i>
+                                            </li>
+                                        </ol>
+                                    </div>
                                 </div>
                             </div>
                             <div id="divEmitidos" style="display: none;">
@@ -203,10 +213,22 @@
                                 </div>
                                 <hr>
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-6 align-content-center ">
                                         <button type="button" id="btnEmitidos" class="btn btn-dark btn-block mt-3">
                                             Descargar
                                         </button>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width: 20px;height: 20px;"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24l0 112c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-112c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg> Nota:</span>
+                                        <ol>
+                                            <li>Ingresar al portal SRI.</li>
+                                            <li>Dirigirse al apartado de Facturación Electrónica / Producción / Consultas / Comprobantes Electrónicos Emitidos.</li>
+                                            <li>Selecciónar los días a descargar, el tipo de comprobante y consultar.</li>
+                                            <li>Descargar el archivo .txt y renombrarlo.</li>
+                                            <li>Mover el archivo descargado dependiendo el tipo de comprobante, ejemplo: (c:/ia/SRIBOT/XML/EMITIDAS).</li>
+                                            <li>Iniciar el BOT.</li>
+                                        </ol>
+                                        <i>Esto tiene un limite de 10 días permitidos para descargar el archivo.</i>
                                     </div>
                                 </div>
                             </div>
@@ -642,7 +664,12 @@
                     url: atsForm.action,
                     data: $(atsForm).serialize() + '&action=CrearAts',
                     success: function (response) {
-                        toastr.success(response.output, "Éxito");
+                        console.log(response)
+                        if(response.output.state == 'None'){
+                            toastr.error('Revisar que los archivos .XML se encuentren en la carpeta correcta', 'Alerta');
+                        }else{
+                            toastr.success('Se ha generado correctamente el ATS en la carpeta c:/ia/SRIBOT/XML', 'Exito');
+                        }
                     },
                     error: function (response) {
                         toastr.error('Error al iniciar el script.', "Error");

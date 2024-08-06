@@ -1,25 +1,20 @@
 import os
-import time
 import shutil
 import sys
+import tkinter as tk
+from tkinter import ttk, messagebox
 from selenium import webdriver
-from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select
-import tkinter as tk
-from tkinter import ttk
 from selenium.common.exceptions import TimeoutException
-
 from datetime import datetime
 import requests
 import xml.etree.ElementTree as ET
 import glob
 
-# Obtener los argumentos de usuario y contraseña
-username = sys.argv[1]
-password = sys.argv[2]
 
 # Crear Carpeta SRIBOT EN DOCUMENTOS
 documents_folder = 'C:\\ia\\SRIBOT'
@@ -29,7 +24,7 @@ os.makedirs(documents_folder, exist_ok=True)
 xml_folder = os.path.join(documents_folder, 'XML', 'EMITIDAS')
 os.makedirs(xml_folder, exist_ok=True)
 
-# Crear subcarpetas dentro de EMITIDAS si no existen
+# Crear subcarpetas si no existen
 subcarpetas = ['FacturasE', 'LiquidacionesE', 'NotasCreditoE', 'NotasDebitoE', 'RetencionesE']
 for subcarpeta in subcarpetas:
     os.makedirs(os.path.join(xml_folder, subcarpeta), exist_ok=True)
@@ -46,7 +41,6 @@ chrome_options.add_experimental_option("prefs", {
 
 # Configuración del Bot
 chrome_options.add_extension("C:\\Resolver.crx")
-
 
 # Función para procesar los archivos TXT y generar archivos XML
 def procesar_archivos_txt():
@@ -66,7 +60,7 @@ def procesar_archivos_txt():
         </soapenv:Body>
     </soapenv:Envelope>"""
 
-    # Buscar en todas las subcarpetas de la carpeta recibidas
+    # Buscar en todas las subcarpetas de la carpeta XML
     for root, dirs, files in os.walk(xml_folder):
         archivos_txt = glob.glob(os.path.join(root, "*.txt"))
         for ruta_txt in archivos_txt:
@@ -129,22 +123,67 @@ def procesar_archivos_txt():
                             else:
                                 print(f"No se encontró el elemento 'autorizaciones' para la clave {clave_acceso}.")
                         else:
-                            print(
-                                f"No se encontró el elemento 'RespuestaAutorizacionComprobante' para la clave {clave_acceso}.")
+                            print(f"No se encontró el elemento 'RespuestaAutorizacionComprobante' para la clave {clave_acceso}.")
                     else:
-                        print(
-                            f"No se encontró el elemento 'autorizacionComprobanteResponse' para la clave {clave_acceso}.")
+                        print(f"No se encontró el elemento 'autorizacionComprobanteResponse' para la clave {clave_acceso}.")
                 else:
                     print(f"Error en la solicitud para la clave {clave_acceso}. Estado: {response.status_code}")
 
+# Función para limpiar carpetas seleccionadas
+def limpiar_carpetas():
+    seleccion_subcarpeta = subcarpeta_var.get()
+    if seleccion_subcarpeta == "No":
+        messagebox.showinfo("Información", "No se ha limpiado ninguna carpeta.")
+    elif seleccion_subcarpeta == "Todas":
+        for subcarpeta in subcarpetas:
+            shutil.rmtree(os.path.join(xml_folder, subcarpeta))
+            os.makedirs(os.path.join(xml_folder, subcarpeta), exist_ok=True)
+        messagebox.showinfo("Éxito", "Todas las subcarpetas han sido limpiadas.")
+    else:
+        shutil.rmtree(os.path.join(xml_folder, seleccion_subcarpeta))
+        os.makedirs(os.path.join(xml_folder, seleccion_subcarpeta), exist_ok=True)
+        messagebox.showinfo("Éxito", f"La subcarpeta {seleccion_subcarpeta} ha sido limpiada.")
+    ventana_opciones.destroy()
+    seleccionar_opcion_procesar()
+
+# Crear ventana Tkinter para opciones de limpieza
+def ventana_limpiar_carpetas():
+    global subcarpeta_var, ventana_opciones
+
+    ventana_opciones = tk.Tk()
+    ventana_opciones.title("Opciones de Limpieza de Carpetas")
+
+    ancho_ventana_opciones = 400
+    alto_ventana_opciones = 200
+
+    ancho_pantalla = ventana_opciones.winfo_screenwidth()
+    alto_pantalla = ventana_opciones.winfo_screenheight()
+
+    x = (ancho_pantalla // 2) - (ancho_ventana_opciones // 2)
+    y = (alto_pantalla // 2) - (alto_ventana_opciones // 2)
+
+    ventana_opciones.geometry(f"{ancho_ventana_opciones}x{alto_ventana_opciones}+{x}+{y}")
+
+    label = tk.Label(ventana_opciones, text="¿Desea eliminar el contenido de las carpetas?")
+    label.pack(pady=10)
+
+    subcarpeta_var = tk.StringVar()
+    subcarpeta_combo = ttk.Combobox(ventana_opciones, textvariable=subcarpeta_var, state="readonly")
+    subcarpeta_combo['values'] = ["No", "Todas"] + subcarpetas
+    subcarpeta_combo.pack(pady=5)
+
+    boton_aceptar = tk.Button(ventana_opciones, text="Aceptar", command=limpiar_carpetas)
+    boton_aceptar.pack(pady=10)
+
+    ventana_opciones.mainloop()
 
 # Ventana emergente para seleccionar la opción de procesamiento
-def seleccionar_opcion():
+def seleccionar_opcion_procesar():
     def enviar_seleccion():
-        opcion_seleccionada = combobox.get()
+        opcion_seleccionada = combobox_procesar.get()
         if opcion_seleccionada == "Sí":
-            ventana.destroy()
             procesar_archivos_txt()
+        ventana.destroy()
 
     ventana = tk.Tk()
     ventana.title("Seleccione una opción")
@@ -167,14 +206,13 @@ def seleccionar_opcion():
     tk.Label(ventana, text="¿Desea descargar los comprobantes de los archivos TXT existentes?").pack(pady=10)
 
     opciones = ["Seleccione una opción", "Sí", "No"]
-    combobox = ttk.Combobox(ventana, values=opciones, state="readonly")
-    combobox.pack(pady=10)
-    combobox.current(0)  # Selecciona la primera opción por defecto
+    combobox_procesar = ttk.Combobox(ventana, values=opciones, state="readonly")
+    combobox_procesar.pack(pady=10)
+    combobox_procesar.current(0)  # Selecciona la primera opción por defecto
 
     tk.Button(ventana, text="Aceptar", command=enviar_seleccion).pack(pady=10)
 
     ventana.mainloop()
 
-
-# Mostrar la ventana emergente de selección
-seleccionar_opcion()
+# Iniciar la ventana de limpieza de carpetas
+ventana_limpiar_carpetas()

@@ -12,7 +12,7 @@ import threading
 
 def ejecutar_script(username, password):
     script_path = os.path.join(os.path.dirname(__file__), '..', 'scripts', 'BOTATS.py')
-    python_executable = os.path.join(os.path.dirname(__file__), '..', 'venv', 'Scripts', 'python.exe')
+    python_executable = os.path.join(os.path.dirname(__file__), '..' , '..', 'venv', 'Scripts', 'python.exe')
     print(os.path.join(os.path.dirname(__file__)))
     try:
         result = subprocess.run([python_executable, script_path, username, password], capture_output=True, text=True)
@@ -27,7 +27,7 @@ def ejecutar_script(username, password):
 
 def ejecutar_script_botemitidos(username, password):
     script_path = os.path.join(os.path.dirname(__file__), '..', 'scripts', 'BOTEMITIDOS.py')
-    python_executable = os.path.join(os.path.dirname(__file__), '..', 'venv', 'Scripts', 'python.exe')
+    python_executable = os.path.join(os.path.dirname(__file__), '..', '..', 'venv', 'Scripts', 'python.exe')
     
     try:
         result = subprocess.run([python_executable, script_path, username, password], capture_output=True, text=True)
@@ -43,7 +43,7 @@ def ejecutar_script_botemitidos(username, password):
 
 def ejecutar_script_reporterecibidos():
     script_path = os.path.join(os.path.dirname(__file__), '..', 'scripts', 'ReporteRecibidos.py')
-    python_executable = os.path.join(os.path.dirname(__file__), '..', 'venv', 'Scripts', 'python.exe')
+    python_executable = os.path.join(os.path.dirname(__file__), '..', '..','venv', 'Scripts', 'python.exe')
     result_message = ""
 
     try:
@@ -64,7 +64,7 @@ def ejecutar_script_reporterecibidos():
 
 def ejecutar_script_reporteemitidos():
     script_path = os.path.join(os.path.dirname(__file__), '..', 'scripts', 'ReporteEmitidos.py')
-    python_executable = os.path.join(os.path.dirname(__file__), '..','venv', 'Scripts', 'python.exe')
+    python_executable = os.path.join(os.path.dirname(__file__), '..', '..','venv', 'Scripts', 'python.exe')
     result_message = ""
 
     try:
@@ -86,22 +86,27 @@ def ejecutar_script_reporteemitidos():
 
 def ejecutar_script_crearats():
     script_path = os.path.join(os.path.dirname(__file__), '..', 'scripts', 'CrearAts.py')
-    python_executable = os.path.join(os.path.dirname(__file__), '..','venv', 'Scripts', 'python.exe')
+    python_executable = os.path.join(os.path.dirname(__file__), '..', '..','venv', 'Scripts', 'python.exe')
     result_message = ""
+    state = ''
     try:
         result = subprocess.run([python_executable, script_path], capture_output=True, text=True, encoding='utf-8')
         if result.returncode == 0:
+            # Si hay archivos
             result_message = result.stdout.strip()
-            print("Script ejecutado con éxito")
-            print("Salida:", result_message)
+            state = 'success'
         else:
+            # NO hay archivo
             result_message = result.stderr.strip()
-            print("Error al ejecutar el script")
-            print("Error:", result_message)
+            state = 'None'
     except Exception as e:
+        # Error en la ejecucion del scrip
         result_message = f"Excepción al intentar ejecutar el script: {str(e)}"
+        state = 'error'
         print(result_message)
-    return result_message
+
+    context = {'state': state, 'result': result_message}
+    return context
 
 
 

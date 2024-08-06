@@ -323,7 +323,7 @@ def crear_ats(factura_emitidas_roots, factura_recibidas_roots, ruta_carpeta_rete
 ruta_carpeta_facturas_emitidas = r'C:\IA\SRIBOT\XML\EMITIDAS\FacturasE'
 ruta_carpeta_facturas_recibidas = r'C:\IA\SRIBOT\XML\RECIBIDAS\Facturas'
 ruta_carpeta_retenciones = r'C:\IA\SRIBOT\XML\EMITIDAS\RetencionesE'
-ruta_anulados = r'C:\ia\SRIBOT\XML\ANULADOS\comprobantes_anulados.txt'
+ruta_anulados = r'C:\IA\SRIBOT\XML\ANULADOS\comprobantes_anulados.txt'
 
 
 # Parsear los archivos XML de la carpeta de facturas emitidas
@@ -345,5 +345,5 @@ for archivo in os.listdir(ruta_carpeta_facturas_recibidas):
             factura_recibidas_roots.append((root, numero_autorizacion))
 
 
-crear_ats(factura_emitidas_roots, factura_recibidas_roots, ruta_carpeta_retenciones, r'C:\ia\SRIBOT\XML', ruta_anulados)
-print(f"Archivo ATS creado exitosamente en C:\\ia\\SRIBOT\\XML")
+crear_ats(factura_emitidas_roots, factura_recibidas_roots, ruta_carpeta_retenciones, r'C:\IA\SRIBOT\XML', ruta_anulados)
+print(f"Archivo ATS creado exitosamente en C:\\IA\\SRIBOT\\XML")
