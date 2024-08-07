@@ -599,6 +599,7 @@
         const divEmitidos = document.getElementById('divEmitidos');
         const divAnulados = document.getElementById('divAnulados');
         const atsForm = document.getElementById('atsForm');
+        
 
         // Botones en divEmitidos
         const btnFacturas = document.getElementById('Facturas');
@@ -641,7 +642,7 @@
                 // Funcionalidad input Ruta
                 if(directoryInput.value == ''){
                     console.log('Vacio')
-                    valRutaFolder = 'C:\IA\SRIBOT\XML';
+                    valRutaFolder = 'C:\\IA\\SRIBOT';
                     console.log(valRutaFolder)
                 }else{
                     console.log('Cosa')
@@ -733,6 +734,7 @@
         const mes = document.getElementById('mes').value;
         const dia = document.getElementById('dia').value;
         const tipo_comprobante = document.getElementById('tipo_comprobante').value;
+        
 
         if (!username || !password || !mes || !dia || !tipo_comprobante) {
             toastr.warning("Por favor, complete todos los campos.", "Advertencia");
@@ -746,6 +748,7 @@
                     'mes': mes,
                     'dia': dia,
                     'tipo_comprobante': tipo_comprobante,
+                    'directory': valRutaFolder,
                     'action': 'BOTATS',
                     'csrfmiddlewaretoken': '{{ csrf_token }}'
                 },
@@ -833,6 +836,8 @@
                 url: '{% url "check_xml_files" %}',
                 data: {
                     'button_id': buttonId,
+                    'mess': mes,
+                    'directorys': valRutaFolder,
                     'csrfmiddlewaretoken': '{{ csrf_token }}'
                 },
                 success: function (response) {

@@ -15,12 +15,7 @@ import tkinter as tk
 from tkinter import messagebox, ttk
 from selenium.common.exceptions import TimeoutException
 
-# Obtener los argumentos de usuario y contraseña
-username = sys.argv[1]
-password = sys.argv[2]
-mes = sys.argv[3]
-dia = sys.argv[4]
-tipo_comprobante = sys.argv[5]
+
 
 # Obtener los argumentos de usuario y contraseña
 username = sys.argv[1]
@@ -28,6 +23,8 @@ password = sys.argv[2]
 mes = sys.argv[3]
 dia = sys.argv[4]
 tipo_comprobante = sys.argv[5]
+print(tipo_comprobante,'tipo_comprobante = sys.argv[5]')
+directory =sys.argv[6]
 
 tipo_comprobante_nombres = {
     "1": "Facturas",
@@ -37,8 +34,9 @@ tipo_comprobante_nombres = {
     "6": "Retenciones"
 }
 
+
 # Crear Carpeta SRIBOT EN DOCUMENTOS
-documents_folder = 'C:\\ia\\SRIBOT'
+documents_folder = directory
 os.makedirs(documents_folder, exist_ok=True)
 
 xml_folder = os.path.join(documents_folder, 'XML')
@@ -180,7 +178,7 @@ try:
 
     # Obtener el nombre de la carpeta del tipo de comprobante
     tipo_comprobante_nombre = tipo_comprobante_nombres.get(tipo_comprobante, "Desconocido")
-    tipo_comprobante_folder = os.path.join("C:\\ia\\SRIBOT\\XML\\RECIBIDAS", tipo_comprobante_nombre)
+    tipo_comprobante_folder = os.path.join(f"{directory}\\XML\\{mes}\\RECIBIDAS", tipo_comprobante_nombre)
     os.makedirs(tipo_comprobante_folder, exist_ok=True)
     print("Carpeta creada para el tipo de comprobante:", tipo_comprobante_nombre)
 

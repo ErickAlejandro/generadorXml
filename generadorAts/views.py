@@ -10,12 +10,11 @@ import os
 import threading
 
 
-def ejecutar_script(username, password, mes, dia, tipo_comprobante):
+def ejecutar_script(username, password, mes, dia, tipo_comprobante, directory):
     script_path = os.path.join(os.path.dirname(__file__), '..', 'scripts', 'BOTATS.py')
     python_executable = os.path.join(os.path.dirname(__file__), '..', 'venv', 'Scripts', 'python.exe')
-    print(os.path.join(os.path.dirname(__file__)))
     try:
-        result = subprocess.run([python_executable, script_path, username, password, mes, dia, tipo_comprobante], capture_output=True, text=True)
+        result = subprocess.run([python_executable, script_path, username, password, mes, dia, tipo_comprobante, directory], capture_output=True, text=True)
         if result.returncode == 0:
             print("Script ejecutado con éxito")
             print("Salida:", result.stdout)
@@ -162,15 +161,17 @@ def crearats(request):
         mes = request.POST.get('mes')
         dia = request.POST.get('dia')
         tipo_comprobante = request.POST.get('tipo_comprobante')
+        directory = request.POST.get('directory')
+        print(directory,'directory')
 
         result_message = ""
 
         if action == 'BOTATS':
-            thread = threading.Thread(target=ejecutar_script, args=(username, password, mes, dia, tipo_comprobante))
+            thread = threading.Thread(target=ejecutar_script, args=(username, password, mes, dia, tipo_comprobante, directory))
             thread.start()
             result_message = "El script se está ejecutando en segundo plano"
         elif action == 'BOTEMITIDOS':
-            thread = threading.Thread(target=ejecutar_script_botemitidos, args=(username, password, mes, dia, tipo_comprobante))
+            thread = threading.Thread(target=ejecutar_script_botemitidos, args=(username, password, mes, dia, tipo_comprobante, directory))
             thread.start()
             result_message = "El script se está ejecutando en segundo plano"
         elif action == 'ReporteRecibidos':
@@ -187,10 +188,13 @@ def crearats(request):
 def check_xml_files(request):
     if request.method == 'POST':
         button_id = request.POST.get('button_id')
-        directory = os.path.join('C:\\', 'ia', 'SRIBOT', 'XML', 'RECIBIDAS', button_id)
+        mes = request.POST.get('mess')
+        directory = request.POST.get('directorys')
+        
+        full = os.path.join(f"{directory}", f"{mes}",'RECIBIDAS', button_id)
 
         # Imprimir el directorio para verificar que es correcto
-        print(f"Directorio a verificar: {directory}")
+        print(f"Directorio a verificar: {full}")
 
         # Ruta al script y al intérprete Python
         script_path = os.path.join(os.path.dirname(__file__), '..', 'scripts', 'comprobantesrecibidos.py')
