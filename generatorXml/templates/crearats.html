@@ -126,6 +126,21 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div id="divRoutes" style="display: none;">
+                                    <div class="row justify-content-center">
+                                        <div class="col-md-8">
+                                            <div class="card text-white bg-secondary mb-3">
+                                                <div class="card-header">Seleccionar Ruta</div>
+                                                <div class="card-body">
+                                                    <div class="form-group">
+                                                        <label for="directoryInput">Ingrese la ruta de la carpeta de destino</label>
+                                                        <input type="text" class="form-control" id="directoryInput" name="directoryInput" placeholder="C:\ia\SRIBOT\XML">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div id="divRecibidos" style="display: none;">
                                     <h3>Comprobantes Electronicos Recibidos</h3>
                                     <div class="row">
@@ -378,6 +393,9 @@
         const btnRedep = document.getElementById('btnRedep');
         const rowDownloadCompRecib = document.getElementById('rowDownloadCompRecib');
         const rowDownloadCompEmi = document.getElementById('rowDownloadCompEmi');
+        const directoryInput = document.getElementById('directoryInput');
+
+        let valRutaFolder;
 
         // Funcionalidad de envio a la aplicacion para generar el XML
         btnRedep.addEventListener('click', function () {
@@ -576,6 +594,7 @@
         const btnEmitidos = document.getElementById('btnEmitidos');
         const btnGuardarAnulado = document.getElementById('btnGuardarAnulado');
         const divIniciarSesion = document.getElementById('divIniciarSesion');
+        const divRoutes = document.getElementById('divRoutes');
         const divRecibidos = document.getElementById('divRecibidos');
         const divEmitidos = document.getElementById('divEmitidos');
         const divAnulados = document.getElementById('divAnulados');
@@ -595,7 +614,7 @@
         const autorizacionInput = document.getElementById('autorizacion');
 
         let currentSection = 0;
-        const sections = [divIniciarSesion, divRecibidos, divEmitidos, divAnulados];
+        const sections = [divIniciarSesion, divRoutes, divRecibidos, divEmitidos, divAnulados];
 
         function showSection(index) {
             sections.forEach((section, i) => {
@@ -615,6 +634,22 @@
 
         btnNext.addEventListener('click', () => {
             btnNext.disabled = true;
+            if(currentSection == 0){
+                btnNext.disabled = false;
+            }
+            if(currentSection == 1){
+                // Funcionalidad input Ruta
+                if(directoryInput.value == ''){
+                    console.log('Vacio')
+                    valRutaFolder = 'C:\IA\SRIBOT\XML';
+                    console.log(valRutaFolder)
+                }else{
+                    console.log('Cosa')
+                    valRutaFolder = directoryInput.value;
+                    console.log(valRutaFolder)
+                }
+                // Aqui va la funcion que va a la vista valRutaFolder
+            }
             if (currentSection < sections.length - 1) {
                 currentSection++;
                 showSection(currentSection);
