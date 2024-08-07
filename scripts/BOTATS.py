@@ -18,7 +18,24 @@ from selenium.common.exceptions import TimeoutException
 # Obtener los argumentos de usuario y contraseña
 username = sys.argv[1]
 password = sys.argv[2]
+mes = sys.argv[3]
+dia = sys.argv[4]
+tipo_comprobante = sys.argv[5]
 
+# Obtener los argumentos de usuario y contraseña
+username = sys.argv[1]
+password = sys.argv[2]
+mes = sys.argv[3]
+dia = sys.argv[4]
+tipo_comprobante = sys.argv[5]
+
+tipo_comprobante_nombres = {
+    "1": "Facturas",
+    "2": "Liquidaciones",
+    "3": "NotasCredito",
+    "4": "NotasDebito",
+    "6": "Retenciones"
+}
 
 # Crear Carpeta SRIBOT EN DOCUMENTOS
 documents_folder = 'C:\\ia\\SRIBOT'
@@ -30,9 +47,7 @@ os.makedirs(xml_folder, exist_ok=True)
 # Obtener las subcarpetas dentro de la carpeta RECIBIDAS
 recibidas_folder = os.path.join(xml_folder, 'RECIBIDAS')
 os.makedirs(recibidas_folder, exist_ok=True)
-subcarpetas_recibidas = [name for name in os.listdir(recibidas_folder) if
-                         os.path.isdir(os.path.join(recibidas_folder, name))]
-
+subcarpetas_recibidas = [name for name in os.listdir(recibidas_folder) if os.path.isdir(os.path.join(recibidas_folder, name))]
 
 # Función para limpiar carpetas seleccionadas
 def limpiar_carpetas():
@@ -49,7 +64,6 @@ def limpiar_carpetas():
         os.makedirs(os.path.join(recibidas_folder, seleccion_subcarpeta), exist_ok=True)
         messagebox.showinfo("Éxito", f"La subcarpeta {seleccion_subcarpeta} de RECIBIDAS ha sido limpiada.")
     ventana_opciones.destroy()
-
 
 # Crear ventana Tkinter para opciones de limpieza
 ventana_opciones = tk.Tk()
@@ -140,173 +154,45 @@ try:
 
     driver.get("https://srienlinea.sri.gob.ec/tuportal-internet/accederAplicacion.jspa?redireccion=57&idGrupo=55")
 
-    # VENTANA MES
+    # Seleccionar el mes
     select_mes_element = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.ID, 'frmPrincipal:mes'))
     )
+    select_mes = Select(select_mes_element)
+    select_mes.select_by_value(mes)
+    print("Mes seleccionado:", mes)
 
-
-    # Función para seleccionar el mes y continuar con el proceso
-    def seleccionar_mes():
-        global select_mes_element
-        mes_nombre = mes_var.get()
-        mes_valor = opciones_mes[mes_nombre]  # Obtener el valor del mes
-        select_mes = Select(select_mes_element)
-        select_mes.select_by_value(mes_valor)
-        print("Mes seleccionado:", mes_nombre)
-        ventana_mes.destroy()
-
-
-    # Crear ventana Tkinter para seleccionar el mes
-    ventana_mes = tk.Tk()
-    ventana_mes.title("Selección de Mes")
-
-    ancho_ventana_mes = 250  # Ancho de la ventana de selección de mes
-    alto_ventana_mes = 200  # Alto de la ventana de selección de mes
-
-    ancho_pantalla = ventana_mes.winfo_screenwidth()
-    alto_pantalla = ventana_mes.winfo_screenheight()
-
-    # Calcular la posición para centrar la ventana
-    x = (ancho_pantalla // 2) - (ancho_ventana_mes // 2)
-    y = (alto_pantalla // 2) - (alto_ventana_mes // 2)
-
-    # Establecer la geometría de la ventana
-    ventana_mes.geometry(f"{ancho_ventana_mes}x{alto_ventana_mes}+{x}+{y}")
-
-    mes_var = tk.StringVar(ventana_mes)
-    mes_var.set("Seleccione el Mes")  # Establecer valor predeterminado
-    opciones_mes = {"Enero": "1", "Febrero": "2", "Marzo": "3", "Abril": "4", "Mayo": "5", "Junio": "6", "Julio": "7",
-                    "Agosto": "8", "Septiembre": "9", "Octubre": "10", "Noviembre": "11", "Diciembre": "12"}
-    mes_menu = tk.OptionMenu(ventana_mes, mes_var, *opciones_mes.keys())
-    mes_menu.pack(pady=10)
-
-    boton_aceptar_mes = tk.Button(ventana_mes, text="Aceptar", command=seleccionar_mes)
-    boton_aceptar_mes.pack(pady=5)
-
-    # Iniciar el bucle principal de la ventana Tkinter
-    ventana_mes.mainloop()
-
-    # VENTANA DIA
+    # Seleccionar el día
     select_dia_element = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.ID, 'frmPrincipal:dia'))
     )
+    select_dia = Select(select_dia_element)
+    select_dia.select_by_value(dia)
+    print("Día seleccionado:", dia)
 
-
-    def seleccionar_dia():
-        global select_dia_element
-        dia = dia_var.get()
-        if dia == "Todos":
-            print("Seleccionado todos los días.")
-            select_dia = Select(select_dia_element)
-            select_dia.select_by_value("0")  # Seleccionar la opción "Todos" (value 0)
-        else:
-            select_dia = Select(select_dia_element)
-            select_dia.select_by_value(dia)
-            print("Día seleccionado:", dia)
-        ventana_dia.destroy()
-
-
-    # Crear ventana Tkinter para seleccionar el día
-    ventana_dia = tk.Tk()
-    ventana_dia.title("Selección de Día")
-
-    ancho_ventana_dia = 200  # Ancho de la ventana de selección de día
-    alto_ventana_dia = 150  # Alto de la ventana de selección de día
-
-    ancho_pantalla = ventana_dia.winfo_screenwidth()
-    alto_pantalla = ventana_dia.winfo_screenheight()
-
-    # Calcular la posición para centrar la ventana
-    x = (ancho_pantalla // 2) - (ancho_ventana_dia // 2)
-    y = (alto_pantalla // 2) - (alto_ventana_dia // 2)
-
-    # Establecer la geometría de la ventana
-    ventana_dia.geometry(f"{ancho_ventana_dia}x{alto_ventana_dia}+{x}+{y}")
-
-    dia_var = tk.StringVar(ventana_dia)
-    dia_var.set("Seleccione el Día")  # Establecer valor predeterminado
-    opciones_dia = ["Todos"] + [str(i) for i in range(1, 32)]  # Días del 1 al 31
-    dia_menu = tk.OptionMenu(ventana_dia, dia_var, *opciones_dia)
-    dia_menu.pack(pady=10)
-
-    boton_aceptar_dia = tk.Button(ventana_dia, text="Aceptar", command=seleccionar_dia)
-    boton_aceptar_dia.pack(pady=5)
-
-    # Iniciar el bucle principal de la ventana Tkinter
-    ventana_dia.mainloop()
-
-    # VENTANA TIPO DE COMPROBANTE
+    # Seleccionar el tipo de comprobante
     tipo_comprobante_select_element = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.ID, 'frmPrincipal:cmbTipoComprobante'))
     )
+    tipo_comprobante_select = Select(tipo_comprobante_select_element)
+    tipo_comprobante_select.select_by_value(tipo_comprobante)
+    print("Tipo de comprobante seleccionado:", tipo_comprobante)
 
+    # Obtener el nombre de la carpeta del tipo de comprobante
+    tipo_comprobante_nombre = tipo_comprobante_nombres.get(tipo_comprobante, "Desconocido")
+    tipo_comprobante_folder = os.path.join("C:\\ia\\SRIBOT\\XML\\RECIBIDAS", tipo_comprobante_nombre)
+    os.makedirs(tipo_comprobante_folder, exist_ok=True)
+    print("Carpeta creada para el tipo de comprobante:", tipo_comprobante_nombre)
 
-    # Función para seleccionar el tipo de comprobante y continuar con el proceso
-    def seleccionar_tipo_comprobante():
-        global tipo_comprobante_select_element  # Declarar la variable como global para poder modificarla dentro de la función
-        tipo_comprobante = tipo_comprobante_var.get()
-        tipo_comprobante_select = Select(tipo_comprobante_select_element)
-        if tipo_comprobante == "Facturas":
-            tipo_comprobante_select.select_by_value("1")
-        elif tipo_comprobante == "Liquidaciones":
-            tipo_comprobante_select.select_by_value("2")
-        elif tipo_comprobante == "NotasCredito":
-            tipo_comprobante_select.select_by_value("3")
-        elif tipo_comprobante == "NotasDebito":
-            tipo_comprobante_select.select_by_value("4")
-        elif tipo_comprobante == "Retenciones":
-            tipo_comprobante_select.select_by_value("6")
-
-        # Crear una carpeta para el tipo de comprobante seleccionado
-        global tipo_comprobante_folder
-        tipo_comprobante_folder = os.path.join("C:\\ia\\SRIBOT\\XML\\RECIBIDAS", tipo_comprobante)
-        os.makedirs(tipo_comprobante_folder, exist_ok=True)
-        print("Carpeta creada para el tipo de comprobante:", tipo_comprobante)
-
-        ventana.destroy()
-
-
-    # Crear ventana Tkinter
-    ventana = tk.Tk()
-    ventana.title("Selección de Tipo de Comprobante")
-
-    ancho_ventana = 350
-    alto_ventana = 150
-
-    ancho_pantalla = ventana.winfo_screenwidth()
-    alto_pantalla = ventana.winfo_screenheight()
-
-    # Calcular la posición para centrar la ventana
-    x = (ancho_pantalla // 2) - (ancho_ventana // 2)
-    y = (alto_pantalla // 2) - (alto_ventana // 2)
-
-    ventana.geometry(f"{ancho_ventana}x{alto_ventana}+{x}+{y}")
-
-    tipo_comprobante_var = tk.StringVar(ventana)
-    tipo_comprobante_var.set("Seleccione el Tipo de Comprobante")  # Establecer valor predeterminado
-    opciones_tipo_comprobante = ["Seleccione el Tipo de Comprobante", "Facturas",
-                                 "Liquidaciones", "NotasCredito",
-                                 "NotasDebito", "Retenciones"]
-    tipo_comprobante_menu = tk.OptionMenu(ventana, tipo_comprobante_var, *opciones_tipo_comprobante)
-    tipo_comprobante_menu.pack(pady=10)
-
-    boton_aceptar = tk.Button(ventana, text="Aceptar", command=seleccionar_tipo_comprobante)
-    boton_aceptar.pack(pady=5)
-
-    # Iniciar el bucle principal de la ventana Tkinter
-    ventana.mainloop()
-
-    # Hacer clic en el elemento //*[@id="btnRecaptcha"]
+    # Hacer clic en el elemento recaptcha
     recaptcha_button = WebDriverWait(driver, 10).until(
         EC.element_to_be_clickable((By.XPATH, '//*[@id="btnRecaptcha"]'))
     )
-
     recaptcha_button.click()
     print("Clic en el botón Recaptcha exitoso.")
 
     # Esperar que la IA resuelva el captcha
-    time.sleep(40)
+    time.sleep(60)
 
     # Descargar listado txt
     listado_button = WebDriverWait(driver, 10).until(
@@ -315,14 +201,12 @@ try:
     listado_button.click()
     print("Clic en el enlace para obtener el listado.")
 
-
     # Función para obtener el valor de numeroAutorizacion de un archivo XML
     def obtener_numero_autorizacion(xml_path):
         tree = ET.parse(xml_path)
         root = tree.getroot()
         numero_autorizacion = root.find('.//numeroAutorizacion').text
         return numero_autorizacion
-
 
     # Función para renombrar los archivos XML descargados
     def renombrar_xmls():
@@ -344,13 +228,10 @@ try:
                 print(f"Archivo {file} renombrado como {new_filename}")
 
                 # Mover el archivo a la carpeta correspondiente del tipo de comprobante en RECIBIDAS
-                tipo_comprobante_recibidas_folder = os.path.join(recibidas_folder, tipo_comprobante_folder)
-                os.makedirs(tipo_comprobante_recibidas_folder, exist_ok=True)
-                shutil.move(new_filename, tipo_comprobante_recibidas_folder)
-                print(f"Archivo {new_filename} movido a {tipo_comprobante_recibidas_folder}")
+                shutil.move(new_filename, tipo_comprobante_folder)
+                print(f"Archivo {new_filename} movido a {tipo_comprobante_folder}")
             except Exception as e:
                 print(f"Error al procesar el archivo {file}: {e}")
-
 
     # Función para hacer clic en los enlaces y descargar los archivos XML
     def hacer_clic_en_enlace():
@@ -396,7 +277,6 @@ try:
         # Llamada a la función para renombrar los archivos XML
         renombrar_xmls()
 
-
     # Llamada a la función para hacer clic en los enlaces y descargar los archivos XML
     hacer_clic_en_enlace()
 
@@ -404,12 +284,10 @@ try:
     ventana_emergente = tk.Tk()
     ventana_emergente.title("Descarga exitosa")
 
-
     # Función para cerrar la ventana emergente y finalizar el programa
     def cerrar_ventana():
         ventana_emergente.destroy()
         driver.quit()  # Cerrar el navegador y finalizar el programa
-
 
     # Mensaje para mostrar en la ventana emergente
     mensaje = "Comprobantes descargados correctamente."
@@ -429,6 +307,6 @@ except Exception as e:
     print("Error:", e)
 
 finally:
-
     # Cerrar el navegador
     driver.quit()
+

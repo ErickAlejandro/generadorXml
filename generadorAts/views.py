@@ -10,12 +10,12 @@ import os
 import threading
 
 
-def ejecutar_script(username, password):
+def ejecutar_script(username, password, mes, dia, tipo_comprobante):
     script_path = os.path.join(os.path.dirname(__file__), '..', 'scripts', 'BOTATS.py')
-    python_executable = os.path.join(os.path.dirname(__file__), '..' , '..', 'venv', 'Scripts', 'python.exe')
+    python_executable = os.path.join(os.path.dirname(__file__), '..', 'venv', 'Scripts', 'python.exe')
     print(os.path.join(os.path.dirname(__file__)))
     try:
-        result = subprocess.run([python_executable, script_path, username, password], capture_output=True, text=True)
+        result = subprocess.run([python_executable, script_path, username, password, mes, dia, tipo_comprobante], capture_output=True, text=True)
         if result.returncode == 0:
             print("Script ejecutado con éxito")
             print("Salida:", result.stdout)
@@ -159,16 +159,18 @@ def crearats(request):
         action = request.POST.get('action')
         username = request.POST.get('username')
         password = request.POST.get('password')
-
+        mes = request.POST.get('mes')
+        dia = request.POST.get('dia')
+        tipo_comprobante = request.POST.get('tipo_comprobante')
 
         result_message = ""
 
         if action == 'BOTATS':
-            thread = threading.Thread(target=ejecutar_script, args=(username, password))
+            thread = threading.Thread(target=ejecutar_script, args=(username, password, mes, dia, tipo_comprobante))
             thread.start()
             result_message = "El script se está ejecutando en segundo plano"
         elif action == 'BOTEMITIDOS':
-            thread = threading.Thread(target=ejecutar_script_botemitidos, args=(username, password))
+            thread = threading.Thread(target=ejecutar_script_botemitidos, args=(username, password, mes, dia, tipo_comprobante))
             thread.start()
             result_message = "El script se está ejecutando en segundo plano"
         elif action == 'ReporteRecibidos':
@@ -176,12 +178,11 @@ def crearats(request):
         elif action == 'ReporteEmitidos':
             result_message = ejecutar_script_reporteemitidos()
         elif action == 'CrearAts':
-            result_message = ejecutar_script_crearats()    
+            result_message = ejecutar_script_crearats()
         return JsonResponse({'output': result_message})
 
-        
-
-    return render(request, 'crearats.html')
+    days = list(range(1, 32))  # Generar la lista de días del 1 al 31
+    return render(request, 'crearats.html', {'days': days})
 
 def check_xml_files(request):
     if request.method == 'POST':

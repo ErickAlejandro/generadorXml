@@ -176,6 +176,45 @@
                                         </div>
                                     </div>
                                     <hr>
+                                    <div class="row">
+                                        <div class="form-group col-md-3">
+                                                <label for="mes">Seleccione el Mes</label>
+                                                <select class="form-control" id="mes" name="mes">
+                                                    <option value="1">Enero</option>
+                                                    <option value="2">Febrero</option>
+                                                    <option value="3">Marzo</option>
+                                                    <option value="4">Abril</option>
+                                                    <option value="5">Mayo</option>
+                                                    <option value="6">Junio</option>
+                                                    <option value="7">Julio</option>
+                                                    <option value="8">Agosto</option>
+                                                    <option value="9">Septiembre</option>
+                                                    <option value="10">Octubre</option>
+                                                    <option value="11">Noviembre</option>
+                                                    <option value="12">Diciembre</option>
+                                                </select>
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label for="dia">Seleccione el Día</label>
+                                            <select class="form-control" id="dia" name="dia">
+                                                <option value="0">Todos</option>
+                                                {% for day in days %}
+                                                <option value="{{ day }}">{{ day }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-md-6 ">
+                                            <label for="tipo_comprobante">Seleccione el Tipo de Comprobante</label>
+                                            <select class="form-control" id="tipo_comprobante" name="tipo_comprobante">
+                                                <option value="1">Facturas</option>
+                                                <option value="2">Liquidaciónes</option>
+                                                <option value="3">Nota de Crédito</option>
+                                                <option value="4">Nota de Débito</option>
+                                                <option value="6">Retención</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <hr>
                                     <div class="row" id="rowDownloadCompRecib" style="display: none;">
                                         <div class="col-md-6">
                                             <button type="button" id="btnDownload" class="btn btn-dark btn-block mt-3">
@@ -654,25 +693,36 @@
 
 
         btnDownload.addEventListener('click', () => {
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const mes = document.getElementById('mes').value;
+        const dia = document.getElementById('dia').value;
+        const tipo_comprobante = document.getElementById('tipo_comprobante').value;
 
-            if (!username || !password) {
-                toastr.warning("Por favor, complete los campos de usuario y contraseña.", "Advertencia");
-            } else {
-                $.ajax({
-                    type: 'POST',
-                    url: atsForm.action,
-                    data: $(atsForm).serialize() + '&action=BOTATS',
-                    success: function (response) {
-                        toastr.success(response.message, "Éxito");
-                    },
-                    error: function (response) {
-                        toastr.error('Error al iniciar el script.', "Error");
-                    }
-                });
-            }
-        });
+        if (!username || !password || !mes || !dia || !tipo_comprobante) {
+            toastr.warning("Por favor, complete todos los campos.", "Advertencia");
+        } else {
+            $.ajax({
+                type: 'POST',
+                url: atsForm.action,
+                data: {
+                    'username': username,
+                    'password': password,
+                    'mes': mes,
+                    'dia': dia,
+                    'tipo_comprobante': tipo_comprobante,
+                    'action': 'BOTATS',
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function (response) {
+                    toastr.success(response.message, "Éxito");
+                },
+                error: function (response) {
+                    toastr.error('Error al iniciar el script.', "Error");
+                }
+            });
+        }
+    });
 
         btnEmitidos.addEventListener('click', () => {
             const username = document.getElementById('username').value;
