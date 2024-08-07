@@ -1,12 +1,13 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generador de Xml</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
-          integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+        integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -28,272 +29,305 @@
         align-items: center;
     }
 </style>
+
 <body style="margin: 0; padding: 0;">
-<div class="container" id="containerFormRDEP">
-    <br>
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card" style="margin-bottom: 20px;">
-                <div class="card-header">Formulario ATS</div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-12 text-center">
-                            <img src="{% static 'logoishida.png' %}" alt="Logo" class="img-fluid"
-                                 style="max-width: 150px; margin-bottom: 5px;">
+    <div class="container" id="containerFormRDEP">
+        <br>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card" style="margin-bottom: 20px;">
+                    <div class="card-header">Formulario ATS</div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12 text-center">
+                                <img src="{% static 'logoishida.png' %}" alt="Logo" class="img-fluid"
+                                    style="max-width: 150px; margin-bottom: 5px;">
+                            </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-3 d-flex justify-content-start align-items-center">
-                            <button type="button" class="btn btn-success" data-toggle="modal"
+                        <div class="row" id="rowButtons" style="display: none;">
+                            <div class="col-md-3 d-flex justify-content-start align-items-center">
+                                <button type="button" class="btn btn-success" data-toggle="modal"
                                     data-target="#reportModal">Generar Reportes
-                            </button>
-                        </div>
-                        <div class="col-md-6 text-center">
-                            <button class="btn btn-dark" type="button" id="btnRedep">REDEP</button>
-                        </div>
-                        <div class="col-md-3 d-flex justify-content-end align-items-center">
-                            <button type="button" class="btn btn-danger" id="btnCrearAts">Generar ATS</button>
-                        </div>
-                    </div>
-                    <hr>
-                    <style>
-                        .text-white-bold {
-                            color: white !important;
-                            font-weight: bold;
-                        }
-                    </style>
-                    <div id="detailEmpleado">
-                        <!-- Sección con botones de navegación -->
-                        <div class="row justify-content-between">
-                            <div class="col-md-3">
-                                <button id="btnBack" class="btn btn-dark btn-sm"
-                                        style="margin-top: 15px; margin-bottom: 15px;">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"
-                                         style="fill: white; width: 15px; height: 15px;">
-                                        <path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/>
-                                    </svg>
                                 </button>
                             </div>
-                            <div class="col-md-3 text-right">
-                                <button id="btnNext" class="btn btn-dark btn-sm"
-                                        style="margin-top: 15px; margin-bottom: 15px;" disabled>
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"
-                                         style="fill: white; width: 15px; height: 15px;">
-                                        <path d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32h306.8L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"/>
-                                    </svg>
-                                </button>
+                            <div class="col-md-6 text-center">
+                                <button class="btn btn-dark" type="button" id="btnRedep">REDEP</button>
+                            </div>
+                            <div class="col-md-3 d-flex justify-content-end align-items-center">
+                                <button type="button" class="btn btn-danger" id="btnCrearAts">Generar ATS</button>
                             </div>
                         </div>
                         <hr>
-                        <!-- Secciones -->
-                        <form id="atsForm" method="POST" action="{% url 'crearats' %}">
-                            {% csrf_token %}
-                            <div id="divIniciarSesion" class="row justify-content-center">
-                                <div class="col-md-6">
-                                    <div class="card text-white bg-secondary mb-3">
-                                        <div class="card-header">Iniciar Sesión</div>
-                                        <div class="card-body">
-                                            <div class="form-group">
-                                                <label for="username">Ruc</label>
-                                                <input type="text" class="form-control" id="username" name="username"
-                                                       placeholder="Ingrese el RUC" maxlength="13" inputmode="numeric">
-                                                <div class="invalid-feedback">Por favor, ingrese un RUC válido de
-                                                    Ecuador.
-                                                </div>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="password">Ingrese la contraseña</label>
-                                                <div class="input-group" id="show_hide_password">
-                                                    <input class="form-control" type="password" id="password"
-                                                           name="password" placeholder="Ingrese la contraseña">
-                                                    <div class="input-group-append">
-                                <span class="input-group-text">
-                                    <a href="" id="togglePassword"><i class="fa fa-eye-slash"
-                                                                      aria-hidden="true"></i></a>
-                                </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <small class="form-text font-weight-bold">Usuario y Contraseña del
-                                                SRI</small>
-                                        </div>
-                                    </div>
+                        <style>
+                            .text-white-bold {
+                                color: white !important;
+                                font-weight: bold;
+                            }
+                        </style>
+                        <div id="detailEmpleado">
+                            <!-- Sección con botones de navegación -->
+                            <div class="row justify-content-between">
+                                <div class="col-md-3">
+                                    <button id="btnBack" class="btn btn-dark btn-sm"
+                                        style="margin-top: 15px; margin-bottom: 15px;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"
+                                            style="fill: white; width: 15px; height: 15px;">
+                                            <path
+                                                d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="col-md-3 text-right">
+                                    <button id="btnNext" class="btn btn-dark btn-sm"
+                                        style="margin-top: 15px; margin-bottom: 15px;" disabled>
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"
+                                            style="fill: white; width: 15px; height: 15px;">
+                                            <path
+                                                d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32h306.8L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z" />
+                                        </svg>
+                                    </button>
                                 </div>
                             </div>
-                            <div id="divRecibidos" style="display: none;">
-                                <h3>Comprobantes Electronicos Recibidos</h3>
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <button type="button" id="Facturas"
-                                                class="btn btn-outline-success btn-block mt-3">
-                                            Facturas
-                                        </button>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <button type="button" id="Liquidaciones"
-                                                class="btn btn-outline-success btn-block mt-3">
-                                            Liquidaciones
-                                        </button>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <button type="button" id="NotasCredito"
-                                                class="btn btn-outline-success btn-block mt-3">
-                                            Notas de Credito
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="row">
+                            <hr>
+                            <!-- Secciones -->
+                            <form id="atsForm" method="POST" action="{% url 'crearats' %}">
+                                {% csrf_token %}
+                                <div id="divIniciarSesion" class="row justify-content-center">
                                     <div class="col-md-6">
-                                        <button type="button" id="NotasDebito"
-                                                class="btn btn-outline-success btn-block mt-3">
-                                            Notas de Debito
-                                        </button>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <button type="button" id="Retenciones"
-                                                class="btn btn-outline-success btn-block mt-3">
-                                            Retenciones
-                                        </button>
-                                    </div>
-                                </div>
-                                <hr>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <button type="button" id="btnDownload" class="btn btn-dark btn-block mt-3">
-                                            Descargar
-                                        </button>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width: 20px;height: 20px;"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24l0 112c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-112c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg><b> Nota:</b>
-                                        <ol>
-                                            <li>Ejecutar el botón "Descargar".</li>
-                                            <li>Se abrirá automaticamente el portal del SRI y una ventana solicitando el mes, día y tipo de comprobante.</li>
-                                            <li>
-                                                <i>La interacción del usuario termina en esta parte, se recomienda dejar que el proceso concluya automaticamente</i>
-                                            </li>
-                                        </ol>
-                                    </div>
-                                </div>
-                            </div>
-                            <div id="divEmitidos" style="display: none;">
-                                <h3>Comprobantes Electronicos Emitidos</h3>
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <button type="button" id="FacturasE"
-                                                class="btn btn-outline-success btn-block mt-3">
-                                            Facturas
-                                        </button>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <button type="button" id="LiquidacionesE"
-                                                class="btn btn-outline-success btn-block mt-3">
-                                            Liquidaciones
-                                        </button>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <button type="button" id="NotasCreditoE"
-                                                class="btn btn-outline-success btn-block mt-3">
-                                            Notas de Credito
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <button type="button" id="NotasDebitoE"
-                                                class="btn btn-outline-success btn-block mt-3">
-                                            Notas de Debito
-                                        </button>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <button type="button" id="RetencionesE"
-                                                class="btn btn-outline-success btn-block mt-3">
-                                            Retenciones
-                                        </button>
-                                    </div>
-                                </div>
-                                <hr>
-                                <div class="row">
-                                    <div class="col-md-6 align-content-center ">
-                                        <button type="button" id="btnEmitidos" class="btn btn-dark btn-block mt-3">
-                                            Descargar
-                                        </button>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width: 20px;height: 20px;"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24l0 112c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-112c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg> Nota:</span>
-                                        <ol>
-                                            <li>Ingresar al portal SRI.</li>
-                                            <li>Dirigirse al apartado de Facturación Electrónica / Producción / Consultas / Comprobantes Electrónicos Emitidos.</li>
-                                            <li>Selecciónar los días a descargar, el tipo de comprobante y consultar.</li>
-                                            <li>Descargar el archivo .txt y renombrarlo.</li>
-                                            <li>Mover el archivo descargado dependiendo el tipo de comprobante, ejemplo: (c:/ia/SRIBOT/XML/EMITIDAS).</li>
-                                            <li>Iniciar el BOT.</li>
-                                        </ol>
-                                        <i>Esto tiene un limite de 10 días permitidos para descargar el archivo.</i>
-                                    </div>
-                                </div>
-                            </div>
-                            <div id="divAnulados" style="display: none;">
-                                <h3>Comprobantes Anulados</h3>
-                                <div class="row justify-content-center">
-                                    <div class="col-md-12">
                                         <div class="card text-white bg-secondary mb-3">
-                                            <div class="card-header">Formulario de Comprobantes Anulados</div>
+                                            <div class="card-header">Iniciar Sesión</div>
                                             <div class="card-body">
                                                 <div class="form-group">
-                                                    <label for="tipoComprobante">Tipo de Comprobante</label>
-                                                    <select class="form-control" id="tipoComprobante" name="tipoComprobante">
-                                                        <option value="18">Factura</option>
-                                                        <option value="07">Retención</option>
-                                                        <option value="05">Nota de Débito</option>
-                                                        <option value="04">Nota de Crédito</option>
-                                                        <option value="03">Liquidación</option>
-                                                    </select>
+                                                    <label for="username">Ruc</label>
+                                                    <input type="text" class="form-control" id="username"
+                                                        name="username" placeholder="Ingrese el RUC" maxlength="13"
+                                                        inputmode="numeric">
+                                                    <div class="invalid-feedback">Por favor, ingrese un RUC válido de
+                                                        Ecuador.
+                                                    </div>
                                                 </div>
                                                 <div class="form-group">
-                                                    <label for="autorizacion">Autorización</label>
-                                                    <input type="text" class="form-control" id="autorizacion" name="autorizacion"
-                                                           placeholder="Ingrese la autorización">
+                                                    <label for="password">Ingrese la contraseña</label>
+                                                    <div class="input-group" id="show_hide_password">
+                                                        <input class="form-control" type="password" id="password"
+                                                            name="password" placeholder="Ingrese la contraseña">
+                                                        <div class="input-group-append">
+                                                            <span class="input-group-text">
+                                                                <a href="" id="togglePassword"><i
+                                                                        class="fa fa-eye-slash"
+                                                                        aria-hidden="true"></i></a>
+                                                            </span>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <button type="submit" class="btn btn-primary btn-block" id="btnGuardarAnulado">Guardar</button>
+                                                <small class="form-text font-weight-bold">Usuario y Contraseña del
+                                                    SRI</small>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </form>
+                                <div id="divRecibidos" style="display: none;">
+                                    <h3>Comprobantes Electronicos Recibidos</h3>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <p><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"
+                                                    style="width: 20px; height: 20px;">
+                                                    <path
+                                                        d="M272 384c9.6-31.9 29.5-59.1 49.2-86.2c0 0 0 0 0 0c5.2-7.1 10.4-14.2 15.4-21.4c19.8-28.5 31.4-63 31.4-100.3C368 78.8 289.2 0 192 0S16 78.8 16 176c0 37.3 11.6 71.9 31.4 100.3c5 7.2 10.2 14.3 15.4 21.4c0 0 0 0 0 0c19.8 27.1 39.7 54.4 49.2 86.2l160 0zM192 512c44.2 0 80-35.8 80-80l0-16-160 0 0 16c0 44.2 35.8 80 80 80zM112 176c0 8.8-7.2 16-16 16s-16-7.2-16-16c0-61.9 50.1-112 112-112c8.8 0 16 7.2 16 16s-7.2 16-16 16c-44.2 0-80 35.8-80 80z" />
+                                                </svg><b> Recomendaciones:</b> Verificar la información de las carpetas
+                                                que son necesarias para la generación del ATS.
+                                                <br>
+                                                <i><b>Click en cada tipo de comprobante para la verificación.</b></i>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <button type="button" id="Facturas"
+                                                class="btn btn-outline-success btn-block mt-3">
+                                                Facturas
+                                            </button>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <button type="button" id="Liquidaciones"
+                                                class="btn btn-outline-success btn-block mt-3" style="display: none;">
+                                                Liquidaciones
+                                            </button>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <button type="button" id="NotasCredito"
+                                                class="btn btn-outline-success btn-block mt-3" style="display: none;">
+                                                Notas de Credito
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <button type="button" id="NotasDebito"
+                                                class="btn btn-outline-success btn-block mt-3" style="display: none;">
+                                                Notas de Debito
+                                            </button>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <button type="button" id="Retenciones"
+                                                class="btn btn-outline-success btn-block mt-3" style="display: none;">
+                                                Retenciones
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="row" id="rowDownloadCompRecib" style="display: none;">
+                                        <div class="col-md-6">
+                                            <button type="button" id="btnDownload" class="btn btn-dark btn-block mt-3">
+                                                Descargar
+                                            </button>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
+                                                style="width: 20px;height: 20px;">
+                                                <path
+                                                    d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24l0 112c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-112c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z" />
+                                            </svg><b> Nota:</b>
+                                            <ol>
+                                                <li>Ejecutar el botón "Descargar".</li>
+                                                <li>Se abrirá automaticamente el portal del SRI y una ventana
+                                                    solicitando el mes, día y tipo de comprobante.</li>
+                                                <li>
+                                                    <i>La interacción del usuario termina en esta parte, se recomienda
+                                                        dejar que el proceso concluya automaticamente</i>
+                                                </li>
+                                            </ol>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="divEmitidos" style="display: none;">
+                                    <h3>Comprobantes Electronicos Emitidos</h3>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <button type="button" id="FacturasE"
+                                                class="btn btn-outline-success btn-block mt-3">
+                                                Facturas
+                                            </button>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <button type="button" id="LiquidacionesE"
+                                                class="btn btn-outline-success btn-block mt-3" style="display: none;">
+                                                Liquidaciones
+                                            </button>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <button type="button" id="NotasCreditoE"
+                                                class="btn btn-outline-success btn-block mt-3" style="display: none;">
+                                                Notas de Credito
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <button type="button" id="NotasDebitoE"
+                                                class="btn btn-outline-success btn-block mt-3" style="display: none;">
+                                                Notas de Debito
+                                            </button>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <button type="button" id="RetencionesE"
+                                                class="btn btn-outline-success btn-block mt-3" style="display: none;">
+                                                Retenciones
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="row" id="rowDownloadCompEmi" style="display: none;">
+                                        <div class="col-md-6 align-content-center ">
+                                            <button type="button" id="btnEmitidos" class="btn btn-dark btn-block mt-3">
+                                                Descargar
+                                            </button>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
+                                                    style="width: 20px;height: 20px;">
+                                                    <path
+                                                        d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24l0 112c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-112c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z" />
+                                                </svg> Nota:</span>
+                                            <ol>
+                                                <li>Ingresar al portal SRI.</li>
+                                                <li>Dirigirse al apartado de Facturación Electrónica / Producción /
+                                                    Consultas / Comprobantes Electrónicos Emitidos.</li>
+                                                <li>Selecciónar los días a descargar, el tipo de comprobante y
+                                                    consultar.</li>
+                                                <li>Descargar el archivo .txt y renombrarlo.</li>
+                                                <li>Mover el archivo descargado dependiendo el tipo de comprobante,
+                                                    ejemplo: (c:/ia/SRIBOT/XML/EMITIDAS).</li>
+                                                <li>Iniciar el BOT.</li>
+                                            </ol>
+                                            <i>Esto tiene un limite de 10 días permitidos para descargar el archivo.</i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="divAnulados" style="display: none;">
+                                    <h3>Comprobantes Anulados</h3>
+                                    <div class="row justify-content-center">
+                                        <div class="col-md-12">
+                                            <div class="card text-white bg-secondary mb-3">
+                                                <div class="card-header">Formulario de Comprobantes Anulados</div>
+                                                <div class="card-body">
+                                                    <div class="form-group">
+                                                        <label for="tipoComprobante">Tipo de Comprobante</label>
+                                                        <select class="form-control" id="tipoComprobante"
+                                                            name="tipoComprobante">
+                                                            <option value="18">Factura</option>
+                                                            <option value="07">Retención</option>
+                                                            <option value="05">Nota de Débito</option>
+                                                            <option value="04">Nota de Crédito</option>
+                                                            <option value="03">Liquidación</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="autorizacion">Autorización</label>
+                                                        <input type="text" class="form-control" id="autorizacion"
+                                                            name="autorizacion" placeholder="Ingrese la autorización">
+                                                    </div>
+                                                    <button type="submit" class="btn btn-primary btn-block"
+                                                        id="btnGuardarAnulado">Guardar</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Modal -->
-<div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="reportModalLabel">Generar Reportes</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-6">
-                        <button type="button" class="btn btn-outline-primary btn-block" id="openRecibidos">Recibidos
-                        </button>
-                    </div>
-                    <div class="col-6">
-                        <button type="button" class="btn btn-outline-primary btn-block" id="openEmitidos">Emitidos
-                        </button>
-                    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reportModalLabel">Generar Reportes</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <button type="button" class="btn btn-outline-primary btn-block" id="openRecibidos">Recibidos
+                            </button>
+                        </div>
+                        <div class="col-6">
+                            <button type="button" class="btn btn-outline-primary btn-block" id="openEmitidos">Emitidos
+                            </button>
+                        </div>
+                    </div>
 
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 </body>
 <script>
@@ -303,9 +337,11 @@
         const togglePassword = document.getElementById('togglePassword');
         const usernameInput = document.getElementById('username');
         const btnRedep = document.getElementById('btnRedep');
+        const rowDownloadCompRecib = document.getElementById('rowDownloadCompRecib');
+        const rowDownloadCompEmi = document.getElementById('rowDownloadCompEmi');
 
         // Funcionalidad de envio a la aplicacion para generar el XML
-        btnRedep.addEventListener('click', function(){
+        btnRedep.addEventListener('click', function () {
             window.location.href = "{% url 'go_view_generatoXML' %}";
         })
 
@@ -317,12 +353,14 @@
             togglePassword.querySelector('i').classList.toggle('fa-eye-slash');
         });
 
-        passwordInput.addEventListener("input", function(){
+        passwordInput.addEventListener("input", function () {
             var passwordVal = passwordInput.value
-            if(usernameInput.value != '' && passwordVal.length >= 4 ){
-                btnNext.disabled = false
-            }else{
-                btnNext.disabled = true
+            if (usernameInput.value != '' && passwordVal.length >= 4) {
+                btnNext.disabled = false;
+                rowButtons.style.display = '';
+            } else {
+                btnNext.disabled = true;
+                rowButtons.style.display = 'none';
             }
         })
 
@@ -422,7 +460,7 @@
                 modulo = 10;
             }
 
-                /* Solo para sociedades publicas (modulo 11) */
+            /* Solo para sociedades publicas (modulo 11) */
             /* Aqui el digito verficador esta en la posicion 9, en las otras 2 en la pos. 10 */
             else if (d3 == 6) {
                 pub = true;
@@ -493,6 +531,7 @@
 
         const btnBack = document.getElementById('btnBack');
         const btnNext = document.getElementById('btnNext');
+        const rowButtons = document.getElementById('rowButtons');
         const btnDownload = document.getElementById('btnDownload');
         const btnCrearAts = document.getElementById('btnCrearAts')
         const btnEmitidos = document.getElementById('btnEmitidos');
@@ -526,6 +565,9 @@
         }
 
         btnBack.addEventListener('click', () => {
+            if(currentSection != 0){
+                btnNext.disabled = false;
+            }
             if (currentSection > 0) {
                 currentSection--;
                 showSection(currentSection);
@@ -533,6 +575,7 @@
         });
 
         btnNext.addEventListener('click', () => {
+            btnNext.disabled = true;
             if (currentSection < sections.length - 1) {
                 currentSection++;
                 showSection(currentSection);
@@ -584,7 +627,7 @@
                 }
             });
         });
-        
+
         btnGuardarAnulado.addEventListener('click', (event) => {
             event.preventDefault();
             const formData = new FormData(atsForm);
@@ -597,17 +640,17 @@
                     'X-CSRFToken': '{{ csrf_token }}'
                 }
             })
-            .then(response => response.json())
-            .then(data => {
-                toastr.success(data.output);
-                autorizacionInput.value = ''; // Limpiar el campo de autorización
-            })
-            .catch(error => {
-                toastr.error('Error al guardar el comprobante anulado.');
-            });
+                .then(response => response.json())
+                .then(data => {
+                    toastr.success(data.output);
+                    autorizacionInput.value = ''; // Limpiar el campo de autorización
+                })
+                .catch(error => {
+                    toastr.error('Error al guardar el comprobante anulado.');
+                });
         });
 
-        
+
 
 
         btnDownload.addEventListener('click', () => {
@@ -664,10 +707,9 @@
                     url: atsForm.action,
                     data: $(atsForm).serialize() + '&action=CrearAts',
                     success: function (response) {
-                        console.log(response)
-                        if(response.output.state == 'None'){
+                        if (response.output.state == 'None') {
                             toastr.error('Revisar que los archivos .XML se encuentren en la carpeta correcta', 'Alerta');
-                        }else{
+                        } else {
                             toastr.success('Se ha generado correctamente el ATS en la carpeta c:/ia/SRIBOT/XML', 'Exito');
                         }
                     },
@@ -679,6 +721,28 @@
         });
 
         function checkXmlFiles(buttonId) {
+            // Condicion para mostrar los botones
+            switch (buttonId) {
+                case 'Facturas':
+                    btnLiquidaciones.style.display = '';
+                    break;
+                case 'Liquidaciones':
+                    btnNotasCredito.style.display = '';
+                    break;
+                case 'NotasCredito':
+                    btnNotasDebito.style.display = '';
+                    break;
+                case 'NotasDebito':
+                    btnRetenciones.style.display = '';
+                    break;
+                case 'Retenciones':
+                    rowDownloadCompRecib.style.display = '';
+                    btnNext.disabled = false;
+                    break;
+                default:
+                    break;
+            }
+
             $.ajax({
                 type: 'POST',
                 url: '{% url "check_xml_files" %}',
@@ -701,6 +765,26 @@
         }
 
         function checkXmlFilesEmitidos(buttonId) {
+            switch (buttonId) {
+                case 'FacturasE':
+                    btnLiquidacionesE.style.display = '';
+                    break;
+                case 'LiquidacionesE':
+                    btnNotasCreditoE.style.display = '';
+                    break;
+                case 'NotasCreditoE':
+                    btnNotasDebitoE.style.display = '';
+                    break;
+                case 'NotasDebitoE':
+                    btnRetencionesE.style.display = '';
+                    break;
+                case 'RetencionesE':
+                    rowDownloadCompEmi.style.display = '';
+                    btnNext.disabled = false;
+                    break;
+                default:
+                    break;
+            }
             $.ajax({
                 type: 'POST',
                 url: '{% url "check_xml_files_recibidos" %}',
@@ -739,4 +823,5 @@
         showSection(currentSection);
     });
 </script>
+
 </html>
