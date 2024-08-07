@@ -585,12 +585,11 @@
             return true;
         }
 
-
         const btnBack = document.getElementById('btnBack');
         const btnNext = document.getElementById('btnNext');
         const rowButtons = document.getElementById('rowButtons');
         const btnDownload = document.getElementById('btnDownload');
-        const btnCrearAts = document.getElementById('btnCrearAts')
+        const btnCrearAts = document.getElementById('btnCrearAts');
         const btnEmitidos = document.getElementById('btnEmitidos');
         const btnGuardarAnulado = document.getElementById('btnGuardarAnulado');
         const divIniciarSesion = document.getElementById('divIniciarSesion');
@@ -600,7 +599,6 @@
         const divAnulados = document.getElementById('divAnulados');
         const atsForm = document.getElementById('atsForm');
         
-
         // Botones en divEmitidos
         const btnFacturas = document.getElementById('Facturas');
         const btnLiquidaciones = document.getElementById('Liquidaciones');
@@ -641,13 +639,13 @@
             if(currentSection == 1){
                 // Funcionalidad input Ruta
                 if(directoryInput.value == ''){
-                    console.log('Vacio')
+                    console.log('Vacio');
                     valRutaFolder = 'C:\\IA\\SRIBOT';
-                    console.log(valRutaFolder)
+                    console.log(valRutaFolder);
                 }else{
-                    console.log('Cosa')
+                    console.log('Cosa');
                     valRutaFolder = directoryInput.value;
-                    console.log(valRutaFolder)
+                    console.log(valRutaFolder);
                 }
                 // Aqui va la funcion que va a la vista valRutaFolder
             }
@@ -724,9 +722,6 @@
                     toastr.error('Error al guardar el comprobante anulado.');
                 });
         });
-
-
-
 
         btnDownload.addEventListener('click', () => {
         const username = document.getElementById('username').value;
@@ -831,6 +826,8 @@
                     break;
             }
 
+            const mes = document.getElementById('mes').value;
+
             $.ajax({
                 type: 'POST',
                 url: '{% url "check_xml_files" %}',
@@ -875,11 +872,16 @@
                 default:
                     break;
             }
+
+            const mes = document.getElementById('mes').value;
+
             $.ajax({
                 type: 'POST',
                 url: '{% url "check_xml_files_recibidos" %}',
                 data: {
                     'button_id': buttonId,
+                    'mess': mes,
+                    'directorys': valRutaFolder,
                     'csrfmiddlewaretoken': '{{ csrf_token }}'
                 },
                 success: function (response) {
@@ -913,5 +915,6 @@
         showSection(currentSection);
     });
 </script>
+
 
 </html>

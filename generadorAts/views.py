@@ -191,7 +191,7 @@ def check_xml_files(request):
         mes = request.POST.get('mess')
         directory = request.POST.get('directorys')
         
-        full = os.path.join(f"{directory}", f"{mes}",'RECIBIDAS', button_id)
+        full = os.path.join(f"{directory}\\XML",  f"{mes}",'RECIBIDAS', button_id)
 
         # Imprimir el directorio para verificar que es correcto
         print(f"Directorio a verificar: {full}")
@@ -201,7 +201,7 @@ def check_xml_files(request):
         python_executable = 'python'  # Cambia esto a la ruta de tu intérprete Python si es necesario
 
         try:
-            result = subprocess.run([python_executable, script_path, directory], capture_output=True, text=True)
+            result = subprocess.run([python_executable, script_path, full], capture_output=True, text=True)
             output = result.stdout.strip()
             if result.returncode == 0:
                 if "No se encontraron archivos XML" in output or "[WinError 3]" in output:
