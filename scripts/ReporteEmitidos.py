@@ -1,8 +1,13 @@
 import os
+import sys
 import pandas as pd
 import xml.etree.ElementTree as ET
 from tkinter import Tk
 from tkinter.filedialog import asksaveasfilename
+
+directory = sys.argv[1]
+nombremesmodal = sys.argv[2]
+aniomodal = sys.argv[3]
 
 
 def obtener_archivos_xml(directory):
@@ -678,11 +683,12 @@ def seleccionar_y_guardar(sheets_data):
         return "No se seleccionó ningún archivo. Los datos no se han guardado."
 
 def main():
-    directory_compras = r'C:\IA\SRIBOT\XML\EMITIDAS\FacturasE'
-    directory_retenciones = r'C:\IA\SRIBOT\XML\EMITIDAS\RetencionesE'
-    directory_notas_credito = r'C:\IA\SRIBOT\XML\EMITIDAS\NotasCreditoE'
-    directory_notas_debito = r'C:\IA\SRIBOT\XML\EMITIDAS\NotasDebitoE'
-    directory_liquidacion = r'C:\IA\SRIBOT\XML\EMITIDAS\LiquidacionesE'
+    directory_compras = os.path.join(directory,'XML',aniomodal,nombremesmodal,'EMITIDAS', 'FacturasE')
+   
+    directory_retenciones = os.path.join(directory,'XML',aniomodal,nombremesmodal,'EMITIDAS', 'RetencionesE')
+    directory_notas_credito = os.path.join(directory,'XML',aniomodal,nombremesmodal,'EMITIDAS', 'NotasCreditoE')
+    directory_notas_debito = os.path.join(directory,'XML',aniomodal,nombremesmodal,'EMITIDAS', 'NotasDebitoE')
+    directory_liquidacion = os.path.join(directory,'XML',aniomodal,nombremesmodal,'EMITIDAS', 'LiquidacionesE')
 
     xml_files_compras = obtener_archivos_xml(directory_compras)
     xml_files_retenciones = obtener_archivos_xml(directory_retenciones)

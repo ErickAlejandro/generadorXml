@@ -53,9 +53,6 @@
                             <div class="col-md-6 text-center">
                                 <button class="btn btn-dark" type="button" id="btnRedep">REDEP</button>
                             </div>
-                            <div class="col-md-3 d-flex justify-content-end align-items-center">
-                                <button type="button" class="btn btn-danger" id="btnCrearAts">Generar ATS</button>
-                            </div>
                         </div>
                         <hr>
                         <style>
@@ -133,8 +130,10 @@
                                                 <div class="card-header">Seleccionar Ruta</div>
                                                 <div class="card-body">
                                                     <div class="form-group">
-                                                        <label for="directoryInput">Ingrese la ruta de la carpeta de destino</label>
-                                                        <input type="text" class="form-control" id="directoryInput" name="directoryInput" placeholder="C:\ia\SRIBOT\XML">
+                                                        <label for="directoryInput">Ingrese la ruta de la carpeta de
+                                                            destino</label>
+                                                        <input type="text" class="form-control" id="directoryInput"
+                                                            name="directoryInput" placeholder="C:\ia\SRIBOT\XML">
                                                     </div>
                                                     <hr>
                                                     <p>Opciónes de limpieza</p>
@@ -142,50 +141,54 @@
                                                         <div class="col-md-3">
                                                             <div class="input-group mb-3">
                                                                 <select class="custom-select" id="selectOptionsClear">
-                                                                  <option value="1" selected>No</option>
-                                                                  <option value="2">Todas</option>
-                                                                  <option value="3">Carpeta raiz</option>
+                                                                    <option value="1" selected>No</option>
+                                                                    <option value="2">Todas</option>
+                                                                    <option value="3">Carpeta raiz</option>
                                                                 </select>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-3">
-                                                            <select class="form-control" id="selectYearClear" name="selectYearClear">
+                                                            <select class="form-control" id="selectYearClear"
+                                                                name="selectYearClear">
                                                                 {% for year in years %}
-                                                                    <option value="{{ year }}">{{ year }}</option>
+                                                                <option value="{{ year }}">{{ year }}</option>
                                                                 {% endfor %}
                                                             </select>
                                                         </div>
                                                         <div class="col-md-3">
                                                             <div class="input-group mb-3">
-                                                                <select class="custom-select" id="selectOptionMounth" disabled>
-                                                                  <option value="1">Enero</option>
-                                                                  <option value="2">Febrero</option>
-                                                                  <option value="3">Marzo</option>
-                                                                  <option value="4">Abril</option>
-                                                                  <option value="5">Mayo</option>
-                                                                  <option value="6">Junio</option>
-                                                                  <option value="7">Julio</option>
-                                                                  <option value="8">Agosto</option>
-                                                                  <option value="9">Septiembre</option>
-                                                                  <option value="10">Octubre</option>
-                                                                  <option value="11">Noviembre</option>
-                                                                  <option value="12">Diciembre</option>
-                                                                  <option value="13">Todo el año</option>
+                                                                <select class="custom-select" id="selectOptionMounth"
+                                                                    disabled>
+                                                                    <option value="1">Enero</option>
+                                                                    <option value="2">Febrero</option>
+                                                                    <option value="3">Marzo</option>
+                                                                    <option value="4">Abril</option>
+                                                                    <option value="5">Mayo</option>
+                                                                    <option value="6">Junio</option>
+                                                                    <option value="7">Julio</option>
+                                                                    <option value="8">Agosto</option>
+                                                                    <option value="9">Septiembre</option>
+                                                                    <option value="10">Octubre</option>
+                                                                    <option value="11">Noviembre</option>
+                                                                    <option value="12">Diciembre</option>
+                                                                    <option value="13">Todo el año</option>
                                                                 </select>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-3">
                                                             <div class="input-group mb-3">
-                                                                <select class="custom-select" id="selectOptionEmiRec" disabled>
-                                                                  <option value="" selected> </option>
-                                                                  <option value="E">Emitidas</option>
-                                                                  <option value="R">Recibidas</option>
+                                                                <select class="custom-select" id="selectOptionEmiRec"
+                                                                    disabled>
+                                                                    <option value="" selected> </option>
+                                                                    <option value="E">Emitidas</option>
+                                                                    <option value="R">Recibidas</option>
                                                                 </select>
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <br>
-                                                    <button class="btn btn-light" type="button" id="btnClearFolders">Limpiar</button>
+                                                    <button class="btn btn-light" type="button"
+                                                        id="btnClearFolders">Limpiar</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -246,26 +249,26 @@
                                             <label for="dia">Seleccione el Año</label>
                                             <select class="form-control" id="anio" name="anio">
                                                 {% for year in years %}
-                                                    <option value="{{ year }}">{{ year }}</option>
+                                                <option value="{{ year }}">{{ year }}</option>
                                                 {% endfor %}
                                             </select>
                                         </div>
                                         <div class="form-group col-md-3">
-                                                <label for="mes">Seleccione el Mes</label>
-                                                <select class="form-control" id="mes" name="mes">
-                                                    <option value="1">Enero</option>
-                                                    <option value="2">Febrero</option>
-                                                    <option value="3">Marzo</option>
-                                                    <option value="4">Abril</option>
-                                                    <option value="5">Mayo</option>
-                                                    <option value="6">Junio</option>
-                                                    <option value="7">Julio</option>
-                                                    <option value="8">Agosto</option>
-                                                    <option value="9">Septiembre</option>
-                                                    <option value="10">Octubre</option>
-                                                    <option value="11">Noviembre</option>
-                                                    <option value="12">Diciembre</option>
-                                                </select>
+                                            <label for="mes">Seleccione el Mes</label>
+                                            <select class="form-control" id="mes" name="mes">
+                                                <option value="1">Enero</option>
+                                                <option value="2">Febrero</option>
+                                                <option value="3">Marzo</option>
+                                                <option value="4">Abril</option>
+                                                <option value="5">Mayo</option>
+                                                <option value="6">Junio</option>
+                                                <option value="7">Julio</option>
+                                                <option value="8">Agosto</option>
+                                                <option value="9">Septiembre</option>
+                                                <option value="10">Octubre</option>
+                                                <option value="11">Noviembre</option>
+                                                <option value="12">Diciembre</option>
+                                            </select>
                                         </div>
                                         <div class="form-group col-md-3">
                                             <label for="dia">Seleccione el Día</label>
@@ -354,26 +357,26 @@
                                             <label for="dia">Seleccione el Año</label>
                                             <select class="form-control" id="anioemitidos" name="anioemitidos">
                                                 {% for year in years %}
-                                                    <option value="{{ year }}">{{ year }}</option>
+                                                <option value="{{ year }}">{{ year }}</option>
                                                 {% endfor %}
                                             </select>
                                         </div>
                                         <div class="form-group col-md-3">
-                                                <label for="mes">Seleccione el Mes</label>
-                                                <select class="form-control" id="mesemitidos" name="mesemitidos">
-                                                    <option value="1">Enero</option>
-                                                    <option value="2">Febrero</option>
-                                                    <option value="3">Marzo</option>
-                                                    <option value="4">Abril</option>
-                                                    <option value="5">Mayo</option>
-                                                    <option value="6">Junio</option>
-                                                    <option value="7">Julio</option>
-                                                    <option value="8">Agosto</option>
-                                                    <option value="9">Septiembre</option>
-                                                    <option value="10">Octubre</option>
-                                                    <option value="11">Noviembre</option>
-                                                    <option value="12">Diciembre</option>
-                                                </select>
+                                            <label for="mes">Seleccione el Mes</label>
+                                            <select class="form-control" id="mesemitidos" name="mesemitidos">
+                                                <option value="1">Enero</option>
+                                                <option value="2">Febrero</option>
+                                                <option value="3">Marzo</option>
+                                                <option value="4">Abril</option>
+                                                <option value="5">Mayo</option>
+                                                <option value="6">Junio</option>
+                                                <option value="7">Julio</option>
+                                                <option value="8">Agosto</option>
+                                                <option value="9">Septiembre</option>
+                                                <option value="10">Octubre</option>
+                                                <option value="11">Noviembre</option>
+                                                <option value="12">Diciembre</option>
+                                            </select>
                                         </div>
                                         <div class="form-group col-md-3">
                                             <label for="dia">Seleccione el Día</label>
@@ -462,17 +465,45 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <div class="row">
-                        <div class="col-6">
-                            <button type="button" class="btn btn-outline-primary btn-block" id="openRecibidos">Recibidos
-                            </button>
+                    <div class="row mt-3">
+                        <div class="form-group col-md-6">
+                            <label for="anioemitidos">Seleccione el Año</label>
+                            <select class="form-control" id="aniomodal" name="aniomodal">
+                                {% for year in years %}
+                                <option value="{{ year }}">{{ year }}</option>
+                                {% endfor %}
+                            </select>
                         </div>
-                        <div class="col-6">
-                            <button type="button" class="btn btn-outline-primary btn-block" id="openEmitidos">Emitidos
-                            </button>
+                        <div class="form-group col-md-6">
+                            <label for="mesemitidos">Seleccione el Mes</label>
+                            <select class="form-control" id="mesmodal" name="mesmodal">
+                                <option value="1">Enero</option>
+                                <option value="2">Febrero</option>
+                                <option value="3">Marzo</option>
+                                <option value="4">Abril</option>
+                                <option value="5">Mayo</option>
+                                <option value="6">Junio</option>
+                                <option value="7">Julio</option>
+                                <option value="8">Agosto</option>
+                                <option value="9">Septiembre</option>
+                                <option value="10">Octubre</option>
+                                <option value="11">Noviembre</option>
+                                <option value="12">Diciembre</option>
+                            </select>
                         </div>
                     </div>
-
+                    <div class="row">
+                        <div class="col-4">
+                            <button type="button" class="btn btn-success btn-block"
+                                id="openRecibidos">Recibidos</button>
+                        </div>
+                        <div class="col-4">
+                            <button type="button" class="btn btn-success btn-block" id="openEmitidos">Emitidos</button>
+                        </div>
+                        <div class="col-4">
+                            <button type="button" class="btn btn-danger btn-block" id="btnCrearAts">Generar ATS</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -491,7 +522,7 @@
         const directoryInput = document.getElementById('directoryInput');
 
         let valRutaFolder;
-        
+
 
         // Funcionalidad de envio a la aplicacion para generar el XML
         btnRedep.addEventListener('click', function () {
@@ -694,7 +725,7 @@
         const divEmitidos = document.getElementById('divEmitidos');
         const divAnulados = document.getElementById('divAnulados');
         const atsForm = document.getElementById('atsForm');
-        
+
         // Botones en divEmitidos
         const btnFacturas = document.getElementById('Facturas');
         const btnLiquidaciones = document.getElementById('Liquidaciones');
@@ -718,7 +749,7 @@
         }
 
         btnBack.addEventListener('click', () => {
-            if(currentSection != 0){
+            if (currentSection != 0) {
                 btnNext.disabled = false;
             }
             if (currentSection > 0) {
@@ -729,14 +760,14 @@
 
         btnNext.addEventListener('click', () => {
             btnNext.disabled = true;
-            if(currentSection == 0){
+            if (currentSection == 0) {
                 btnNext.disabled = false;
             }
-            if(currentSection == 1){
+            if (currentSection == 1) {
                 // Funcionalidad input Ruta
-                if(directoryInput.value == ''){
+                if (directoryInput.value == '') {
                     valRutaFolder = 'C:\\IA\\SRIBOT';
-                }else{
+                } else {
                     valRutaFolder = directoryInput.value;
                 }
                 // Aqui va la funcion que va a la vista valRutaFolder
@@ -748,14 +779,26 @@
         });
 
         openRecibidos.addEventListener('click', () => {
+
+            const aniomodal = document.getElementById('aniomodal').value;
+            const mesSelect = document.getElementById('mesmodal');
+            const mes = mesSelect.value;  // Esto obtiene el valor (número) del mes
+            const nombremesmodal = mesSelect.options[mesSelect.selectedIndex].text;
+            console.log('aniomodal', aniomodal)
+            console.log(valRutaFolder)
+
             $('#reportModal').modal('hide');
-            showSection(1); // Mostrar la sección de Recibidos
+
             $.ajax({
                 type: 'POST',
                 url: atsForm.action,
                 data: {
                     'csrfmiddlewaretoken': '{{ csrf_token }}',
-                    'action': 'ReporteRecibidos'
+                    'action': 'ReporteRecibidos',
+                    'directory': valRutaFolder,
+                    'aniomodal': aniomodal,
+                    'nombremesmodal': nombremesmodal
+
                 },
                 success: function (response) {
                     if (response.output) {
@@ -772,13 +815,19 @@
 
         openEmitidos.addEventListener('click', () => {
             $('#reportModal').modal('hide');
-            showSection(2); // Mostrar la sección de Emitidos
+            const aniomodal = document.getElementById('aniomodal').value;
+            const mesSelect = document.getElementById('mesmodal');
+            const mes = mesSelect.value;  // Esto obtiene el valor (número) del mes
+            const nombremesmodal = mesSelect.options[mesSelect.selectedIndex].text;
             $.ajax({
                 type: 'POST',
                 url: atsForm.action,
                 data: {
                     'csrfmiddlewaretoken': '{{ csrf_token }}',
-                    'action': 'ReporteEmitidos'
+                    'action': 'ReporteEmitidos',
+                    'directory': valRutaFolder,
+                    'aniomodal': aniomodal,
+                    'nombremesmodal': nombremesmodal
                 },
                 success: function (response) {
                     if (response.output) {
@@ -816,91 +865,101 @@
         });
 
         btnDownload.addEventListener('click', () => {
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
-        const mesSelect = document.getElementById('mes');
-        const mes = mesSelect.value;  // Esto obtiene el valor (número) del mes
-        const nombremesrecibidos = mesSelect.options[mesSelect.selectedIndex].text;
-        const anio = document.getElementById('anio').value
-        const dia = document.getElementById('dia').value;
-        const tipo_comprobante = document.getElementById('tipo_comprobante').value;
-        
-
-        if (!username || !password || !mes || !dia || !tipo_comprobante) {
-            toastr.warning("Por favor, complete todos los campos.", "Advertencia");
-        } else {
-            $.ajax({
-                type: 'POST',
-                url: atsForm.action,
-                data: {
-                    'username': username,
-                    'password': password,
-                    'anio': anio,
-                    'mes': mes,
-                    'nombremesrecibidos':nombremesrecibidos,
-                    'dia': dia,
-                    'tipo_comprobante': tipo_comprobante,
-                    'directory': valRutaFolder,
-                    'action': 'BOTATS',
-                    'csrfmiddlewaretoken': '{{ csrf_token }}'
-                },
-                success: function (response) {
-                    toastr.success(response.message, "Éxito");
-                },
-                error: function (response) {
-                    toastr.error('Error al iniciar el script.', "Error");
-                }
-            });
-        }
-    });
-
-    btnEmitidos.addEventListener('click', () => {
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
-    const mesSelect = document.getElementById('mesemitidos');
-    const mesemitidos = mesSelect.value;  // Esto obtiene el valor (número) del mes
-    const nombremesemitidos = mesSelect.options[mesSelect.selectedIndex].text;
-    const anioemitidos = document.getElementById('anioemitidos').value;
-    const diaemitidos = document.getElementById('diaemitidos').value;
-
-    if (!username || !password || !mesemitidos || !anioemitidos || !diaemitidos ) {
-        toastr.warning("Por favor, complete todos los campos.", "Advertencia");
-    } else {
-        $.ajax({
-            type: 'POST',
-            url: atsForm.action,
-            data: {
-                'username': username,
-                'password': password,
-                'anioemitidos': anioemitidos,
-                'mesemitidos': mesemitidos,
-                'nombremesemitidos': nombremesemitidos,
-                'diaemitidos': diaemitidos,
-                'directory': valRutaFolder,
-                'action': 'BOTEMITIDOS',
-                'csrfmiddlewaretoken': '{{ csrf_token }}'
-            },
-            success: function (response) {
-                toastr.success(response.message, "Éxito");
-            },
-            error: function (response) {
-                toastr.error('Error al iniciar el script.', "Error");
-            }
-        });
-    }
-});
-
-        btnCrearAts.addEventListener('click', () => {
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
+            const mesSelect = document.getElementById('mes');
+            const mes = mesSelect.value;  // Esto obtiene el valor (número) del mes
+            const nombremesrecibidos = mesSelect.options[mesSelect.selectedIndex].text;
+            const anio = document.getElementById('anio').value
+            const dia = document.getElementById('dia').value;
+            const tipo_comprobante = document.getElementById('tipo_comprobante').value;
 
-            if (!username || !password) {
-                toastr.warning("Por favor, complete los campos de usuario y contraseña.", "Advertencia");
+
+            if (!username || !password || !mes || !dia || !tipo_comprobante) {
+                toastr.warning("Por favor, complete todos los campos.", "Advertencia");
             } else {
                 $.ajax({
                     type: 'POST',
                     url: atsForm.action,
-                    data: $(atsForm).serialize() + '&action=CrearAts',
+                    data: {
+                        'username': username,
+                        'password': password,
+                        'anio': anio,
+                        'mes': mes,
+                        'nombremesrecibidos': nombremesrecibidos,
+                        'dia': dia,
+                        'tipo_comprobante': tipo_comprobante,
+                        'directory': valRutaFolder,
+                        'action': 'BOTATS',
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function (response) {
+                        toastr.success(response.message, "Éxito");
+                    },
+                    error: function (response) {
+                        toastr.error('Error al iniciar el script.', "Error");
+                    }
+                });
+            }
+        });
+
+        btnEmitidos.addEventListener('click', () => {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const mesSelect = document.getElementById('mesemitidos');
+            const mesemitidos = mesSelect.value;  // Esto obtiene el valor (número) del mes
+            const nombremesemitidos = mesSelect.options[mesSelect.selectedIndex].text;
+            const anioemitidos = document.getElementById('anioemitidos').value;
+            const diaemitidos = document.getElementById('diaemitidos').value;
+
+            if (!username || !password || !mesemitidos || !anioemitidos || !diaemitidos) {
+                toastr.warning("Por favor, complete todos los campos.", "Advertencia");
+            } else {
+                $.ajax({
+                    type: 'POST',
+                    url: atsForm.action,
+                    data: {
+                        'username': username,
+                        'password': password,
+                        'anioemitidos': anioemitidos,
+                        'mesemitidos': mesemitidos,
+                        'nombremesemitidos': nombremesemitidos,
+                        'diaemitidos': diaemitidos,
+                        'directory': valRutaFolder,
+                        'action': 'BOTEMITIDOS',
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function (response) {
+                        toastr.success(response.message, "Éxito");
+                    },
+                    error: function (response) {
+                        toastr.error('Error al iniciar el script.', "Error");
+                    }
+                });
+            }
+        });
+
+        btnCrearAts.addEventListener('click', () => {
+            const aniomodal = document.getElementById('aniomodal').value;
+            const mesSelect = document.getElementById('mesmodal');
+            const mes = mesSelect.value;  // Esto obtiene el valor (número) del mes
+            const nombremesmodal = mesSelect.options[mesSelect.selectedIndex].text;
+            
+            console.log('ats',aniomodal,nombremesmodal,)
+
+            if ( !aniomodal || !mes) {
+                toastr.warning("Por favor, complete todos los campos requeridos.", "Advertencia");
+            } else {
+                $.ajax({
+                    type: 'POST',
+                    url: atsForm.action,
+                    data: {
+                        'csrfmiddlewaretoken': '{{ csrf_token }}',
+                        'action': 'CrearAts',
+                        'directory': valRutaFolder,
+                        'aniomodal': aniomodal,
+                        'nombremesmodal': nombremesmodal
+                    },
                     success: function (response) {
                         if (response.output.state == 'None') {
                             toastr.error('Revisar que los archivos .XML se encuentren en la carpeta correcta', 'Alerta');
@@ -1034,7 +1093,7 @@
 
         showSection(currentSection);
 
-        
+
         // Opciones para la limpieza de carpetas
         const selectOptionsClear = document.getElementById('selectOptionsClear');
         const btnClearFolders = document.getElementById('btnClearFolders');
@@ -1043,30 +1102,30 @@
         const selectYearClear = document.getElementById('selectYearClear');
 
         // Funcionalidad de select
-        selectOptionsClear.addEventListener('change', function(){
-            if(selectOptionsClear.value == 1 || selectOptionsClear.value == 3){
+        selectOptionsClear.addEventListener('change', function () {
+            if (selectOptionsClear.value == 1 || selectOptionsClear.value == 3) {
                 selectOptionMounth.disabled = true;
                 selectOptionEmiRec.disabled = true;
-            }else{
+            } else {
                 selectOptionMounth.disabled = false;
                 selectOptionEmiRec.disabled = false;
             }
         })
 
-        btnClearFolders.addEventListener('click', function(){
+        btnClearFolders.addEventListener('click', function () {
             var optionClear = selectOptionsClear.value == '' ? '1' : selectOptionsClear.value;
             valRutaFolder = valRutaFolder == undefined ? 'C:\\IA\\SRIBOT' : valRutaFolder;
-            var yearClear = '\\'+selectYearClear.value;
-            var optionMounth = '\\'+selectOptionMounth.options[selectOptionMounth.selectedIndex].text;
-            var valEmiRec = '\\'+(selectOptionEmiRec.value == 'E' ? 'EMITIDAS' : 'RECIBIDAS');
+            var yearClear = '\\' + selectYearClear.value;
+            var optionMounth = '\\' + selectOptionMounth.options[selectOptionMounth.selectedIndex].text;
+            var valEmiRec = '\\' + (selectOptionEmiRec.value == 'E' ? 'EMITIDAS' : 'RECIBIDAS');
             var fullDirectory = `${valRutaFolder}\\XML${yearClear}${optionMounth}${valEmiRec}`;
             var mainDirectory = `${valRutaFolder}\\XML`;
-            
+
             switch (optionClear) {
                 case "1":
                     break;
                 case "2":
-                fetch('/delete_files/', {
+                    fetch('/delete_files/', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -1074,14 +1133,14 @@
                         },
                         body: JSON.stringify({ ruta: fullDirectory })
                     })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.error) {
-                            toastr.error('Error: '+data.error + ', revisar la carpeta del mes', 'Error')
-                        } else {
-                            toastr.success(data.message, 'Exito en la limpieza')
-                        }
-                    });
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.error) {
+                                toastr.error('Error: ' + data.error + ', revisar la carpeta del mes', 'Error')
+                            } else {
+                                toastr.success(data.message, 'Exito en la limpieza')
+                            }
+                        });
                     break;
                 case "3":
                     fetch('/delete_files/', {
@@ -1092,14 +1151,14 @@
                         },
                         body: JSON.stringify({ ruta: mainDirectory })
                     })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.error) {
-                            toastr.error('Error: '+data.error + ', revisar la carpeta raíz.', 'Error')
-                        } else {
-                            toastr.success(data.message, 'Exito en la limpieza')
-                        }
-                    });
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.error) {
+                                toastr.error('Error: ' + data.error + ', revisar la carpeta raíz.', 'Error')
+                            } else {
+                                toastr.success(data.message, 'Exito en la limpieza')
+                            }
+                        });
                     break;
             }
         });
@@ -1118,7 +1177,7 @@
             }
             return cookieValue;
         }
-        });
+    });
 </script>
 
 

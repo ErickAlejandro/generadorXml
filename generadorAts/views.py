@@ -43,13 +43,14 @@ def ejecutar_script_botemitidos(username, password, mesemitidos, nombremesemitid
         print("Excepción al intentar ejecutar el script:", str(e))
 
 
-def ejecutar_script_reporterecibidos():
+def ejecutar_script_reporterecibidos(directory, nombremesmodal, aniomodal):
     script_path = os.path.join(os.path.dirname(__file__), '..', 'scripts', 'ReporteRecibidos.py')
-    python_executable = os.path.join(os.path.dirname(__file__), '..', '..','venv', 'Scripts', 'python.exe')
+    python_executable = os.path.join(os.path.dirname(__file__), '..', 'venv', 'Scripts', 'python.exe')
     result_message = ""
 
     try:
-        result = subprocess.run([python_executable, script_path], capture_output=True, text=True, encoding='utf-8')
+        print(f"Ejecutando script con: {directory}, {nombremesmodal}, {aniomodal}")
+        result = subprocess.run([python_executable, script_path, directory, nombremesmodal, aniomodal], capture_output=True, text=True, encoding='utf-8')
         if result.returncode == 0:
             result_message = result.stdout.strip()
             print("Script ejecutado con éxito")
@@ -64,13 +65,13 @@ def ejecutar_script_reporterecibidos():
 
     return result_message
 
-def ejecutar_script_reporteemitidos():
+def ejecutar_script_reporteemitidos(directory, nombremesmodal, aniomodal):
     script_path = os.path.join(os.path.dirname(__file__), '..', 'scripts', 'ReporteEmitidos.py')
-    python_executable = os.path.join(os.path.dirname(__file__), '..', '..','venv', 'Scripts', 'python.exe')
+    python_executable = os.path.join(os.path.dirname(__file__), '..','venv', 'Scripts', 'python.exe')
     result_message = ""
 
     try:
-        result = subprocess.run([python_executable, script_path], capture_output=True, text=True, encoding='utf-8')
+        result = subprocess.run([python_executable, script_path,directory, nombremesmodal, aniomodal], capture_output=True, text=True, encoding='utf-8')
         if result.returncode == 0:
             result_message = result.stdout.strip()
             print("Script ejecutado con éxito")
@@ -86,13 +87,13 @@ def ejecutar_script_reporteemitidos():
     return result_message
 
 
-def ejecutar_script_crearats():
+def ejecutar_script_crearats(directory, nombremesmodal, aniomodal):
     script_path = os.path.join(os.path.dirname(__file__), '..', 'scripts', 'CrearAts.py')
-    python_executable = os.path.join(os.path.dirname(__file__), '..', '..','venv', 'Scripts', 'python.exe')
+    python_executable = os.path.join(os.path.dirname(__file__), '..','venv', 'Scripts', 'python.exe')
     result_message = ""
     state = ''
     try:
-        result = subprocess.run([python_executable, script_path], capture_output=True, text=True, encoding='utf-8')
+        result = subprocess.run([python_executable, script_path,directory, nombremesmodal, aniomodal], capture_output=True, text=True, encoding='utf-8')
         if result.returncode == 0:
             # Si hay archivos
             result_message = result.stdout.strip()
@@ -163,15 +164,17 @@ def crearats(request):
         password = request.POST.get('password')
         mes = request.POST.get('mes')
         mesemitidos = request.POST.get('mesemitidos')
+        nombremesmodal = request.POST.get('nombremesmodal')
         nombremesrecibidos = request.POST.get('nombremesrecibidos')
         nombremesemitidos = request.POST.get('nombremesemitidos')
         anio = request.POST.get('anio')
+        aniomodal = request.POST.get('aniomodal')
         anioemitidos = request.POST.get('anioemitidos')
         dia = request.POST.get('dia')
         diaemitidos =  request.POST.get('diaemitidos')
         tipo_comprobante = request.POST.get('tipo_comprobante')
         directory = request.POST.get('directory')
-        print(directory,'directory')
+        
 
         result_message = ""
 
@@ -185,11 +188,12 @@ def crearats(request):
             thread.start()
             result_message = "El script se está ejecutando en segundo plano"
         elif action == 'ReporteRecibidos':
-            result_message = ejecutar_script_reporterecibidos()
+            result_message = ejecutar_script_reporterecibidos(directory, nombremesmodal, aniomodal)
+            print(result_message)
         elif action == 'ReporteEmitidos':
-            result_message = ejecutar_script_reporteemitidos()
+            result_message = ejecutar_script_reporteemitidos(directory, nombremesmodal, aniomodal)
         elif action == 'CrearAts':
-            result_message = ejecutar_script_crearats()
+            result_message = ejecutar_script_crearats(directory, nombremesmodal, aniomodal)
         return JsonResponse({'output': result_message})
 
     days = list(range(1, 32))  # Generar la lista de días del 1 al 31

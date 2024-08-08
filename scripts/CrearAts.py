@@ -3,6 +3,15 @@ import os
 from collections import defaultdict
 import sys
 
+directory = sys.argv[1]
+nombremesmodal = sys.argv[2]
+aniomodal = sys.argv[3]
+
+print(directory,nombremesmodal,aniomodal)
+
+
+
+
 def leer_anulados(file_path, mes_ats, anio_ats):
     anulados = []
     if os.path.isfile(file_path):
@@ -320,9 +329,15 @@ def crear_ats(factura_emitidas_roots, factura_recibidas_roots, ruta_carpeta_rete
         tree.write(xml_file, encoding='utf-8', xml_declaration=False)
 
 # Ruta de la carpeta con los archivos XML de las facturas emitidas y recibidas
-ruta_carpeta_facturas_emitidas = r'C:\IA\SRIBOT\XML\EMITIDAS\FacturasE'
-ruta_carpeta_facturas_recibidas = r'C:\IA\SRIBOT\XML\RECIBIDAS\Facturas'
-ruta_carpeta_retenciones = r'C:\IA\SRIBOT\XML\EMITIDAS\RetencionesE'
+ruta_carpeta_facturas_emitidas = os.path.join(directory,'XML',aniomodal,nombremesmodal,'EMITIDAS', 'FacturasE')
+
+
+
+ruta_carpeta_facturas_recibidas = os.path.join(directory,'XML',aniomodal,nombremesmodal,'RECIBIDAS', 'Facturas')
+
+ruta_carpeta_retenciones = os.path.join(directory,'XML',aniomodal,nombremesmodal,'EMITIDAS', 'RetencionesE')
+
+
 ruta_anulados = r'C:\IA\SRIBOT\XML\ANULADOS\comprobantes_anulados.txt'
 
 
