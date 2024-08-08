@@ -128,7 +128,7 @@
                                 </div>
                                 <div id="divRoutes" style="display: none;">
                                     <div class="row justify-content-center">
-                                        <div class="col-md-8">
+                                        <div class="col-md-10">
                                             <div class="card text-white bg-secondary mb-3">
                                                 <div class="card-header">Seleccionar Ruta</div>
                                                 <div class="card-body">
@@ -139,7 +139,7 @@
                                                     <hr>
                                                     <p>Opciónes de limpieza</p>
                                                     <div class="row">
-                                                        <div class="col-md-4">
+                                                        <div class="col-md-3">
                                                             <div class="input-group mb-3">
                                                                 <select class="custom-select" id="selectOptionsClear">
                                                                   <option value="1" selected>No</option>
@@ -148,7 +148,14 @@
                                                                 </select>
                                                             </div>
                                                         </div>
-                                                        <div class="col-md-4">
+                                                        <div class="col-md-3">
+                                                            <select class="form-control" id="selectYearClear" name="selectYearClear">
+                                                                {% for year in years %}
+                                                                    <option value="{{ year }}">{{ year }}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-md-3">
                                                             <div class="input-group mb-3">
                                                                 <select class="custom-select" id="selectOptionMounth" disabled>
                                                                   <option value="1">Enero</option>
@@ -167,7 +174,7 @@
                                                                 </select>
                                                             </div>
                                                         </div>
-                                                        <div class="col-md-4">
+                                                        <div class="col-md-3">
                                                             <div class="input-group mb-3">
                                                                 <select class="custom-select" id="selectOptionEmiRec" disabled>
                                                                   <option value="" selected> </option>
@@ -1033,6 +1040,7 @@
         const btnClearFolders = document.getElementById('btnClearFolders');
         const selectOptionMounth = document.getElementById('selectOptionMounth');
         const selectOptionEmiRec = document.getElementById('selectOptionEmiRec');
+        const selectYearClear = document.getElementById('selectYearClear');
 
         // Funcionalidad de select
         selectOptionsClear.addEventListener('change', function(){
@@ -1048,11 +1056,12 @@
         btnClearFolders.addEventListener('click', function(){
             var optionClear = selectOptionsClear.value == '' ? '1' : selectOptionsClear.value;
             valRutaFolder = valRutaFolder == undefined ? 'C:\\IA\\SRIBOT' : valRutaFolder;
-            var optionMounth = '\\'+selectOptionMounth.value;
+            var yearClear = '\\'+selectYearClear.value;
+            var optionMounth = '\\'+selectOptionMounth.options[selectOptionMounth.selectedIndex].text;
             var valEmiRec = '\\'+(selectOptionEmiRec.value == 'E' ? 'EMITIDAS' : 'RECIBIDAS');
-            var fullDirectory = `${valRutaFolder}\\XML${optionMounth}${valEmiRec}`;
+            var fullDirectory = `${valRutaFolder}\\XML${yearClear}${optionMounth}${valEmiRec}`;
             var mainDirectory = `${valRutaFolder}\\XML`;
-
+            
             switch (optionClear) {
                 case "1":
                     break;
