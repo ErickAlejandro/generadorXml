@@ -47,50 +47,6 @@ recibidas_folder = os.path.join(xml_folder, 'RECIBIDAS')
 os.makedirs(recibidas_folder, exist_ok=True)
 subcarpetas_recibidas = [name for name in os.listdir(recibidas_folder) if os.path.isdir(os.path.join(recibidas_folder, name))]
 
-# Función para limpiar carpetas seleccionadas
-def limpiar_carpetas():
-    seleccion_subcarpeta = subcarpeta_var.get()
-    if seleccion_subcarpeta == "No":
-        messagebox.showinfo("Información", "No se ha limpiado ninguna carpeta.")
-    elif seleccion_subcarpeta == "Todas":
-        for subcarpeta in subcarpetas_recibidas:
-            shutil.rmtree(os.path.join(recibidas_folder, subcarpeta))
-            os.makedirs(os.path.join(recibidas_folder, subcarpeta), exist_ok=True)
-        messagebox.showinfo("Éxito", "Todas las subcarpetas de RECIBIDAS han sido limpiadas.")
-    else:
-        shutil.rmtree(os.path.join(recibidas_folder, seleccion_subcarpeta))
-        os.makedirs(os.path.join(recibidas_folder, seleccion_subcarpeta), exist_ok=True)
-        messagebox.showinfo("Éxito", f"La subcarpeta {seleccion_subcarpeta} de RECIBIDAS ha sido limpiada.")
-    ventana_opciones.destroy()
-
-# Crear ventana Tkinter para opciones de limpieza
-ventana_opciones = tk.Tk()
-ventana_opciones.title("Opciones de Limpieza de Carpetas")
-
-ancho_ventana_opciones = 400
-alto_ventana_opciones = 200
-
-ancho_pantalla = ventana_opciones.winfo_screenwidth()
-alto_pantalla = ventana_opciones.winfo_screenheight()
-
-x = (ancho_pantalla // 2) - (ancho_ventana_opciones // 2)
-y = (alto_pantalla // 2) - (alto_ventana_opciones // 2)
-
-ventana_opciones.geometry(f"{ancho_ventana_opciones}x{alto_ventana_opciones}+{x}+{y}")
-
-label = tk.Label(ventana_opciones, text="¿Desea eliminar el contenido de las carpetas?")
-label.pack(pady=10)
-
-subcarpeta_var = tk.StringVar()
-subcarpeta_combo = ttk.Combobox(ventana_opciones, textvariable=subcarpeta_var, state="readonly")
-subcarpeta_combo['values'] = ["No", "Todas"] + subcarpetas_recibidas
-subcarpeta_combo.pack(pady=5)
-
-boton_aceptar = tk.Button(ventana_opciones, text="Aceptar", command=limpiar_carpetas)
-boton_aceptar.pack(pady=10)
-
-ventana_opciones.mainloop()
-
 # Configuración del navegador Chrome
 chrome_options = Options()
 chrome_options.add_argument("--allow-running-insecure-content")  # Permitir contenido inseguro

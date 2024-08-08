@@ -136,6 +136,49 @@
                                                         <label for="directoryInput">Ingrese la ruta de la carpeta de destino</label>
                                                         <input type="text" class="form-control" id="directoryInput" name="directoryInput" placeholder="C:\ia\SRIBOT\XML">
                                                     </div>
+                                                    <hr>
+                                                    <p>Opciónes de limpieza</p>
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <div class="input-group mb-3">
+                                                                <select class="custom-select" id="selectOptionsClear">
+                                                                  <option value="1" selected>No</option>
+                                                                  <option value="2">Todas</option>
+                                                                  <option value="3">Carpeta raiz</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="input-group mb-3">
+                                                                <select class="custom-select" id="selectOptionMounth" disabled>
+                                                                  <option value="1">Enero</option>
+                                                                  <option value="2">Febrero</option>
+                                                                  <option value="3">Marzo</option>
+                                                                  <option value="4">Abril</option>
+                                                                  <option value="5">Mayo</option>
+                                                                  <option value="6">Junio</option>
+                                                                  <option value="7">Julio</option>
+                                                                  <option value="8">Agosto</option>
+                                                                  <option value="9">Septiembre</option>
+                                                                  <option value="10">Octubre</option>
+                                                                  <option value="11">Noviembre</option>
+                                                                  <option value="12">Diciembre</option>
+                                                                  <option value="13">Todo el año</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="input-group mb-3">
+                                                                <select class="custom-select" id="selectOptionEmiRec" disabled>
+                                                                  <option value="" selected> </option>
+                                                                  <option value="E">Emitidas</option>
+                                                                  <option value="R">Recibidas</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <br>
+                                                    <button class="btn btn-light" type="button" id="btnClearFolders">Limpiar</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -396,6 +439,7 @@
         const directoryInput = document.getElementById('directoryInput');
 
         let valRutaFolder;
+        
 
         // Funcionalidad de envio a la aplicacion para generar el XML
         btnRedep.addEventListener('click', function () {
@@ -639,13 +683,9 @@
             if(currentSection == 1){
                 // Funcionalidad input Ruta
                 if(directoryInput.value == ''){
-                    console.log('Vacio');
                     valRutaFolder = 'C:\\IA\\SRIBOT';
-                    console.log(valRutaFolder);
                 }else{
-                    console.log('Cosa');
                     valRutaFolder = directoryInput.value;
-                    console.log(valRutaFolder);
                 }
                 // Aqui va la funcion que va a la vista valRutaFolder
             }
@@ -913,7 +953,90 @@
         btnRetencionesE.addEventListener('click', () => checkXmlFilesEmitidos('RetencionesE'));
 
         showSection(currentSection);
-    });
+
+        
+        // Opciones para la limpieza de carpetas
+        const selectOptionsClear = document.getElementById('selectOptionsClear');
+        const btnClearFolders = document.getElementById('btnClearFolders');
+        const selectOptionMounth = document.getElementById('selectOptionMounth');
+        const selectOptionEmiRec = document.getElementById('selectOptionEmiRec');
+
+        // Funcionalidad de select
+        selectOptionsClear.addEventListener('change', function(){
+            if(selectOptionsClear.value == 1 || selectOptionsClear.value == 3){
+                selectOptionMounth.disabled = true;
+                selectOptionEmiRec.disabled = true;
+            }else{
+                selectOptionMounth.disabled = false;
+                selectOptionEmiRec.disabled = false;
+            }
+        })
+
+        btnClearFolders.addEventListener('click', function(){
+            var optionClear = selectOptionsClear.value == '' ? '1' : selectOptionsClear.value;
+            valRutaFolder = valRutaFolder == undefined ? 'C:\\IA\\SRIBOT' : valRutaFolder;
+            var optionMounth = '\\'+selectOptionMounth.value;
+            var valEmiRec = '\\'+(selectOptionEmiRec.value == 'E' ? 'EMITIDAS' : 'RECIBIDAS');
+            var fullDirectory = `${valRutaFolder}\\XML${optionMounth}${valEmiRec}`;
+            var mainDirectory = `${valRutaFolder}\\XML`;
+
+            switch (optionClear) {
+                case "1":
+                    break;
+                case "2":
+                fetch('/delete_files/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken')
+                        },
+                        body: JSON.stringify({ ruta: fullDirectory })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            toastr.error('Error: '+data.error + ', revisar la carpeta del mes', 'Error')
+                        } else {
+                            toastr.success(data.message, 'Exito en la limpieza')
+                        }
+                    });
+                    break;
+                case "3":
+                    fetch('/delete_files/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken')
+                        },
+                        body: JSON.stringify({ ruta: mainDirectory })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            toastr.error('Error: '+data.error + ', revisar la carpeta raíz.', 'Error')
+                        } else {
+                            toastr.success(data.message, 'Exito en la limpieza')
+                        }
+                    });
+                    break;
+            }
+        });
+        // Obtener el token CSRF para las solicitudes POST
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        });
 </script>
 
 

@@ -2,17 +2,19 @@ from django.shortcuts import render
 
 # Create your views here.
 
-
+from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from django.http import JsonResponse
 import subprocess
 import os
 import threading
+import shutil
+import json
 
 
 def ejecutar_script(username, password, mes, dia, tipo_comprobante, directory):
     script_path = os.path.join(os.path.dirname(__file__), '..', 'scripts', 'BOTATS.py')
-    python_executable = os.path.join(os.path.dirname(__file__), '..', 'venv', 'Scripts', 'python.exe')
+    python_executable = os.path.join(os.path.dirname(__file__), '..', '..', 'venv', 'Scripts', 'python.exe')
     try:
         result = subprocess.run([python_executable, script_path, username, password, mes, dia, tipo_comprobante, directory], capture_output=True, text=True)
         if result.returncode == 0:
@@ -162,7 +164,6 @@ def crearats(request):
         dia = request.POST.get('dia')
         tipo_comprobante = request.POST.get('tipo_comprobante')
         directory = request.POST.get('directory')
-        print(directory,'directory')
 
         result_message = ""
 
@@ -242,3 +243,29 @@ def check_xml_files_emitidos(request):
             return JsonResponse({'status': 'error', 'output': str(e)})
 
     return JsonResponse({'status': 'error', 'output': 'Invalid request method.'})
+
+@csrf_exempt
+def delete_files(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            directory = data.get('ruta')
+            if not directory:
+                return JsonResponse({'error': 'No se proporcionó ninguna ruta.'})
+            
+            if not os.path.exists(directory):
+                return JsonResponse({'error': 'La ruta no existe.'})
+
+            for filename in os.listdir(directory):
+                file_path = os.path.join(directory, filename)
+                try:
+                    if os.path.isfile(file_path) or os.path.islink(file_path):
+                        os.unlink(file_path)
+                    elif os.path.isdir(file_path):
+                        shutil.rmtree(file_path)
+                except Exception as e:
+                    return JsonResponse({'error': str(e)})
+            return JsonResponse({'message': 'Todos los archivos han sido eliminados'})
+        except Exception as e:
+            return JsonResponse({'error': str(e)})
+    return JsonResponse({'error': 'Método no permitido.'})
