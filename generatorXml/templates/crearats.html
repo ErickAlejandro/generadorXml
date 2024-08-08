@@ -235,6 +235,14 @@
                                     </div>
                                     <hr>
                                     <div class="row">
+                                        <div class="form-group col-md-2">
+                                            <label for="dia">Seleccione el Año</label>
+                                            <select class="form-control" id="anio" name="anio">
+                                                {% for year in years %}
+                                                    <option value="{{ year }}">{{ year }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
                                         <div class="form-group col-md-3">
                                                 <label for="mes">Seleccione el Mes</label>
                                                 <select class="form-control" id="mes" name="mes">
@@ -261,7 +269,7 @@
                                                 {% endfor %}
                                             </select>
                                         </div>
-                                        <div class="form-group col-md-6 ">
+                                        <div class="form-group col-md-4 ">
                                             <label for="tipo_comprobante">Seleccione el Tipo de Comprobante</label>
                                             <select class="form-control" id="tipo_comprobante" name="tipo_comprobante">
                                                 <option value="1">Facturas</option>
@@ -331,6 +339,43 @@
                                                 class="btn btn-outline-success btn-block mt-3" style="display: none;">
                                                 Retenciones
                                             </button>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="row">
+                                        <div class="form-group col-md-2">
+                                            <label for="dia">Seleccione el Año</label>
+                                            <select class="form-control" id="anioemitidos" name="anioemitidos">
+                                                {% for year in years %}
+                                                    <option value="{{ year }}">{{ year }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                                <label for="mes">Seleccione el Mes</label>
+                                                <select class="form-control" id="mesemitidos" name="mesemitidos">
+                                                    <option value="1">Enero</option>
+                                                    <option value="2">Febrero</option>
+                                                    <option value="3">Marzo</option>
+                                                    <option value="4">Abril</option>
+                                                    <option value="5">Mayo</option>
+                                                    <option value="6">Junio</option>
+                                                    <option value="7">Julio</option>
+                                                    <option value="8">Agosto</option>
+                                                    <option value="9">Septiembre</option>
+                                                    <option value="10">Octubre</option>
+                                                    <option value="11">Noviembre</option>
+                                                    <option value="12">Diciembre</option>
+                                                </select>
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label for="dia">Seleccione el Día</label>
+                                            <select class="form-control" id="diaemitidos" name="diaemitidos">
+                                                <option value="0">Todos</option>
+                                                {% for day in days %}
+                                                <option value="{{ day }}">{{ day }}</option>
+                                                {% endfor %}
+                                            </select>
                                         </div>
                                     </div>
                                     <hr>
@@ -766,7 +811,10 @@
         btnDownload.addEventListener('click', () => {
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
-        const mes = document.getElementById('mes').value;
+        const mesSelect = document.getElementById('mes');
+        const mes = mesSelect.value;  // Esto obtiene el valor (número) del mes
+        const nombremesrecibidos = mesSelect.options[mesSelect.selectedIndex].text;
+        const anio = document.getElementById('anio').value
         const dia = document.getElementById('dia').value;
         const tipo_comprobante = document.getElementById('tipo_comprobante').value;
         
@@ -780,7 +828,9 @@
                 data: {
                     'username': username,
                     'password': password,
+                    'anio': anio,
                     'mes': mes,
+                    'nombremesrecibidos':nombremesrecibidos,
                     'dia': dia,
                     'tipo_comprobante': tipo_comprobante,
                     'directory': valRutaFolder,
@@ -797,26 +847,41 @@
         }
     });
 
-        btnEmitidos.addEventListener('click', () => {
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
+    btnEmitidos.addEventListener('click', () => {
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    const mesSelect = document.getElementById('mesemitidos');
+    const mesemitidos = mesSelect.value;  // Esto obtiene el valor (número) del mes
+    const nombremesemitidos = mesSelect.options[mesSelect.selectedIndex].text;
+    const anioemitidos = document.getElementById('anioemitidos').value;
+    const diaemitidos = document.getElementById('diaemitidos').value;
 
-            if (!username || !password) {
-                toastr.warning("Por favor, complete los campos de usuario y contraseña.", "Advertencia");
-            } else {
-                $.ajax({
-                    type: 'POST',
-                    url: atsForm.action,
-                    data: $(atsForm).serialize() + '&action=BOTEMITIDOS',
-                    success: function (response) {
-                        toastr.success(response.message, "Éxito");
-                    },
-                    error: function (response) {
-                        toastr.error('Error al iniciar el script.', "Error");
-                    }
-                });
+    if (!username || !password || !mesemitidos || !anioemitidos || !diaemitidos ) {
+        toastr.warning("Por favor, complete todos los campos.", "Advertencia");
+    } else {
+        $.ajax({
+            type: 'POST',
+            url: atsForm.action,
+            data: {
+                'username': username,
+                'password': password,
+                'anioemitidos': anioemitidos,
+                'mesemitidos': mesemitidos,
+                'nombremesemitidos': nombremesemitidos,
+                'diaemitidos': diaemitidos,
+                'directory': valRutaFolder,
+                'action': 'BOTEMITIDOS',
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function (response) {
+                toastr.success(response.message, "Éxito");
+            },
+            error: function (response) {
+                toastr.error('Error al iniciar el script.', "Error");
             }
         });
+    }
+});
 
         btnCrearAts.addEventListener('click', () => {
             const username = document.getElementById('username').value;
@@ -866,14 +931,18 @@
                     break;
             }
 
-            const mes = document.getElementById('mes').value;
+            const mesSelect = document.getElementById('mes');
+            const mes = mesSelect.value;  // Esto obtiene el valor (número) del mes
+            const nombremesrecibidos = mesSelect.options[mesSelect.selectedIndex].text;
+            const anio = document.getElementById('anio').value
 
             $.ajax({
                 type: 'POST',
                 url: '{% url "check_xml_files" %}',
                 data: {
                     'button_id': buttonId,
-                    'mess': mes,
+                    'anio': anio,
+                    'nombremesrecibidos': nombremesrecibidos,
                     'directorys': valRutaFolder,
                     'csrfmiddlewaretoken': '{{ csrf_token }}'
                 },
@@ -913,14 +982,18 @@
                     break;
             }
 
-            const mes = document.getElementById('mes').value;
+            const mesSelect = document.getElementById('mesemitidos');
+            const mes = mesSelect.value;  // Esto obtiene el valor (número) del mes
+            const nombremesemitidos = mesSelect.options[mesSelect.selectedIndex].text;
+            const anioemitidos = document.getElementById('anioemitidos').value
 
             $.ajax({
                 type: 'POST',
                 url: '{% url "check_xml_files_recibidos" %}',
                 data: {
                     'button_id': buttonId,
-                    'mess': mes,
+                    'anioemitidos': anioemitidos,
+                    'nombremesemitidos': nombremesemitidos,
                     'directorys': valRutaFolder,
                     'csrfmiddlewaretoken': '{{ csrf_token }}'
                 },

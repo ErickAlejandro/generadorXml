@@ -10,13 +10,14 @@ import os
 import threading
 import shutil
 import json
+import datetime
 
 
-def ejecutar_script(username, password, mes, dia, tipo_comprobante, directory):
+def ejecutar_script(username, password, mes, nombremesrecibidos, dia, tipo_comprobante, directory,anio):
     script_path = os.path.join(os.path.dirname(__file__), '..', 'scripts', 'BOTATS.py')
-    python_executable = os.path.join(os.path.dirname(__file__), '..', '..', 'venv', 'Scripts', 'python.exe')
+    python_executable = os.path.join(os.path.dirname(__file__), '..', 'venv', 'Scripts', 'python.exe')
     try:
-        result = subprocess.run([python_executable, script_path, username, password, mes, dia, tipo_comprobante, directory], capture_output=True, text=True)
+        result = subprocess.run([python_executable, script_path, username, password, mes, nombremesrecibidos, dia, tipo_comprobante, directory,anio], capture_output=True, text=True)
         if result.returncode == 0:
             print("Script ejecutado con éxito")
             print("Salida:", result.stdout)
@@ -26,12 +27,12 @@ def ejecutar_script(username, password, mes, dia, tipo_comprobante, directory):
     except Exception as e:
         print("Excepción al intentar ejecutar el script:", str(e))
 
-def ejecutar_script_botemitidos(username, password):
+def ejecutar_script_botemitidos(username, password, mesemitidos, nombremesemitidos, diaemitidos, directory,anioemitidos):
     script_path = os.path.join(os.path.dirname(__file__), '..', 'scripts', 'BOTEMITIDOS.py')
-    python_executable = os.path.join(os.path.dirname(__file__), '..', '..', 'venv', 'Scripts', 'python.exe')
+    python_executable = os.path.join(os.path.dirname(__file__), '..', 'venv', 'Scripts', 'python.exe')
     
     try:
-        result = subprocess.run([python_executable, script_path, username, password], capture_output=True, text=True)
+        result = subprocess.run([python_executable, script_path, username, password, mesemitidos, nombremesemitidos, diaemitidos, directory,anioemitidos], capture_output=True, text=True)
         if result.returncode == 0:
             print("Script ejecutado con éxito")
             print("Salida:", result.stdout)
@@ -161,18 +162,26 @@ def crearats(request):
         username = request.POST.get('username')
         password = request.POST.get('password')
         mes = request.POST.get('mes')
+        mesemitidos = request.POST.get('mesemitidos')
+        nombremesrecibidos = request.POST.get('nombremesrecibidos')
+        nombremesemitidos = request.POST.get('nombremesemitidos')
+        anio = request.POST.get('anio')
+        anioemitidos = request.POST.get('anioemitidos')
         dia = request.POST.get('dia')
+        diaemitidos =  request.POST.get('diaemitidos')
         tipo_comprobante = request.POST.get('tipo_comprobante')
         directory = request.POST.get('directory')
+        print(directory,'directory')
 
         result_message = ""
 
         if action == 'BOTATS':
-            thread = threading.Thread(target=ejecutar_script, args=(username, password, mes, dia, tipo_comprobante, directory))
+            thread = threading.Thread(target=ejecutar_script, args=(username, password, mes, nombremesrecibidos, dia, tipo_comprobante, directory,anio))
             thread.start()
             result_message = "El script se está ejecutando en segundo plano"
         elif action == 'BOTEMITIDOS':
-            thread = threading.Thread(target=ejecutar_script_botemitidos, args=(username, password, mes, dia, tipo_comprobante, directory))
+            thread = threading.Thread(target=ejecutar_script_botemitidos, args=(username, password, mesemitidos, nombremesemitidos, diaemitidos,
+                                                                                 directory,anioemitidos))
             thread.start()
             result_message = "El script se está ejecutando en segundo plano"
         elif action == 'ReporteRecibidos':
@@ -184,15 +193,18 @@ def crearats(request):
         return JsonResponse({'output': result_message})
 
     days = list(range(1, 32))  # Generar la lista de días del 1 al 31
-    return render(request, 'crearats.html', {'days': days})
+    current_year = datetime.datetime.now().year
+    last_five_years = list(range(current_year, current_year - 5, -1))  # Generar los últimos 5 años incluyendo el actual
+    return render(request, 'crearats.html', {'days': days, 'years': last_five_years})
 
 def check_xml_files(request):
     if request.method == 'POST':
         button_id = request.POST.get('button_id')
-        mes = request.POST.get('mess')
+        nombremesrecibidos = request.POST.get('nombremesrecibidos')
         directory = request.POST.get('directorys')
+        anio = request.POST.get('anio')
         
-        full = os.path.join(f"{directory}\\XML",  f"{mes}",'RECIBIDAS', button_id)
+        full = os.path.join(f"{directory}\\XML",f"{anio}", f"{nombremesrecibidos}",'RECIBIDAS', button_id)
 
         # Imprimir el directorio para verificar que es correcto
         print(f"Directorio a verificar: {full}")
@@ -220,17 +232,22 @@ def check_xml_files(request):
 def check_xml_files_emitidos(request):
     if request.method == 'POST':
         button_id = request.POST.get('button_id')
-        directory = os.path.join('C:\\', 'ia', 'SRIBOT', 'XML', 'EMITIDAS', button_id)
+        nombremesemitidos = request.POST.get('nombremesemitidos')
+        directory = request.POST.get('directorys')
+        anioemitidos = request.POST.get('anioemitidos')
+
+
+        full = os.path.join(f"{directory}\\XML",f"{anioemitidos}", f"{nombremesemitidos}",'EMITIDAS', button_id)
         
         # Imprimir el directorio para verificar que es correcto
-        print(f"Directorio a verificar: {directory}")
+        print(f"Directorio a verificar: {full}")
 
         # Ruta al script y al intérprete Python
         script_path = os.path.join(os.path.dirname(__file__), '..', 'scripts', 'comprobantesemitidos.py')
         python_executable = 'python'  # Cambia esto a la ruta de tu intérprete Python si es necesario
 
         try:
-            result = subprocess.run([python_executable, script_path, directory], capture_output=True, text=True)
+            result = subprocess.run([python_executable, script_path, full], capture_output=True, text=True)
             output = result.stdout.strip()
             if result.returncode == 0:
                 if "No se encontraron archivos XML" in output or "[WinError 3]" in output:

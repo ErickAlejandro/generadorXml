@@ -15,16 +15,15 @@ import tkinter as tk
 from tkinter import messagebox, ttk
 from selenium.common.exceptions import TimeoutException
 
-
-
 # Obtener los argumentos de usuario y contraseña
 username = sys.argv[1]
 password = sys.argv[2]
 mes = sys.argv[3]
-dia = sys.argv[4]
-tipo_comprobante = sys.argv[5]
-print(tipo_comprobante,'tipo_comprobante = sys.argv[5]')
-directory =sys.argv[6]
+nombremesrecibidos = sys.argv[4]
+dia = sys.argv[5]
+tipo_comprobante = sys.argv[6]
+directory = sys.argv[7]
+anio = sys.argv[8]
 
 tipo_comprobante_nombres = {
     "1": "Facturas",
@@ -34,18 +33,12 @@ tipo_comprobante_nombres = {
     "6": "Retenciones"
 }
 
-
 # Crear Carpeta SRIBOT EN DOCUMENTOS
 documents_folder = directory
 os.makedirs(documents_folder, exist_ok=True)
 
 xml_folder = os.path.join(documents_folder, 'XML')
 os.makedirs(xml_folder, exist_ok=True)
-
-# Obtener las subcarpetas dentro de la carpeta RECIBIDAS
-recibidas_folder = os.path.join(xml_folder, 'RECIBIDAS')
-os.makedirs(recibidas_folder, exist_ok=True)
-subcarpetas_recibidas = [name for name in os.listdir(recibidas_folder) if os.path.isdir(os.path.join(recibidas_folder, name))]
 
 # Configuración del navegador Chrome
 chrome_options = Options()
@@ -64,7 +57,7 @@ chrome_options.add_extension("C:\\Resolver.crx")
 driver = webdriver.Chrome(options=chrome_options)
 
 # URL de la pagina del SRI
-url = "https://srienlinea.sri.gob.ec/auth/realms/Internet/protocol/openid-connect/auth?client_id=app-sri-claves-angular&redirect_uri=https%3A%2F%2Fsrienlinea.sri.gob.ec%2Fsri-en-linea%2F%2Fcontribuyente%2Fperfil&state=f535d2b5-e613-4f17-8669-fac1a601b292&nonce=089fd62c-1ea9-4a7f-b502-1617eeb0a8ba&response_mode=fragment&response_type=code&scope=openid"
+url = "https://srienlinea.sri.gob.ec/auth/realms/Internet/protocol/openid-connect/auth?client_id=app-sri-claves-angular&redirect_uri=https%3A%2F%2Fsrienlinea.sri.gob.ec%2Fsri-en-linea%2F%2Fcontribuyente%2Fperfil&state=f535d2b5-e613-4f17-8669-fac1a601b292&nonce=089fd62c-1ea9-4f7f-b502-1617eeb0a8ba&response_mode=fragment&response_type=code&scope=openid"
 
 # Abrir la página en el navegador
 driver.get(url)
@@ -108,6 +101,14 @@ try:
 
     driver.get("https://srienlinea.sri.gob.ec/tuportal-internet/accederAplicacion.jspa?redireccion=57&idGrupo=55")
 
+    # Seleccionar el año
+    select_anio_element = WebDriverWait(driver, 10).until(
+       EC.presence_of_element_located((By.ID, 'frmPrincipal:ano'))
+    )
+    select_anio = Select(select_anio_element)
+    select_anio.select_by_value(anio)
+    print("Año seleccionado:", anio)
+
     # Seleccionar el mes
     select_mes_element = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.ID, 'frmPrincipal:mes'))
@@ -134,7 +135,7 @@ try:
 
     # Obtener el nombre de la carpeta del tipo de comprobante
     tipo_comprobante_nombre = tipo_comprobante_nombres.get(tipo_comprobante, "Desconocido")
-    tipo_comprobante_folder = os.path.join(f"{directory}\\XML\\{mes}\\RECIBIDAS", tipo_comprobante_nombre)
+    tipo_comprobante_folder = os.path.join(f"{directory}\\XML\\{anio}\\{nombremesrecibidos}\\RECIBIDAS", tipo_comprobante_nombre)
     os.makedirs(tipo_comprobante_folder, exist_ok=True)
     print("Carpeta creada para el tipo de comprobante:", tipo_comprobante_nombre)
 
@@ -263,4 +264,3 @@ except Exception as e:
 finally:
     # Cerrar el navegador
     driver.quit()
-
