@@ -296,6 +296,8 @@
                                             <button type="button" id="btnDownload" class="btn btn-dark btn-block mt-3">
                                                 Descargar
                                             </button>
+                                            <br>
+                                            <h2 id="estadoPag"></h2>
                                         </div>
                                         <div class="col-md-6">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
@@ -1179,6 +1181,20 @@
         }
     });
 </script>
+<script>
+    const estadoPag = document.getElementById('estadoPag');
 
+    function fetchEstado() {
+        fetch('/get-estado/')
+        .then(response => response.json())
+        .then(data => {
+            estadoPag.innerText = data.estado;
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    // Llama a la función fetchEstado cada 5 segundos para actualizar el estado
+    setInterval(fetchEstado, 5000);
+</script>
 
 </html>

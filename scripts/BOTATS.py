@@ -11,7 +11,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select
 from xml.etree import ElementTree as ET
 from selenium.webdriver.common.action_chains import ActionChains
-import tkinter as tk
 from selenium.common.exceptions import TimeoutException
 
 # Obtener los argumentos de usuario y contraseña
