@@ -11,21 +11,45 @@ import threading
 import shutil
 import json
 import datetime
+import select
+import subprocess
+import os
+import sys
 
 
-def ejecutar_script(username, password, mes, nombremesrecibidos, dia, tipo_comprobante, directory,anio):
+def ejecutar_script(username, password, mes, nombremesrecibidos, dia, tipo_comprobante, directory, anio):
     script_path = os.path.join(os.path.dirname(__file__), '..', 'scripts', 'BOTATS.py')
     python_executable = os.path.join(os.path.dirname(__file__), '..', 'venv', 'Scripts', 'python.exe')
+    
     try:
-        result = subprocess.run([python_executable, script_path, username, password, mes, nombremesrecibidos, dia, tipo_comprobante, directory,anio], capture_output=True, text=True)
-        if result.returncode == 0:
+        process = subprocess.Popen(
+            [python_executable, script_path, username, password, mes, nombremesrecibidos, dia, tipo_comprobante, directory, anio],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            bufsize=1
+        )
+        
+        while True:
+            output = process.stdout.readline()
+            if output == '' and process.poll() is not None:
+                break
+            if output:
+                print(output.strip())
+        
+        stderr_output = process.stderr.read()
+        if stderr_output:
+            print(stderr_output.strip(), file=sys.stderr)
+        
+        process.stdout.close()
+        process.stderr.close()
+
+        if process.returncode == 0:
             print("Script ejecutado con éxito")
-            print("Salida:", result.stdout)
         else:
             print("Error al ejecutar el script")
-            print("Error:", result.stderr)
     except Exception as e:
-        print("Excepción al intentar ejecutar el script:", str(e))
+        print("Excepción al intentar ejecutar el script:", str(e), flush=True)
 
 def ejecutar_script_botemitidos(username, password, mesemitidos, nombremesemitidos, diaemitidos, directory,anioemitidos):
     script_path = os.path.join(os.path.dirname(__file__), '..', 'scripts', 'BOTEMITIDOS.py')

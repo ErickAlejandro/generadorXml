@@ -12,7 +12,6 @@ from selenium.webdriver.support.ui import Select
 from xml.etree import ElementTree as ET
 from selenium.webdriver.common.action_chains import ActionChains
 import tkinter as tk
-from tkinter import messagebox, ttk
 from selenium.common.exceptions import TimeoutException
 
 # Obtener los argumentos de usuario y contraseña
@@ -51,17 +50,21 @@ chrome_options.add_experimental_option("prefs", {
 })
 
 # Configuración del Bot
+# Intenta comentar esta línea si el problema persiste
 chrome_options.add_extension("C:\\Resolver.crx")
 
 # Iniciar el navegador
-driver = webdriver.Chrome(options=chrome_options)
+try:
+    driver = webdriver.Chrome(options=chrome_options)
+except Exception as e:
+    print(f"Error al iniciar ChromeDriver: {e}", flush=True)
+    sys.exit(1)
 
-# URL de la pagina del SRI
+# URL de la página del SRI
 url = "https://srienlinea.sri.gob.ec/auth/realms/Internet/protocol/openid-connect/auth?client_id=app-sri-claves-angular&redirect_uri=https%3A%2F%2Fsrienlinea.sri.gob.ec%2Fsri-en-linea%2F%2Fcontribuyente%2Fperfil&state=f535d2b5-e613-4f17-8669-fac1a601b292&nonce=089fd62c-1ea9-4f7f-b502-1617eeb0a8ba&response_mode=fragment&response_type=code&scope=openid"
 
-# Abrir la página en el navegador
-driver.get(url)
 try:
+    driver.get(url)
     # Esperar hasta que el campo de usuario esté presente en la página
     input_usuario = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.ID, "usuario"))
@@ -69,7 +72,7 @@ try:
 
     # Ingresar el usuario
     input_usuario.send_keys(username)
-    print("Usuario ingresado con éxito.")
+    print("Usuario ingresado con éxito.", flush=True)
 
     # Esperar hasta que el campo de contraseña esté presente en la página
     input_password = WebDriverWait(driver, 10).until(
@@ -78,14 +81,14 @@ try:
 
     # Ingresar la contraseña
     input_password.send_keys(password)
-    print("Contraseña ingresada con éxito.")
+    print("Contraseña ingresada con éxito.", flush=True)
 
     # Encontrar el botón de inicio de sesión y hacer clic en él
     login_button = WebDriverWait(driver, 10).until(
         EC.element_to_be_clickable((By.XPATH, '//*[@id="kc-login"]'))
     )
     login_button.click()
-    print("Inicio de sesión exitoso.")
+    print("Inicio de sesión exitoso.", flush=True)
 
     try:
         # Saltarse encuesta 24/04/2024
@@ -95,19 +98,19 @@ try:
         )
 
         ubicarse.click()
-        print("Encuesta encontrada y saltada.")
+        print("Encuesta encontrada y saltada.", flush=True)
     except TimeoutException:
-        print("La encuesta no se encontró. Continuando con el resto del código.")
+        print("La encuesta no se encontró. Continuando con el resto del código.", flush=True)
 
     driver.get("https://srienlinea.sri.gob.ec/tuportal-internet/accederAplicacion.jspa?redireccion=57&idGrupo=55")
 
     # Seleccionar el año
     select_anio_element = WebDriverWait(driver, 10).until(
-       EC.presence_of_element_located((By.ID, 'frmPrincipal:ano'))
+        EC.presence_of_element_located((By.ID, 'frmPrincipal:ano'))
     )
     select_anio = Select(select_anio_element)
     select_anio.select_by_value(anio)
-    print("Año seleccionado:", anio)
+    print("Año seleccionado:", anio, flush=True)
 
     # Seleccionar el mes
     select_mes_element = WebDriverWait(driver, 10).until(
@@ -115,7 +118,7 @@ try:
     )
     select_mes = Select(select_mes_element)
     select_mes.select_by_value(mes)
-    print("Mes seleccionado:", mes)
+    print("Mes seleccionado:", mes, flush=True)
 
     # Seleccionar el día
     select_dia_element = WebDriverWait(driver, 10).until(
@@ -123,7 +126,7 @@ try:
     )
     select_dia = Select(select_dia_element)
     select_dia.select_by_value(dia)
-    print("Día seleccionado:", dia)
+    print("Día seleccionado:", dia, flush=True)
 
     # Seleccionar el tipo de comprobante
     tipo_comprobante_select_element = WebDriverWait(driver, 10).until(
@@ -131,30 +134,77 @@ try:
     )
     tipo_comprobante_select = Select(tipo_comprobante_select_element)
     tipo_comprobante_select.select_by_value(tipo_comprobante)
-    print("Tipo de comprobante seleccionado:", tipo_comprobante)
+    print("Tipo de comprobante seleccionado:", tipo_comprobante, flush=True)
 
     # Obtener el nombre de la carpeta del tipo de comprobante
     tipo_comprobante_nombre = tipo_comprobante_nombres.get(tipo_comprobante, "Desconocido")
     tipo_comprobante_folder = os.path.join(f"{directory}\\XML\\{anio}\\{nombremesrecibidos}\\RECIBIDAS", tipo_comprobante_nombre)
     os.makedirs(tipo_comprobante_folder, exist_ok=True)
-    print("Carpeta creada para el tipo de comprobante:", tipo_comprobante_nombre)
+    print("Carpeta creada para el tipo de comprobante:", tipo_comprobante_nombre, flush=True)
 
     # Hacer clic en el elemento recaptcha
     recaptcha_button = WebDriverWait(driver, 10).until(
         EC.element_to_be_clickable((By.XPATH, '//*[@id="btnRecaptcha"]'))
     )
     recaptcha_button.click()
-    print("Clic en el botón Recaptcha exitoso.")
+    print("Clic en el botón Recaptcha exitoso.", flush=True)
 
     # Esperar que la IA resuelva el captcha
     time.sleep(60)
+
+    # Verificar el texto de la paginación y hacer clic si los números no son iguales
+    try:
+        paginacion_texto_element = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, '//*[@id="frmPrincipal:tablaCompRecibidos_paginator_bottom"]/span[3]'))
+        )
+        paginacion_texto = paginacion_texto_element.text.strip()
+        print(f"Paginación detectada: {paginacion_texto}", flush=True)
+
+        # Extraer los números del texto
+        numeros = paginacion_texto.split(" of ")
+        if len(numeros) == 2 and numeros[0] != numeros[1]:
+            print(f"Los números en la paginación no son iguales: {numeros[0]} y {numeros[1]}. Procediendo a hacer clic en la siguiente página.", flush=True)
+
+            # Hacer clic en el botón para ir a la siguiente página
+            siguiente_pagina_button = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, '//*[@id="frmPrincipal:tablaCompRecibidos_paginator_bottom"]/span[5]'))
+            )
+            siguiente_pagina_button.click()
+            print("Clic en el botón de la siguiente página.", flush=True)
+
+            # Esperar a que la tabla se recargue
+            time.sleep(2)  # Espera para asegurar que la tabla se recargue
+
+            # Obtener el último `tr` de la tabla
+            tabla_elementos = driver.find_elements(By.XPATH, '/html/body/div[2]/div[2]/div[3]/form[2]/div[5]/div/div[2]/table/tbody/tr')
+            ultimo_tr = tabla_elementos[-1]  # Selecciona el último `tr`
+            ultimo_texto = ultimo_tr.text.strip()
+            print(f"Texto extraído del último `tr`: {ultimo_texto}", flush=True)
+            
+            # Extraer el texto específico que necesitas del `tr` (ajusta según la estructura de la fila)
+            texto_especifico = ultimo_tr.find_element(By.XPATH, 'td[1]').text.strip()
+            print(f"Texto específico extraído: {texto_especifico}", flush=True)
+
+            volver = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, '//*[@id="frmPrincipal:tablaCompRecibidos_paginator_bottom"]/span[1]'))
+            )
+            volver.click()
+            print("Clic en el volver", flush=True)
+
+            action = ActionChains(driver)
+            action.move_to_element(recaptcha_button).perform()
+
+
+
+    except Exception as e:
+        print(f"Error al intentar verificar y extraer información de la paginación: {e}", flush=True)
 
     # Descargar listado txt
     listado_button = WebDriverWait(driver, 10).until(
         EC.element_to_be_clickable((By.XPATH, '//*[@id="frmPrincipal:lnkTxtlistado"]'))
     )
     listado_button.click()
-    print("Clic en el enlace para obtener el listado.")
+    print("Clic en el enlace para obtener el listado.", flush=True)
 
     # Función para obtener el valor de numeroAutorizacion de un archivo XML
     def obtener_numero_autorizacion(xml_path):
@@ -180,13 +230,13 @@ try:
                 # Renombrar el archivo con el valor de numero_autorizacion
                 new_filename = f"{xml_folder}\\{numero_autorizacion}.xml"
                 os.rename(file, new_filename)
-                print(f"Archivo {file} renombrado como {new_filename}")
+                print(f"Archivo {file} renombrado como {new_filename}", flush=True)
 
                 # Mover el archivo a la carpeta correspondiente del tipo de comprobante en RECIBIDAS
                 shutil.move(new_filename, tipo_comprobante_folder)
-                print(f"Archivo {new_filename} movido a {tipo_comprobante_folder}")
+                print(f"Archivo {new_filename} movido a {tipo_comprobante_folder}", flush=True)
             except Exception as e:
-                print(f"Error al procesar el archivo {file}: {e}")
+                print(f"Error al procesar el archivo {file}: {e}", flush=True)
 
     # Función para hacer clic en los enlaces y descargar los archivos XML
     def hacer_clic_en_enlace():
@@ -197,7 +247,7 @@ try:
                 span_paginacion = driver.find_element(By.XPATH,
                                                       '/html/body/div[2]/div[2]/div[3]/form[2]/div[5]/div/div[2]/table/tfoot/tr/td/span[3]')
                 texto_paginacion = span_paginacion.text
-                print("Texto de paginación:", texto_paginacion)
+                print("Texto de paginación:", texto_paginacion, flush=True)
 
                 if paginacion_previa == texto_paginacion:
                     break  # Si la paginación es la misma que la anterior, salir del bucle
@@ -212,14 +262,14 @@ try:
                 for elemento in elementos_tr:
                     enlace = elemento.find_element(By.XPATH, 'td[10]//a')
                     enlace.click()
-                    print(f"Clic en el enlace {enlace.text}")
+                    print(f"Clic en el enlace {enlace.text}", flush=True)
                     time.sleep(1)  # Espera 1 segundo antes de continuar
 
                 # Hacer clic en el enlace de paginación
                 enlace_siguiente = driver.find_element(By.XPATH,
                                                        '//*[@id="frmPrincipal:tablaCompRecibidos_paginator_bottom"]/span[4]')
                 enlace_siguiente.click()
-                print("Clic en enlace de paginación.")
+                print("Clic en enlace de paginación.", flush=True)
                 time.sleep(5)  # Espera 5 segundos para cargar la página siguiente
 
                 # Mover el cursor del mouse sobre el botón de captcha
@@ -259,7 +309,7 @@ try:
     ventana_emergente.mainloop()
 
 except Exception as e:
-    print("Error:", e)
+    print("Error:", e, flush=True)
 
 finally:
     # Cerrar el navegador
