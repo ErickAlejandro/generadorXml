@@ -85,7 +85,7 @@ def ejecutar_script(username, password, mes, nombremesrecibidos, dia, tipo_compr
                 EC.element_to_be_clickable((By.XPATH, '//*[@id="kc-login"]'))
             )
             login_button.click()
-            sendState('Ingresando al portal')
+            sendState('Ingresando al portal SRI.')
 
             try:
                 # Saltarse encuesta 24/04/2024
@@ -95,9 +95,9 @@ def ejecutar_script(username, password, mes, nombremesrecibidos, dia, tipo_compr
                 )
 
                 ubicarse.click()
-                sendState('Encuesta encontrada y saltada')
+                sendState('Resolviendo encuesta')
             except TimeoutException:
-                sendState('La encuesta no se encontró. Continuando con el resto del código.')
+                sendState('Accediendo a los comprobantes.')
 
             driver.get("https://srienlinea.sri.gob.ec/tuportal-internet/accederAplicacion.jspa?redireccion=57&idGrupo=55")
 
@@ -107,6 +107,7 @@ def ejecutar_script(username, password, mes, nombremesrecibidos, dia, tipo_compr
             )
             select_anio = Select(select_anio_element)
             select_anio.select_by_value(anio)
+            sendState('Ingresando Año.')
 
             # Seleccionar el mes
             select_mes_element = WebDriverWait(driver, 10).until(
@@ -114,6 +115,7 @@ def ejecutar_script(username, password, mes, nombremesrecibidos, dia, tipo_compr
             )
             select_mes = Select(select_mes_element)
             select_mes.select_by_value(mes)
+            sendState('Ingresando mes.')
 
             # Seleccionar el día
             select_dia_element = WebDriverWait(driver, 10).until(
@@ -121,6 +123,7 @@ def ejecutar_script(username, password, mes, nombremesrecibidos, dia, tipo_compr
             )
             select_dia = Select(select_dia_element)
             select_dia.select_by_value(dia)
+            sendState('Ingresando día.')
 
             # Seleccionar el tipo de comprobante
             tipo_comprobante_select_element = WebDriverWait(driver, 10).until(
@@ -128,6 +131,7 @@ def ejecutar_script(username, password, mes, nombremesrecibidos, dia, tipo_compr
             )
             tipo_comprobante_select = Select(tipo_comprobante_select_element)
             tipo_comprobante_select.select_by_value(tipo_comprobante)
+            sendState('Ingresando tipo de comprobante.')
 
             # Obtener el nombre de la carpeta del tipo de comprobante
             tipo_comprobante_nombre = tipo_comprobante_nombres.get(tipo_comprobante, "Desconocido")
@@ -140,7 +144,7 @@ def ejecutar_script(username, password, mes, nombremesrecibidos, dia, tipo_compr
                 EC.element_to_be_clickable((By.XPATH, '//*[@id="btnRecaptcha"]'))
             )
             recaptcha_button.click()
-            sendState('Ejecutando Catchap ...')
+            sendState('Ejecutando Captcha ...')
 
             # Esperar que la IA resuelva el captcha
             time.sleep(60)
@@ -150,7 +154,7 @@ def ejecutar_script(username, password, mes, nombremesrecibidos, dia, tipo_compr
                 EC.element_to_be_clickable((By.XPATH, '//*[@id="frmPrincipal:lnkTxtlistado"]'))
             )
             listado_button.click()
-            sendState('Consultando ...')
+            sendState('Consultando comprobantes ...')
 
             # Función para obtener el valor de numeroAutorizacion de un archivo XML
             def obtener_numero_autorizacion(xml_path):
@@ -182,7 +186,7 @@ def ejecutar_script(username, password, mes, nombremesrecibidos, dia, tipo_compr
                     except Exception as e:
                         sendState(f"Error al procesar el archivo {file}: {e}")
 
-                sendState('Ejecutando Catchap')
+                sendState('Modificando archivos ...')
 
             # Función para hacer clic en los enlaces y descargar los archivos XML
             def hacer_clic_en_enlace():
@@ -214,7 +218,7 @@ def ejecutar_script(username, password, mes, nombremesrecibidos, dia, tipo_compr
                         enlace_siguiente = driver.find_element(By.XPATH,
                                                             '//*[@id="frmPrincipal:tablaCompRecibidos_paginator_bottom"]/span[4]')
                         enlace_siguiente.click()
-                        sendState('Buscando paginaciòn')
+                        sendState('Buscando paginación.')
                         time.sleep(5)  # Espera 5 segundos para cargar la página siguiente
 
                         # Mover el cursor del mouse sobre el botón de captcha
@@ -231,7 +235,7 @@ def ejecutar_script(username, password, mes, nombremesrecibidos, dia, tipo_compr
             hacer_clic_en_enlace()
 
             # Crear una ventana emergente para mostrar el mensaje
-            sendState('Comprobantes descargados exitosamente')
+            sendState('Comprobantes descargados exitosamente.')
 
         except Exception as e:
             print("Error:", e, flush=True)
