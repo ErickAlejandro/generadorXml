@@ -140,13 +140,14 @@ def ejecutar_script(username, password, mes, nombremesrecibidos, dia, tipo_compr
             sendState('Creando carpetas ...')
 
             # Hacer clic en el elemento recaptcha
+            sendState('Ejecutando Captcha ...')
             recaptcha_button = WebDriverWait(driver, 10).until(
                 EC.element_to_be_clickable((By.XPATH, '//*[@id="btnRecaptcha"]'))
             )
             recaptcha_button.click()
-            sendState('Ejecutando Captcha ...')
 
             # Esperar que la IA resuelva el captcha
+            sendState('Resolviendo Captcha ...')
             time.sleep(60)
 
             # Descargar listado txt
@@ -425,7 +426,8 @@ def crearats(request):
 
     days = list(range(1, 32))  # Generar la lista de días del 1 al 31
     current_year = datetime.datetime.now().year
-    last_five_years = list(range(current_year, current_year - 5, -1))  # Generar los últimos 5 años incluyendo el actual
+    last_five_years = list(range(current_year, current_year - 5, -1))  #
+    sendState('')
     return render(request, 'crearats.html', {'days': days, 'years': last_five_years})
 
 def check_xml_files(request):

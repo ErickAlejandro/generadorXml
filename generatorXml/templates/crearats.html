@@ -47,43 +47,32 @@
         place-items: center;
     }
     /* HTML: <div class="loader"></div> */
-    .loader {
-    --s: 25px;
-    --g :5px;  
-    
-    width: calc(3*(1.353*var(--s) + var(--g)));
-    display: grid;
-    justify-items: end;
-    aspect-ratio: 3;
-    overflow: hidden;
-    --_m: linear-gradient(90deg,#0000,#000 15px calc(100% - 15px),#0000);
-    -webkit-mask: var(--_m);
-            mask: var(--_m);
-    }
-    .loader:before { 
-    content: "";
-    width: 200%;
-    background:
-        linear-gradient(90deg,#ff1818 50%,#0000 0),
-        conic-gradient(from -90deg at var(--s) calc(0.353*var(--s)),
-        #fff 135deg,#666 0 270deg,#aaa 0); 
-    background-blend-mode: multiply;
-    --_m:
-        linear-gradient(to bottom right,
-        #0000 calc(0.25*var(--s)),#000 0 calc(100% - calc(0.25*var(--s)) - 1.414*var(--g)),#0000 0),
-        conic-gradient(from -90deg at right var(--g) bottom var(--g),#000 90deg,#0000 0);
-    -webkit-mask: var(--_m);
-            mask: var(--_m);
-    background-size:   calc(100%/3) 100%, calc(100%/6) 100%;
-    -webkit-mask-size: calc(100%/6) 100%;
-            mask-size: calc(100%/6) 100%;
-    -webkit-mask-composite: source-in;
-            mask-composite: intersect;
-    animation: l10 1s infinite linear;
-    }
-    @keyframes l10 {
-    to {transform:translate(calc(100%/3))}
-    }
+    /* HTML: <div class="loader"></div> */
+.loader {
+  width: 50px;
+  aspect-ratio: 1;
+  display: grid;
+  border: 4px solid #0000;
+  border-radius: 50%;
+  border-right-color: #ED1C24;
+  animation: l15 1s infinite linear;
+}
+.loader::before,
+.loader::after {    
+  content: "";
+  grid-area: 1/1;
+  margin: 2px;
+  border: inherit;
+  border-radius: 50%;
+  animation: l15 2s infinite;
+}
+.loader::after {
+  margin: 8px;
+  animation-duration: 3s;
+}
+@keyframes l15{ 
+  100%{transform: rotate(1turn)}
+}
 </style>
 
 <body style="margin: 0; padding: 0;">
@@ -91,7 +80,7 @@
         <br>
         <div class="row">
             <div class="col-md-12">
-                <div class="card" style="margin-bottom: 20px;">
+                <div class="card" style="margin-bottom: 20px; background-color: rgba(128, 128, 128, 0.069);">
                     <div class="card-header">Formulario ATS</div>
                     <div class="card-body">
                         <div class="row">
@@ -101,13 +90,13 @@
                             </div>
                         </div>
                         <div class="row" id="rowButtons" style="display: none;">
-                            <div class="col-md-3 d-flex justify-content-start align-items-center">
-                                <button type="button" class="btn btn-danger" data-toggle="modal"
+                            <div class="col-md-6 d-flex justify-content-start align-items-center">
+                                <button type="button" class="btn btn-danger btn-block" data-toggle="modal"
                                     data-target="#reportModal">Generar Reportes
                                 </button>
                             </div>
                             <div class="col-md-6 text-center">
-                                <button class="btn btn-dark" type="button" id="btnRedep">REDEP</button>
+                                <button class="btn btn-dark btn-block" type="button" id="btnRedep">REDEP</button>
                             </div>
                         </div>
                         <hr>
@@ -147,7 +136,7 @@
                                 {% csrf_token %}
                                 <div id="divIniciarSesion" class="row justify-content-center">
                                     <div class="col-md-6">
-                                        <div class="card text-white bg-secondary mb-3">
+                                        <div class="card text-white bg-dark mb-3">
                                             <div class="card-header">Iniciar Sesión</div>
                                             <div class="card-body">
                                                 <div class="form-group">
@@ -182,7 +171,7 @@
                                 <div id="divRoutes" style="display: none;">
                                     <div class="row justify-content-center">
                                         <div class="col-md-10">
-                                            <div class="card text-white bg-secondary mb-3">
+                                            <div class="card text-white bg-dark mb-3">
                                                 <div class="card-header">Seleccionar Ruta</div>
                                                 <div class="card-body">
                                                     <div class="form-group">
@@ -251,128 +240,153 @@
                                     </div>
                                 </div>
                                 <div id="divRecibidos" style="display: none;">
-                                    <h3>Comprobantes Electronicos Recibidos</h3>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <p><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"
-                                                    style="width: 20px; height: 20px;">
-                                                    <path
-                                                        d="M272 384c9.6-31.9 29.5-59.1 49.2-86.2c0 0 0 0 0 0c5.2-7.1 10.4-14.2 15.4-21.4c19.8-28.5 31.4-63 31.4-100.3C368 78.8 289.2 0 192 0S16 78.8 16 176c0 37.3 11.6 71.9 31.4 100.3c5 7.2 10.2 14.3 15.4 21.4c0 0 0 0 0 0c19.8 27.1 39.7 54.4 49.2 86.2l160 0zM192 512c44.2 0 80-35.8 80-80l0-16-160 0 0 16c0 44.2 35.8 80 80 80zM112 176c0 8.8-7.2 16-16 16s-16-7.2-16-16c0-61.9 50.1-112 112-112c8.8 0 16 7.2 16 16s-7.2 16-16 16c-44.2 0-80 35.8-80 80z" />
-                                                </svg><b> Recomendaciones:</b> Verificar la información de las carpetas
-                                                que son necesarias para la generación del ATS.
-                                                <br>
-                                                <i><b>Click en cada tipo de comprobante para la verificación.</b></i>
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <button type="button" id="Facturas"
-                                                class="btn btn-outline-danger btn-block mt-3">
-                                                Facturas
-                                            </button>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <button type="button" id="Liquidaciones"
-                                                class="btn btn-outline-danger btn-block mt-3" style="display: none;">
-                                                Liquidaciones
-                                            </button>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <button type="button" id="NotasCredito"
-                                                class="btn btn-outline-danger btn-block mt-3" style="display: none;">
-                                                Notas de Credito
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <button type="button" id="NotasDebito"
-                                                class="btn btn-outline-danger btn-block mt-3" style="display: none;">
-                                                Notas de Debito
-                                            </button>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <button type="button" id="Retenciones"
-                                                class="btn btn-outline-danger btn-block mt-3" style="display: none;">
-                                                Retenciones
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <hr>
-                                    <div class="row">
-                                        <div class="form-group col-md-2">
-                                            <label for="dia">Seleccione el Año</label>
-                                            <select class="form-control" id="anio" name="anio">
-                                                {% for year in years %}
-                                                <option value="{{ year }}">{{ year }}</option>
-                                                {% endfor %}
-                                            </select>
-                                        </div>
-                                        <div class="form-group col-md-3">
-                                            <label for="mes">Seleccione el Mes</label>
-                                            <select class="form-control" id="mes" name="mes">
-                                                <option value="1">Enero</option>
-                                                <option value="2">Febrero</option>
-                                                <option value="3">Marzo</option>
-                                                <option value="4">Abril</option>
-                                                <option value="5">Mayo</option>
-                                                <option value="6">Junio</option>
-                                                <option value="7">Julio</option>
-                                                <option value="8">Agosto</option>
-                                                <option value="9">Septiembre</option>
-                                                <option value="10">Octubre</option>
-                                                <option value="11">Noviembre</option>
-                                                <option value="12">Diciembre</option>
-                                            </select>
-                                        </div>
-                                        <div class="form-group col-md-3">
-                                            <label for="dia">Seleccione el Día</label>
-                                            <select class="form-control" id="dia" name="dia">
-                                                <option value="0">Todos</option>
-                                                {% for day in days %}
-                                                <option value="{{ day }}">{{ day }}</option>
-                                                {% endfor %}
-                                            </select>
-                                        </div>
-                                        <div class="form-group col-md-4 ">
-                                            <label for="tipo_comprobante">Seleccione el Tipo de Comprobante</label>
-                                            <select class="form-control" id="tipo_comprobante" name="tipo_comprobante">
-                                                <option value="1">Facturas</option>
-                                                <option value="2">Liquidaciónes</option>
-                                                <option value="3">Nota de Crédito</option>
-                                                <option value="4">Nota de Débito</option>
-                                                <option value="6">Retención</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <hr>
-                                    <div class="row" id="rowDownloadCompRecib" style="display: none;">
-                                        <div class="col-md-6">
-                                            <button type="button" id="btnDownload" class="btn btn-dark btn-block mt-3">
-                                                Descargar
-                                            </button>
-                                            <br>
-                                            <div id="contentLoader" class="loader-container" style="display: none;">
-                                                <div class="loader"></div>
-                                                <h2 id="estadoPag"></h2>
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h3>Comprobantes Electronicos Recibidos</h3>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <p><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"
+                                                            style="width: 20px; height: 20px;">
+                                                            <path
+                                                                d="M272 384c9.6-31.9 29.5-59.1 49.2-86.2c0 0 0 0 0 0c5.2-7.1 10.4-14.2 15.4-21.4c19.8-28.5 31.4-63 31.4-100.3C368 78.8 289.2 0 192 0S16 78.8 16 176c0 37.3 11.6 71.9 31.4 100.3c5 7.2 10.2 14.3 15.4 21.4c0 0 0 0 0 0c19.8 27.1 39.7 54.4 49.2 86.2l160 0zM192 512c44.2 0 80-35.8 80-80l0-16-160 0 0 16c0 44.2 35.8 80 80 80zM112 176c0 8.8-7.2 16-16 16s-16-7.2-16-16c0-61.9 50.1-112 112-112c8.8 0 16 7.2 16 16s-7.2 16-16 16c-44.2 0-80 35.8-80 80z" />
+                                                        </svg><b> Recomendaciones:</b> Verificar la información de las carpetas
+                                                        que son necesarias para la generación del ATS.
+                                                        <br>
+                                                        <i><b>Click en cada tipo de comprobante para la verificación.</b></i>
+                                                    </p>
+                                                </div>
                                             </div>
                                         </div>
+                                    </div>
+                                    <br>
+                                    <div class="row">
                                         <div class="col-md-6">
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
-                                                style="width: 20px;height: 20px;">
-                                                <path
-                                                    d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24l0 112c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-112c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z" />
-                                            </svg><b> Nota:</b>
-                                            <ol>
-                                                <li>Ejecutar el botón "Descargar".</li>
-                                                <li>Se abrirá automaticamente el portal del SRI y una ventana
-                                                    solicitando el mes, día y tipo de comprobante.</li>
-                                                <li>
-                                                    <i>La interacción del usuario termina en esta parte, se recomienda
-                                                        dejar que el proceso concluya automaticamente</i>
-                                                </li>
-                                            </ol>
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <div class="row g-1">
+                                                        <div class="col-md-4">
+                                                            <button type="button" id="Facturas"
+                                                                class="btn btn-outline-danger btn-block mt-3">
+                                                                Facturas
+                                                            </button>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <button type="button" id="Liquidaciones"
+                                                                class="btn btn-outline-danger btn-block mt-3" style="display: none;">
+                                                                Liquidaciones
+                                                            </button>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <button type="button" id="NotasCredito"
+                                                                class="btn btn-outline-danger btn-block mt-3" style="display: none;">
+                                                                Notas de Credito
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row g-1">
+                                                        <div class="col-md-4">
+                                                            <button type="button" id="NotasDebito"
+                                                                class="btn btn-outline-danger btn-block mt-3" style="display: none;">
+                                                                Notas de Debito
+                                                            </button>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <button type="button" id="Retenciones"
+                                                                class="btn btn-outline-danger btn-block mt-3" style="display: none;">
+                                                                Retenciones
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <br>
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <div class="row g-1">
+                                                        <div class="col-md-4">
+                                                            <label for="dia">Seleccione el Año</label>
+                                                            <select class="form-control" id="anio" name="anio">
+                                                                {% for year in years %}
+                                                                <option value="{{ year }}">{{ year }}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                            <br>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label for="mes">Seleccione el Mes</label>
+                                                            <select class="form-control" id="mes" name="mes">
+                                                                <option value="1">Enero</option>
+                                                                <option value="2">Febrero</option>
+                                                                <option value="3">Marzo</option>
+                                                                <option value="4">Abril</option>
+                                                                <option value="5">Mayo</option>
+                                                                <option value="6">Junio</option>
+                                                                <option value="7">Julio</option>
+                                                                <option value="8">Agosto</option>
+                                                                <option value="9">Septiembre</option>
+                                                                <option value="10">Octubre</option>
+                                                                <option value="11">Noviembre</option>
+                                                                <option value="12">Diciembre</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label for="dia">Seleccione el Día</label>
+                                                            <select class="form-control" id="dia" name="dia">
+                                                                <option value="0">Todos</option>
+                                                                {% for day in days %}
+                                                                <option value="{{ day }}">{{ day }}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <br>
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <div class="row g-1">
+                                                        <div class="col-md-12">
+                                                            <label for="tipo_comprobante">Seleccione el Tipo de Comprobante</label>
+                                                            <select class="form-control" id="tipo_comprobante" name="tipo_comprobante">
+                                                                <option value="1">Facturas</option>
+                                                                <option value="2">Liquidaciónes</option>
+                                                                <option value="3">Nota de Crédito</option>
+                                                                <option value="4">Nota de Débito</option>
+                                                                <option value="6">Retención</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6" id="rowDownloadCompRecib" style="display: none;">
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <div id="contentLoader" class="loader-container" style="display: none;">
+                                                        <div class="loader"></div>
+                                                        <h2 id="estadoPag"></h2>
+                                                    </div>
+                                                    <br>
+                                                    <button type="button" id="btnDownload" class="btn btn-dark btn-block mt-3">
+                                                        Descargar
+                                                    </button>
+                                                    <br>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
+                                                        style="width: 20px;height: 20px;">
+                                                        <path
+                                                            d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24l0 112c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-112c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z" />
+                                                    </svg><b> Nota:</b>
+                                                    <ol>
+                                                        <li>Ejecutar el botón "Descargar".</li>
+                                                        <li>Se abrirá automaticamente el portal del SRI y una ventana
+                                                            solicitando el mes, día y tipo de comprobante.</li>
+                                                        <li>
+                                                            <i>La interacción del usuario termina en esta parte, se recomienda
+                                                                dejar que el proceso concluya automaticamente</i>
+                                                        </li>
+                                                    </ol>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -927,6 +941,7 @@
         });
 
         btnDownload.addEventListener('click', () => {
+            btnDownload.disabled = true;
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             const mesSelect = document.getElementById('mes');
@@ -957,7 +972,6 @@
                     },
                     success: function (response) {
                         toastr.success(response.message, "Éxito");
-                        contentLoader.style.display = '';
                     },
                     error: function (response) {
                         contentLoader.style.display = 'none';
@@ -1251,6 +1265,13 @@
                 void estadoPag.offsetWidth;
                 estadoPag.classList.add('fade');
                 estadoPag.innerText = data.estado;
+                if(data.estado == "Esperando ejecución" || data.estado == "Comprobantes descargados exitosamente."){
+                    contentLoader.style.display = 'none';
+                    btnDownload.disabled = false;
+                }else{
+                    btnDownload.disabled = true;
+                    contentLoader.style.display = '';
+                }
             })
             .catch(error => console.error('Error:', error));
         }
