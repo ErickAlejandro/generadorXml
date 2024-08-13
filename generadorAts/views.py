@@ -39,7 +39,7 @@ def ejecutar_script(username, password, mes, nombremesrecibidos, dia, tipo_compr
             "4": "NotasDebito",
             "6": "Retenciones"
         }
-        sendState('')
+        sendState('Esperando ejecución')
         documents_folder = directory
         os.makedirs(documents_folder, exist_ok=True)
 
@@ -148,7 +148,7 @@ def ejecutar_script(username, password, mes, nombremesrecibidos, dia, tipo_compr
 
             # Esperar que la IA resuelva el captcha
             sendState('Resolviendo Captcha ...')
-            time.sleep(60)
+            time.sleep(100)
 
             # Descargar listado txt
             listado_button = WebDriverWait(driver, 10).until(
@@ -209,7 +209,6 @@ def ejecutar_script(username, password, mes, nombremesrecibidos, dia, tipo_compr
                                                             "/html/body/div[2]/div[2]/div[3]/form[2]/div[5]/div/div[2]/table/tbody/tr")
 
                         # Iterar sobre cada enlace y hacer clic
-                        sendState('Descargando archivos ...')
                         for elemento in elementos_tr:
                             enlace = elemento.find_element(By.XPATH, 'td[10]//a')
                             enlace.click()
@@ -219,7 +218,6 @@ def ejecutar_script(username, password, mes, nombremesrecibidos, dia, tipo_compr
                         enlace_siguiente = driver.find_element(By.XPATH,
                                                             '//*[@id="frmPrincipal:tablaCompRecibidos_paginator_bottom"]/span[4]')
                         enlace_siguiente.click()
-                        sendState('Buscando paginación.')
                         time.sleep(5)  # Espera 5 segundos para cargar la página siguiente
 
                         # Mover el cursor del mouse sobre el botón de captcha
@@ -233,6 +231,7 @@ def ejecutar_script(username, password, mes, nombremesrecibidos, dia, tipo_compr
                 renombrar_xmls()
 
             # Llamada a la función para hacer clic en los enlaces y descargar los archivos XML
+            sendState('Descargando archivos ...')
             hacer_clic_en_enlace()
 
             # Crear una ventana emergente para mostrar el mensaje
@@ -247,12 +246,12 @@ def ejecutar_script(username, password, mes, nombremesrecibidos, dia, tipo_compr
 
 def sendState(text):
     if text == '':
-        cache.set('estado_actual', 'Esperando ejecución')
+        cache.set('estado_actual', 'Sin ejecutar')
     else:
         cache.set('estado_actual', text)
 
 def getEstado(request):
-    estado = cache.get('estado_actual', 'Esperando ejecución')
+    estado = cache.get('estado_actual', 'Sin ejecutar')
     return JsonResponse({'estado': estado})
 
 def ejecutar_script_botemitidos(username, password, mesemitidos, nombremesemitidos, diaemitidos, directory,anioemitidos):

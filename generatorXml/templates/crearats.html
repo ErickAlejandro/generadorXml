@@ -47,7 +47,6 @@
         place-items: center;
     }
     /* HTML: <div class="loader"></div> */
-    /* HTML: <div class="loader"></div> */
 .loader {
   width: 50px;
   aspect-ratio: 1;
@@ -72,6 +71,40 @@
 }
 @keyframes l15{ 
   100%{transform: rotate(1turn)}
+}
+
+/* HTML: <div class="loader"></div> */
+#loaderDownload {
+  margin-top: 20px;
+  width: 90px;
+  height: 14px;
+  box-shadow: 0 3px 0 #212121;
+  position: relative;
+  display: grid;
+  clip-path: inset(-60px 0 -5px)
+}
+#loaderDownload:after {
+  content: "";
+  position: relative;
+  background: repeating-linear-gradient(90deg,#0000 0 calc(50% - 8px), #313131 0 calc(50% + 8px), #0000 0 100%) 0 0/calc(100%/3) 100%;
+  animation: l6-1 1s infinite;
+} 
+#loaderDownload:before {
+  content: "";
+  position: absolute;
+  width: 14px;
+  aspect-ratio: 1;
+  left: calc(50% - 7px);
+  bottom: 0;
+  border-radius: 50%;
+  background: #ED1C24;
+  animation: l6-2 1s infinite;
+}
+@keyframes l6-1 {
+  50%,100% {background-position: calc(100%/2) 0}
+}
+@keyframes l6-2 {
+  0%,50% {transform:translateY(-80px)}
 }
 </style>
 
@@ -363,7 +396,9 @@
                                             <div class="card">
                                                 <div class="card-body">
                                                     <div id="contentLoader" class="loader-container" style="display: none;">
-                                                        <div class="loader"></div>
+                                                        <div class="loader" id="loader"></div>
+                                                        <div id="loaderDownload"></div>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" id="svgSuccess" style="width: 60px; height: auto;" viewBox="0 0 512 512"><path d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-111 111-47-47c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64c9.4 9.4 24.6 9.4 33.9 0L369 209z"/></svg>
                                                         <h2 id="estadoPag"></h2>
                                                     </div>
                                                     <br>
@@ -972,6 +1007,7 @@
                     },
                     success: function (response) {
                         toastr.success(response.message, "Éxito");
+                        btnDownload.disabled = true;
                     },
                     error: function (response) {
                         contentLoader.style.display = 'none';
@@ -1257,6 +1293,10 @@
         }
         // Funcion para ejecución de cada 3 segundos de consulta del estado
         const estadoPag = document.getElementById('estadoPag');
+        const loader = document.getElementById('loader');
+        const loaderDownload = document.getElementById('loaderDownload');
+        const svgSuccess = document.getElementById('svgSuccess');
+
         function fetchEstado() {
             fetch('/get-estado/')
             .then(response => response.json())
@@ -1265,12 +1305,44 @@
                 void estadoPag.offsetWidth;
                 estadoPag.classList.add('fade');
                 estadoPag.innerText = data.estado;
-                if(data.estado == "Esperando ejecución" || data.estado == "Comprobantes descargados exitosamente."){
-                    contentLoader.style.display = 'none';
-                    btnDownload.disabled = false;
-                }else{
-                    btnDownload.disabled = true;
-                    contentLoader.style.display = '';
+                var estado = data.estado
+                console.log(estado)
+                switch (estado) {
+                    case "Sin ejecutar":
+                        btnDownload.disabled = false;
+                        contentLoader.style.display = "none";
+                        loader.style.display = "none";
+                        loaderDownload.style.display = "none";
+                        svgSuccess.style.display = "none";
+                        break
+                    case "Esperando ejecución":
+                        btnDownload.disabled = true;
+                        contentLoader.style.display = "";
+                        loader.style.display = "";
+                        loaderDownload.style.display = "none";
+                        svgSuccess.style.display = "none";
+                        break;
+                    case "Ingresando al portal SRI.":
+                        btnDownload.disabled = true;
+                        contentLoader.style.display = "";
+                        loader.style.display = "";
+                        loaderDownload.style.display = "none";
+                        svgSuccess.style.display = "none";
+                        break;
+                    case "Descargando archivos ...":
+                        btnDownload.disabled = true;
+                        contentLoader.style.display = "";
+                        loader.style.display = "none";
+                        loaderDownload.style.display = "";
+                        svgSuccess.style.display = "none";
+                        break
+                    case "Comprobantes descargados exitosamente.":
+                        contentLoader.style.display = "";
+                        btnDownload.disabled = false;
+                        loader.style.display = "none";
+                        loaderDownload.style.display = "none";
+                        svgSuccess.style.display = "";
+                        break;
                 }
             })
             .catch(error => console.error('Error:', error));
