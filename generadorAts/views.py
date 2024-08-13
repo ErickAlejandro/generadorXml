@@ -140,64 +140,17 @@ def ejecutar_script(username, password, mes, nombremesrecibidos, dia, tipo_compr
                 EC.element_to_be_clickable((By.XPATH, '//*[@id="btnRecaptcha"]'))
             )
             recaptcha_button.click()
-            print("Clic en el botón Recaptcha exitoso.", flush=True)
+            sendState('Ejecutando Catchap ...')
 
             # Esperar que la IA resuelva el captcha
             time.sleep(60)
-
-            # Verificar el texto de la paginación y hacer clic si los números no son iguales
-            try:
-                paginacion_texto_element = WebDriverWait(driver, 10).until(
-                    EC.presence_of_element_located((By.XPATH, '//*[@id="frmPrincipal:tablaCompRecibidos_paginator_bottom"]/span[3]'))
-                )
-                paginacion_texto = paginacion_texto_element.text.strip()
-                print(f"Paginación detectada: {paginacion_texto}", flush=True)
-
-                # Extraer los números del texto
-                numeros = paginacion_texto.split(" of ")
-                if len(numeros) == 2 and numeros[0] != numeros[1]:
-                    print(f"Los números en la paginación no son iguales: {numeros[0]} y {numeros[1]}. Procediendo a hacer clic en la siguiente página.", flush=True)
-
-                    # Hacer clic en el botón para ir a la siguiente página
-                    siguiente_pagina_button = WebDriverWait(driver, 10).until(
-                        EC.element_to_be_clickable((By.XPATH, '//*[@id="frmPrincipal:tablaCompRecibidos_paginator_bottom"]/span[5]'))
-                    )
-                    siguiente_pagina_button.click()
-                    print("Clic en el botón de la siguiente página.", flush=True)
-
-                    # Esperar a que la tabla se recargue
-                    time.sleep(2)  # Espera para asegurar que la tabla se recargue
-
-                    # Obtener el último `tr` de la tabla
-                    tabla_elementos = driver.find_elements(By.XPATH, '/html/body/div[2]/div[2]/div[3]/form[2]/div[5]/div/div[2]/table/tbody/tr')
-                    ultimo_tr = tabla_elementos[-1]  # Selecciona el último `tr`
-                    ultimo_texto = ultimo_tr.text.strip()
-                    print(f"Texto extraído del último `tr`: {ultimo_texto}", flush=True)
-                    
-                    # Extraer el texto específico que necesitas del `tr` (ajusta según la estructura de la fila)
-                    texto_especifico = ultimo_tr.find_element(By.XPATH, 'td[1]').text.strip()
-                    print(f"Texto específico extraído: {texto_especifico}", flush=True)
-
-                    volver = WebDriverWait(driver, 10).until(
-                        EC.element_to_be_clickable((By.XPATH, '//*[@id="frmPrincipal:tablaCompRecibidos_paginator_bottom"]/span[1]'))
-                    )
-                    volver.click()
-                    print("Clic en el volver", flush=True)
-
-                    action = ActionChains(driver)
-                    action.move_to_element(recaptcha_button).perform()
-
-
-
-            except Exception as e:
-                print(f"Error al intentar verificar y extraer información de la paginación: {e}", flush=True)
 
             # Descargar listado txt
             listado_button = WebDriverWait(driver, 10).until(
                 EC.element_to_be_clickable((By.XPATH, '//*[@id="frmPrincipal:lnkTxtlistado"]'))
             )
             listado_button.click()
-            print("Clic en el enlace para obtener el listado.", flush=True)
+            sendState('Consultando ...')
 
             # Función para obtener el valor de numeroAutorizacion de un archivo XML
             def obtener_numero_autorizacion(xml_path):
@@ -223,13 +176,13 @@ def ejecutar_script(username, password, mes, nombremesrecibidos, dia, tipo_compr
                         # Renombrar el archivo con el valor de numero_autorizacion
                         new_filename = f"{xml_folder}\\{numero_autorizacion}.xml"
                         os.rename(file, new_filename)
-                        print(f"Archivo {file} renombrado como {new_filename}", flush=True)
 
                         # Mover el archivo a la carpeta correspondiente del tipo de comprobante en RECIBIDAS
                         shutil.move(new_filename, tipo_comprobante_folder)
-                        print(f"Archivo {new_filename} movido a {tipo_comprobante_folder}", flush=True)
                     except Exception as e:
-                        print(f"Error al procesar el archivo {file}: {e}", flush=True)
+                        sendState(f"Error al procesar el archivo {file}: {e}")
+
+                sendState('Ejecutando Catchap')
 
             # Función para hacer clic en los enlaces y descargar los archivos XML
             def hacer_clic_en_enlace():
@@ -240,7 +193,6 @@ def ejecutar_script(username, password, mes, nombremesrecibidos, dia, tipo_compr
                         span_paginacion = driver.find_element(By.XPATH,
                                                             '/html/body/div[2]/div[2]/div[3]/form[2]/div[5]/div/div[2]/table/tfoot/tr/td/span[3]')
                         texto_paginacion = span_paginacion.text
-                        print("Texto de paginación:", texto_paginacion, flush=True)
 
                         if paginacion_previa == texto_paginacion:
                             break  # Si la paginación es la misma que la anterior, salir del bucle
@@ -252,17 +204,17 @@ def ejecutar_script(username, password, mes, nombremesrecibidos, dia, tipo_compr
                                                             "/html/body/div[2]/div[2]/div[3]/form[2]/div[5]/div/div[2]/table/tbody/tr")
 
                         # Iterar sobre cada enlace y hacer clic
+                        sendState('Descargando archivos ...')
                         for elemento in elementos_tr:
                             enlace = elemento.find_element(By.XPATH, 'td[10]//a')
                             enlace.click()
-                            print(f"Clic en el enlace {enlace.text}", flush=True)
                             time.sleep(1)  # Espera 1 segundo antes de continuar
 
                         # Hacer clic en el enlace de paginación
                         enlace_siguiente = driver.find_element(By.XPATH,
                                                             '//*[@id="frmPrincipal:tablaCompRecibidos_paginator_bottom"]/span[4]')
                         enlace_siguiente.click()
-                        print("Clic en enlace de paginación.", flush=True)
+                        sendState('Buscando paginaciòn')
                         time.sleep(5)  # Espera 5 segundos para cargar la página siguiente
 
                         # Mover el cursor del mouse sobre el botón de captcha
@@ -279,27 +231,7 @@ def ejecutar_script(username, password, mes, nombremesrecibidos, dia, tipo_compr
             hacer_clic_en_enlace()
 
             # Crear una ventana emergente para mostrar el mensaje
-            ventana_emergente = tk.Tk()
-            ventana_emergente.title("Descarga exitosa")
-
-            # Función para cerrar la ventana emergente y finalizar el programa
-            def cerrar_ventana():
-                ventana_emergente.destroy()
-                driver.quit()  # Cerrar el navegador y finalizar el programa
-
-            # Mensaje para mostrar en la ventana emergente
-            mensaje = "Comprobantes descargados correctamente."
-
-            # Etiqueta para mostrar el mensaje
-            etiqueta = tk.Label(ventana_emergente, text=mensaje)
-            etiqueta.pack(padx=20, pady=10)
-
-            # Botón "Aceptar" para cerrar la ventana emergente
-            boton_aceptar = tk.Button(ventana_emergente, text="Aceptar", command=cerrar_ventana)
-            boton_aceptar.pack(pady=5)
-
-            # Mostrar la ventana emergente
-            ventana_emergente.mainloop()
+            sendState('Comprobantes descargados exitosamente')
 
         except Exception as e:
             print("Error:", e, flush=True)
@@ -310,12 +242,12 @@ def ejecutar_script(username, password, mes, nombremesrecibidos, dia, tipo_compr
 
 def sendState(text):
     if text == '':
-        cache.set('estado_actual', 'Esperando ejecucion')
+        cache.set('estado_actual', 'Esperando ejecución')
     else:
         cache.set('estado_actual', text)
 
 def getEstado(request):
-    estado = cache.get('estado_actual', 'Sin estado')
+    estado = cache.get('estado_actual', 'Esperando ejecución')
     return JsonResponse({'estado': estado})
 
 def ejecutar_script_botemitidos(username, password, mesemitidos, nombremesemitidos, diaemitidos, directory,anioemitidos):

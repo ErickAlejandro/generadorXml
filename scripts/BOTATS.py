@@ -152,52 +152,7 @@ try:
     time.sleep(60)
 
     # Verificar el texto de la paginación y hacer clic si los números no son iguales
-    try:
-        paginacion_texto_element = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, '//*[@id="frmPrincipal:tablaCompRecibidos_paginator_bottom"]/span[3]'))
-        )
-        paginacion_texto = paginacion_texto_element.text.strip()
-        print(f"Paginación detectada: {paginacion_texto}", flush=True)
-
-        # Extraer los números del texto
-        numeros = paginacion_texto.split(" of ")
-        if len(numeros) == 2 and numeros[0] != numeros[1]:
-            print(f"Los números en la paginación no son iguales: {numeros[0]} y {numeros[1]}. Procediendo a hacer clic en la siguiente página.", flush=True)
-
-            # Hacer clic en el botón para ir a la siguiente página
-            siguiente_pagina_button = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, '//*[@id="frmPrincipal:tablaCompRecibidos_paginator_bottom"]/span[5]'))
-            )
-            siguiente_pagina_button.click()
-            print("Clic en el botón de la siguiente página.", flush=True)
-
-            # Esperar a que la tabla se recargue
-            time.sleep(2)  # Espera para asegurar que la tabla se recargue
-
-            # Obtener el último `tr` de la tabla
-            tabla_elementos = driver.find_elements(By.XPATH, '/html/body/div[2]/div[2]/div[3]/form[2]/div[5]/div/div[2]/table/tbody/tr')
-            ultimo_tr = tabla_elementos[-1]  # Selecciona el último `tr`
-            ultimo_texto = ultimo_tr.text.strip()
-            print(f"Texto extraído del último `tr`: {ultimo_texto}", flush=True)
-            
-            # Extraer el texto específico que necesitas del `tr` (ajusta según la estructura de la fila)
-            texto_especifico = ultimo_tr.find_element(By.XPATH, 'td[1]').text.strip()
-            print(f"Texto específico extraído: {texto_especifico}", flush=True)
-
-            volver = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, '//*[@id="frmPrincipal:tablaCompRecibidos_paginator_bottom"]/span[1]'))
-            )
-            volver.click()
-            print("Clic en el volver", flush=True)
-
-            action = ActionChains(driver)
-            action.move_to_element(recaptcha_button).perform()
-
-
-
-    except Exception as e:
-        print(f"Error al intentar verificar y extraer información de la paginación: {e}", flush=True)
-
+    
     # Descargar listado txt
     listado_button = WebDriverWait(driver, 10).until(
         EC.element_to_be_clickable((By.XPATH, '//*[@id="frmPrincipal:lnkTxtlistado"]'))
