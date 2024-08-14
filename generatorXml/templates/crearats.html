@@ -1121,39 +1121,37 @@
         });
 
         btnCrearAts.addEventListener('click', () => {
-            const aniomodal = document.getElementById('aniomodal').value;
-            const mesSelect = document.getElementById('mesmodal');
-            const mes = mesSelect.value;  // Esto obtiene el valor (número) del mes
-            const nombremesmodal = mesSelect.options[mesSelect.selectedIndex].text;
-            
-            console.log('ats',aniomodal,nombremesmodal,)
+    const aniomodal = document.getElementById('aniomodal').value;
+    const mesSelect = document.getElementById('mesmodal');
+    const mes = mesSelect.value;  // Esto obtiene el valor (número) del mes
+    const nombremesmodal = mesSelect.options[mesSelect.selectedIndex].text;
+    
+    console.log('ats', aniomodal, nombremesmodal);
 
-            if ( !aniomodal || !mes) {
-                toastr.warning("Por favor, complete todos los campos requeridos.", "Advertencia");
-            } else {
-                $.ajax({
-                    type: 'POST',
-                    url: atsForm.action,
-                    data: {
-                        'csrfmiddlewaretoken': '{{ csrf_token }}',
-                        'action': 'CrearAts',
-                        'directory': valRutaFolder,
-                        'aniomodal': aniomodal,
-                        'nombremesmodal': nombremesmodal
-                    },
-                    success: function (response) {
-                        if (response.output.state == 'None') {
-                            toastr.error('Revisar que los archivos .XML se encuentren en la carpeta correcta', 'Alerta');
-                        } else {
-                            toastr.success('Se ha generado correctamente el ATS en la carpeta c:/ia/SRIBOT/XML', 'Exito');
-                        }
-                    },
-                    error: function (response) {
-                        toastr.error('Error al iniciar el script.', "Error");
-                    }
-                });
+    if (!aniomodal || !mes) {
+        toastr.warning("Por favor, complete todos los campos requeridos.", "Advertencia");
+    } else {
+        $.ajax({
+            type: 'POST',
+            url: atsForm.action,
+            data: {
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+                'action': 'CrearAts',
+                'directory': valRutaFolder,
+                'aniomodal': aniomodal,
+                'nombremesmodal': nombremesmodal
+            },
+            success: function (response) {
+                toastr.success(response.output, 'Exito');
+            },
+            error: function (response) {
+                toastr.error('Error al iniciar el script.', "Error");
             }
         });
+    }
+});
+
+
 
         function checkXmlFiles(buttonId) {
             // Condicion para mostrar los botones

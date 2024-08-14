@@ -3,12 +3,9 @@ import os
 from collections import defaultdict
 import sys
 
-directory = sys.argv[1]
-nombremesmodal = sys.argv[2]
-aniomodal = sys.argv[3]
-
-print(directory,nombremesmodal,aniomodal)
-
+directory = 'C:\ia\SRIBOT'
+nombremesmodal = 'Agosto'
+aniomodal = '2024'
 
 
 
@@ -316,7 +313,9 @@ def crear_ats(factura_emitidas_roots, factura_recibidas_roots, ruta_carpeta_rete
     
     tree = ET.ElementTree(ats_root)
     nombre_archivo = f'ATS{mes}{anio}.xml'
-    ruta_archivo_ats = os.path.join(ruta_salida, nombre_archivo)
+    ruta_archivo_ats = os.path.join(directory, 'XML', aniomodal, nombremesmodal, nombre_archivo)
+    # Crear directorios si no existen
+    os.makedirs(os.path.dirname(ruta_archivo_ats), exist_ok=True)
     with open(ruta_archivo_ats, 'wb') as xml_file:
         xml_file.write(b'<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n')
         xml_file.write(b'<!--  Generado por Ishida Asociados   -->\n')
@@ -361,4 +360,4 @@ for archivo in os.listdir(ruta_carpeta_facturas_recibidas):
 
 
 crear_ats(factura_emitidas_roots, factura_recibidas_roots, ruta_carpeta_retenciones, r'C:\IA\SRIBOT\XML', ruta_anulados)
-print(f"Archivo ATS creado exitosamente en C:\\IA\\SRIBOT\\XML")
+print(f"Archivo ATS creado exitosamente en {os.path.join(directory, 'XML', aniomodal, nombremesmodal)}")
