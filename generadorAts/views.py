@@ -28,10 +28,10 @@ from xml.etree import ElementTree as ET
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import TimeoutException
 from django.core.cache import cache
+import requests
 
 def ejecutar_script(username, password, mes, nombremesrecibidos, dia, tipo_comprobante, directory, anio):
     try:
-        print(username, password, mes, nombremesrecibidos, dia, tipo_comprobante, directory, anio)
         tipo_comprobante_nombres = {
             "1": "Facturas",
             "2": "Liquidaciones",
@@ -254,20 +254,156 @@ def getEstado(request):
     estado = cache.get('estado_actual', 'Sin ejecutar')
     return JsonResponse({'estado': estado})
 
-def ejecutar_script_botemitidos(username, password, mesemitidos, nombremesemitidos, diaemitidos, directory,anioemitidos):
-    script_path = os.path.join(os.path.dirname(__file__), '..', 'scripts', 'BOTEMITIDOS.py')
-    python_executable = os.path.join(os.path.dirname(__file__), '..', 'venv', 'Scripts', 'python.exe')
-    
+def ejecutar_script_botemitidos(nombremesemitidos, directory,anioemitidos):
+    sendStateEmit('Esperando ejecución')
+    time.sleep(1)
     try:
-        result = subprocess.run([python_executable, script_path, username, password, mesemitidos, nombremesemitidos, diaemitidos, directory,anioemitidos], capture_output=True, text=True)
-        if result.returncode == 0:
-            print("Script ejecutado con éxito")
-            print("Salida:", result.stdout)
-        else:
-            print("Error al ejecutar el script")
-            print("Error:", result.stderr)
+        # Crear Carpeta SRIBOT EN DOCUMENTOS
+        documents_folder = directory
+        os.makedirs(documents_folder, exist_ok=True)
+        # Crear carpeta XML dentro de SRIBOT
+        xml_folder = os.path.join(documents_folder, 'XML', f'{anioemitidos}', f'{nombremesemitidos}', 'EMITIDAS')
+        os.makedirs(xml_folder, exist_ok=True)
+
+        # Crear subcarpetas si no existen
+        subcarpetas = ['FacturasE', 'LiquidacionesE', 'NotasCreditoE', 'NotasDebitoE', 'RetencionesE']
+        for subcarpeta in subcarpetas:
+            os.makedirs(os.path.join(xml_folder, subcarpeta), exist_ok=True)
+
+        # Configuración del navegador Chrome
+        chrome_options = Options()
+        chrome_options.add_argument("--allow-running-insecure-content")  # Permitir contenido inseguro
+        chrome_options.add_experimental_option("prefs", {
+            "download.default_directory": xml_folder,  # Cambiar la ruta de descarga inicial
+            "download.prompt_for_download": False,
+            "download.directory_upgrade": True,
+            "safebrowsing.enabled": True
+        })
+
+        # Configuración del Bot
+        chrome_options.add_extension("C:\\Resolver.crx")
+        # Función para procesar los archivos TXT y generar archivos XML
+        sendStateEmit('Procesando archivo TXT.')
+        url = "https://cel.sri.gob.ec/comprobantes-electronicos-ws/AutorizacionComprobantesOffline"
+        headers = {
+            "Content-Type": "text/xml; charset=utf-8",
+            "SOAPAction": ""
+        }
+        
+        def crear_body(clave_acceso):
+            return f"""<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ec="http://ec.gob.sri.ws.autorizacion">
+            <soapenv:Header/>
+            <soapenv:Body>
+                <ec:autorizacionComprobante>
+                    <claveAccesoComprobante>{clave_acceso}</claveAccesoComprobante>
+                </ec:autorizacionComprobante>
+            </soapenv:Body>
+        </soapenv:Envelope>"""
+
+        # Buscar en todas las subcarpetas de la carpeta XML
+        sendStateEmit('Analizando subcarpetas en XML.')
+        time.sleep(1)
+        for root, dirs, files in os.walk(xml_folder):
+            archivos_txt = glob.glob(os.path.join(root, "*.txt"))
+            for ruta_txt in archivos_txt:
+                with open(ruta_txt, "r", encoding="latin-1") as file:
+                    lines = file.readlines()
+                sendStateEmit('Obteniendo clave de acceso.')
+                time.sleep(1)
+                claves_acceso = []
+                for line in lines[1:]:
+                    columns = line.split("\t")
+                    if len(columns) > 2:
+                        clave_acceso = columns[2].strip()
+                        if clave_acceso:
+                            claves_acceso.append(clave_acceso)
+                sendStateEmit('Ingresando clave de accesos.')
+                time.sleep(1)
+                for clave_acceso in claves_acceso:
+                    # Verificar si el archivo XML ya existe
+                    ruta_archivo = os.path.join(root, f"{clave_acceso}.xml")
+                    if os.path.exists(ruta_archivo):
+                        print(f"El archivo {ruta_archivo} ya existe. Saltando...")
+                        sendStateEmit('No se encontró el archivo.')
+                        time.sleep(1)
+                        continue
+
+                    sendStateEmit('Creando archivo.')
+                    time.sleep(1)
+                    body = crear_body(clave_acceso)
+                    response = requests.post(url, data=body, headers=headers)
+                    
+                    sendStateEmit('Consultando en el servicio.')
+                    time.sleep(1)
+                    if response.status_code == 200:
+                        response_xml = ET.fromstring(response.text)
+                        ns = {'soap': 'http://schemas.xmlsoap.org/soap/envelope/',
+                            'ns2': 'http://ec.gob.sri.ws.autorizacion'}
+
+                        autorizacion_response = response_xml.find('.//ns2:autorizacionComprobanteResponse', ns)
+                        sendStateEmit('Ingresando datos.')
+                        time.sleep(1)
+                        if autorizacion_response is not None:
+                            respuesta_autorizacion = autorizacion_response.find('RespuestaAutorizacionComprobante', ns)
+                            if respuesta_autorizacion is not None:
+                                autorizaciones = respuesta_autorizacion.find('autorizaciones', ns)
+                                if autorizaciones is not None:
+                                    autorizacion = autorizaciones.find('autorizacion', ns)
+                                    if autorizacion is not None:
+                                        estado = autorizacion.find('estado').text
+                                        numero_autorizacion = autorizacion.find('numeroAutorizacion').text
+                                        fecha_autorizacion = autorizacion.find('fechaAutorizacion').text
+                                        ambiente = autorizacion.find('ambiente').text
+                                        comprobante = autorizacion.find('comprobante').text
+                                        sendStateEmit('Generando XML.')
+                                        time.sleep(1)
+                                        nuevo_xml = f"""<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+                                        <autorizacion>
+                                        <estado>{estado}</estado>
+                                        <numeroAutorizacion>{numero_autorizacion}</numeroAutorizacion>
+                                        <fechaAutorizacion>{fecha_autorizacion}</fechaAutorizacion>
+                                        <ambiente>{ambiente}</ambiente>
+                                        <comprobante><![CDATA[{comprobante}]]></comprobante>
+                                        <mensajes/>
+                                        </autorizacion>"""
+
+                                        with open(ruta_archivo, "w", encoding="utf-8") as f:
+                                            f.write(nuevo_xml)
+
+                                        print(f"Archivo guardado en: {ruta_archivo}")
+                                        sendStateEmit('Archivo guardado correctamente.')
+                                        time.sleep(1)
+                                    else:
+                                        sendStateEmit('No se encontró el elemento de autorización.')
+                                        print(f"No se encontró el elemento 'autorizacion' para la clave {clave_acceso}.")
+                                else:
+                                    sendStateEmit('No se encontró el elemento autorizaciones.')
+                                    print(f"No se encontró el elemento 'autorizaciones' para la clave {clave_acceso}.")
+                            else:
+                                sendStateEmit('No se encontró el elemento RespuestaAutorizacionComprobante.')
+                                print(f"No se encontró el elemento 'RespuestaAutorizacionComprobante' para la clave {clave_acceso}.")
+                        else:
+                            sendStateEmit('No se encontró el elemento autorizacionComprobanteResponse.')
+                            print(f"No se encontró el elemento 'autorizacionComprobanteResponse' para la clave {clave_acceso}.")
+                    else:
+                        sendStateEmit('Error en la consulta')
+                        print(f"Error en la solicitud para la clave {clave_acceso}. Estado: {response.status_code}")
+        
+        time.sleep(2)
+        sendStateEmit('Descarga completa.')
     except Exception as e:
-        print("Excepción al intentar ejecutar el script:", str(e))
+        sendStateEmit('Error en la ejecución, revisar al consola para mas información.')
+        print("Error en el proceso de ejecución:", str(e))
+
+def sendStateEmit(text):
+    if text == '':
+        cache.set('estado_actual', 'Sin ejecutar')
+    else:
+        cache.set('estado_actual', text)
+
+def getEstadoEmit(request):
+    estado = cache.get('estado_actual', 'Sin ejecutar')
+    return JsonResponse({'estado': estado})
 
 
 def ejecutar_script_reporterecibidos(directory, nombremesmodal, aniomodal):

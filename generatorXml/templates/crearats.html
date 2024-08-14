@@ -1367,7 +1367,6 @@
                 estadoPag.classList.add('fade');
                 estadoPag.innerText = data.estado;
                 var estado = data.estado
-                console.log(estado)
                 switch (estado) {
                     case "Sin ejecutar":
                         btnDownload.disabled = false;
@@ -1410,6 +1409,22 @@
             .catch(error => console.error('Error:', error));
         }
         setInterval(fetchEstado, 1000);
+
+        function fetchEstadoEmit() {
+            fetch('/get-estadoEmit/')
+            .then(response => response.json())
+            .then(data => {
+                estadoPag.classList.remove('fade');
+                void estadoPag.offsetWidth;
+                estadoPag.classList.add('fade');
+                estadoPag.innerText = data.estado;
+                var estado = data.estado
+                console.log(estado)
+                
+            })
+            .catch(error => console.error('Error:', error));
+        }
+        setInterval(fetchEstadoEmit, 1000);
     });
 </script>
 

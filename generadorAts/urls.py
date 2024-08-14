@@ -9,4 +9,6 @@ urlpatterns = [
     path('delete_files/', views.delete_files, name='delete_files'),
     path('send-state/', views.sendState, name='send_state'),
     path('get-estado/', views.getEstado, name='get_estado'),
+    path('send-stateEmit/', views.sendStateEmit, name='send_state_emit'),
+    path('get-estadoEmit/', views.getEstadoEmit, name='get_estado_emit'),
 ]
