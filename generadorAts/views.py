@@ -254,8 +254,8 @@ def getEstado(request):
     estado = cache.get('estado_actual', 'Sin ejecutar')
     return JsonResponse({'estado': estado})
 
-def ejecutar_script_botemitidos(nombremesemitidos, directory,anioemitidos):
-    sendStateEmit('Esperando ejecución')
+def ejecutar_script_botemitidos(username, password, mesemitidos, nombremesemitidos, diaemitidos, directory,anioemitidos):
+    sendStateEmit('Esperando ejecución.')
     time.sleep(1)
     try:
         # Crear Carpeta SRIBOT EN DOCUMENTOS
