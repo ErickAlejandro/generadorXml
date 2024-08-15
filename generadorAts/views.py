@@ -312,11 +312,9 @@ def ejecutar_script_botemitidos(username, password, mesemitidos, nombremesemitid
         time.sleep(1)
         for root, dirs, files in os.walk(xml_folder):
             archivos_txt = glob.glob(os.path.join(root, "*.txt"))
-            for ruta_txt in archivos_txt:
+            for index, ruta_txt in enumerate(archivos_txt):
                 with open(ruta_txt, "r", encoding="latin-1") as file:
                     lines = file.readlines()
-                sendStateEmit('Obteniendo clave de acceso.')
-                time.sleep(1)
                 claves_acceso = []
                 for line in lines[1:]:
                     columns = line.split("\t")
@@ -324,32 +322,25 @@ def ejecutar_script_botemitidos(username, password, mesemitidos, nombremesemitid
                         clave_acceso = columns[2].strip()
                         if clave_acceso:
                             claves_acceso.append(clave_acceso)
-                sendStateEmit('Ingresando clave de accesos.')
-                time.sleep(1)
-                for clave_acceso in claves_acceso:
+                            
+                for indexC, clave_acceso in enumerate(claves_acceso):
                     # Verificar si el archivo XML ya existe
                     ruta_archivo = os.path.join(root, f"{clave_acceso}.xml")
                     if os.path.exists(ruta_archivo):
                         print(f"El archivo {ruta_archivo} ya existe. Saltando...")
-                        sendStateEmit('No se encontró el archivo.')
+                        sendStateEmit(f"El archivo ya existe, cambiando al siguiente ({indexC+1}/{len(claves_acceso)}).")
                         time.sleep(1)
                         continue
 
-                    sendStateEmit('Creando archivo.')
-                    time.sleep(1)
                     body = crear_body(clave_acceso)
                     response = requests.post(url, data=body, headers=headers)
                     
-                    sendStateEmit('Consultando en el servicio.')
-                    time.sleep(1)
                     if response.status_code == 200:
                         response_xml = ET.fromstring(response.text)
                         ns = {'soap': 'http://schemas.xmlsoap.org/soap/envelope/',
                             'ns2': 'http://ec.gob.sri.ws.autorizacion'}
 
                         autorizacion_response = response_xml.find('.//ns2:autorizacionComprobanteResponse', ns)
-                        sendStateEmit('Ingresando datos.')
-                        time.sleep(1)
                         if autorizacion_response is not None:
                             respuesta_autorizacion = autorizacion_response.find('RespuestaAutorizacionComprobante', ns)
                             if respuesta_autorizacion is not None:
@@ -362,8 +353,6 @@ def ejecutar_script_botemitidos(username, password, mesemitidos, nombremesemitid
                                         fecha_autorizacion = autorizacion.find('fechaAutorizacion').text
                                         ambiente = autorizacion.find('ambiente').text
                                         comprobante = autorizacion.find('comprobante').text
-                                        sendStateEmit('Generando XML.')
-                                        time.sleep(1)
                                         nuevo_xml = f"""<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
                                         <autorizacion>
                                         <estado>{estado}</estado>
@@ -378,7 +367,7 @@ def ejecutar_script_botemitidos(username, password, mesemitidos, nombremesemitid
                                             f.write(nuevo_xml)
 
                                         print(f"Archivo guardado en: {ruta_archivo}")
-                                        sendStateEmit('Archivo guardado correctamente.')
+                                        sendStateEmit(f"Archivo guardado correctamente ({indexC+1}/{len(claves_acceso)}).")
                                         time.sleep(1)
                                     else:
                                         sendStateEmit('No se encontró el elemento de autorización.')
@@ -396,8 +385,9 @@ def ejecutar_script_botemitidos(username, password, mesemitidos, nombremesemitid
                         sendStateEmit('Error en la consulta')
                         print(f"Error en la solicitud para la clave {clave_acceso}. Estado: {response.status_code}")
         
-        time.sleep(2)
         sendStateEmit('Descarga completa.')
+        time.sleep(2)
+        return None
     except Exception as e:
         sendStateEmit('Error en la ejecución, revisar al consola para mas información.')
         print("Error en el proceso de ejecución:", str(e))
