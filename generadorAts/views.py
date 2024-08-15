@@ -35,6 +35,10 @@ from tkinter import Tk
 from tkinter.filedialog import asksaveasfilename
 from collections import defaultdict
 import os
+from .models import Users
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import unpad
+
 # Descargar Facturas Recibidas
 def ejecutar_script(username, password, mes, nombremesrecibidos, dia, tipo_comprobante, directory, anio):
     try:
@@ -399,8 +403,7 @@ def getEstadoEmit(request):
     return JsonResponse({'estado': estado})
 
 # Crear Reporte Recibidos
-def ejecutar_script_reporterecibidos(directory, nombremesmodal, aniomodal):
-    
+def ejecutar_script_reporterecibidos(directory, nombremesmodal, aniomodal):   
     def obtener_archivos_xml(directory):
         xml_files = []
         for root, _, files in os.walk(directory):
@@ -1111,8 +1114,7 @@ def ejecutar_script_reporterecibidos(directory, nombremesmodal, aniomodal):
 
 
 # Crear Reporte Emitidos
-def ejecutar_script_reporteemitidos(directory, nombremesmodal, aniomodal):
-    
+def ejecutar_script_reporteemitidos(directory, nombremesmodal, aniomodal):  
     def obtener_archivos_xml(directory):
         xml_files = []
         for root, _, files in os.walk(directory):
@@ -1823,7 +1825,6 @@ def ejecutar_script_reporteemitidos(directory, nombremesmodal, aniomodal):
 
 # Crear ATS
 def ejecutar_script_crearats(directory, nombremesmodal, aniomodal):
-
     def leer_anulados(file_path, mes_ats, anio_ats):
         anulados = []
         if os.path.isfile(file_path):
@@ -2223,6 +2224,8 @@ def guardar_anulados(request):
     return JsonResponse({'output': "Método no permitido"}, status=405)
 
 def crearats(request):
+    usuarios = Users.objects.all()
+    print(usuarios)
     if request.method == 'POST':
         action = request.POST.get('action')
         username = request.POST.get('username')
@@ -2239,7 +2242,6 @@ def crearats(request):
         diaemitidos =  request.POST.get('diaemitidos')
         tipo_comprobante = request.POST.get('tipo_comprobante')
         directory = request.POST.get('directory')
-        
 
         result_message = ""
 

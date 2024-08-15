@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'generatorXml',
-    'generadorAts'
+    'generadorAts',
 ]
 
 MIDDLEWARE = [
@@ -77,8 +77,16 @@ WSGI_APPLICATION = 'generateXml.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'mssql',
+        'NAME': 'accessXml',
+        'USER': 'Developer',
+        'PASSWORD': 'Alejandro03',
+        'HOST': 'ERI',
+        'PORT': '',  # Puedes dejar el puerto vacío si estás utilizando el puerto por defecto (1433)
+        'OPTIONS': {
+            'driver': 'ODBC Driver 18 for SQL Server',
+            'extra_params': 'TrustServerCertificate=yes;',
+        },
     }
 }
 
