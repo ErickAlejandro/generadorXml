@@ -1441,6 +1441,12 @@
                         btnEmitidos.disabled = false;
                         svgSuccessEmit.style.display = "";
                         break;
+                    case 'Sin ejecutar':
+                        btnEmitidos.disabled = false;
+                        loaderEmit.style.display = "none";
+                        containerLoaderEmit.style.display = "none";
+                        svgSuccessEmit.style.display = "none";
+                        break;
                 }
             })
             .catch(error => console.error('Error:', error));

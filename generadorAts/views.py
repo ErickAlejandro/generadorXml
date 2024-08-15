@@ -2193,10 +2193,6 @@ def ejecutar_script_crearats(directory, nombremesmodal, aniomodal):
     return result_message
 
     
-
-
-
-
 def go_view_generatoXML(request):
     return render(request, 'view_generator.html')
 
