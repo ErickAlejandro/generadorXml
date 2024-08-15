@@ -327,9 +327,6 @@ def ejecutar_script_botemitidos(username, password, mesemitidos, nombremesemitid
                     # Verificar si el archivo XML ya existe
                     ruta_archivo = os.path.join(root, f"{clave_acceso}.xml")
                     if os.path.exists(ruta_archivo):
-                        print(f"El archivo {ruta_archivo} ya existe. Saltando...")
-                        sendStateEmit(f"El archivo ya existe, cambiando al siguiente ({indexC+1}/{len(claves_acceso)}).")
-                        time.sleep(1)
                         continue
 
                     body = crear_body(clave_acceso)
@@ -368,7 +365,6 @@ def ejecutar_script_botemitidos(username, password, mesemitidos, nombremesemitid
 
                                         print(f"Archivo guardado en: {ruta_archivo}")
                                         sendStateEmit(f"Archivo guardado correctamente ({indexC+1}/{len(claves_acceso)}).")
-                                        time.sleep(1)
                                     else:
                                         sendStateEmit('No se encontró el elemento de autorización.')
                                         print(f"No se encontró el elemento 'autorizacion' para la clave {clave_acceso}.")
