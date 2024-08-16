@@ -9,4 +9,4 @@ class Users(models.Model):
         db_table = 'users'
 
     def __str__(self):
-        return f'ID: {self.id}, RUC: {self.RUC.hex() if self.RUC else "N/A"}, Password: {self.password}'
+        return f'ID: {self.id}, Password: {self.password}'

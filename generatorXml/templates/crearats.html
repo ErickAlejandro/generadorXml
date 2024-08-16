@@ -227,6 +227,7 @@
                                                 </div>
                                                 <small class="form-text font-weight-bold">Usuario y Contraseña del
                                                     SRI</small>
+                                                <p id="textError" style="display: none;">form-text font-weight-bold</p>
                                             </div>
                                         </div>
                                     </div>
@@ -685,9 +686,13 @@
     </div>
 
 </body>
+<script type="application/json" id="users-data">
+    {{ users|json_script:"users-data" }}
+</script>
 <script>
     document.addEventListener('DOMContentLoaded', (event) => {
-
+        var users = JSON.parse('{{ users|safe|escapejs }}');
+        
         const passwordInput = document.getElementById('password');
         const togglePassword = document.getElementById('togglePassword');
         const usernameInput = document.getElementById('username');
@@ -695,6 +700,7 @@
         const rowDownloadCompRecib = document.getElementById('rowDownloadCompRecib');
         const rowDownloadCompEmi = document.getElementById('rowDownloadCompEmi');
         const directoryInput = document.getElementById('directoryInput');
+        const textError = document.getElementById('textError');
 
         let valRutaFolder;
 
@@ -715,8 +721,20 @@
         passwordInput.addEventListener("input", function () {
             var passwordVal = passwordInput.value
             if (usernameInput.value != '' && passwordVal.length >= 4) {
-                btnNext.disabled = false;
-                rowButtons.style.display = '';
+                // Funcionalidad
+                users.forEach(function(user){
+                    if((usernameInput.value == user.ruc) && (passwordInput.value == user.password)){
+                        btnNext.disabled = false;
+                        rowButtons.style.display = '';
+                        textError.style.display = 'none';
+                    }else{
+                        btnNext.disabled = true;
+                        rowButtons.style.display = 'none';
+                        textError.innerHTML = 'Error en el usuario o la contraseña.'
+                        textError.style.color = 'red';
+                        textError.style.display = '';
+                    }
+                })
             } else {
                 btnNext.disabled = true;
                 rowButtons.style.display = 'none';

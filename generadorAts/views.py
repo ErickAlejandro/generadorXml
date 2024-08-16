@@ -35,9 +35,7 @@ from tkinter import Tk
 from tkinter.filedialog import asksaveasfilename
 from collections import defaultdict
 import os
-from .models import Users
-from Crypto.Cipher import AES
-from Crypto.Util.Padding import unpad
+from django.db import connection
 
 # Descargar Facturas Recibidas
 def ejecutar_script(username, password, mes, nombremesrecibidos, dia, tipo_comprobante, directory, anio):
@@ -2223,9 +2221,26 @@ def guardar_anulados(request):
         return JsonResponse({'output': "Comprobante anulado guardado correctamente"})
     return JsonResponse({'output': "Método no permitido"}, status=405)
 
+
 def crearats(request):
-    usuarios = Users.objects.all()
-    print(usuarios)
+    query = """
+    SELECT id, 
+           CONVERT(VARCHAR(MAX), DECRYPTBYPASSPHRASE('0102070612aq', RUC)) AS RUC, 
+           password 
+    FROM users;
+    """
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        rows = cursor.fetchall()
+
+    users = []
+    for row in rows:
+        users.append({
+            "id": row[0],
+            "ruc": row[1],
+            "password": row[2]
+        })
+        
     if request.method == 'POST':
         action = request.POST.get('action')
         username = request.POST.get('username')
@@ -2277,7 +2292,7 @@ def crearats(request):
     current_year = datetime.datetime.now().year
     last_five_years = list(range(current_year, current_year - 5, -1))  #
     sendState('')
-    return render(request, 'crearats.html', {'days': days, 'years': last_five_years})
+    return render(request, 'crearats.html', {'days': days, 'years': last_five_years, 'users': json.dumps(users)})
 
 def check_xml_files(request):
     if request.method == 'POST':
