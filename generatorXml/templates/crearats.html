@@ -549,6 +549,22 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <div class="row g-1">
+                                                        <div class="col-md-12">
+                                                            <label for="tipo_comprobante_emitidos">Seleccione el Tipo de Comprobante</label>
+                                                            <select class="form-control" id="tipo_comprobante_emitidos" name="tipo_comprobante_emitidos">
+                                                                <option value="1">Facturas</option>
+                                                                <option value="2">Liquidaciónes</option>
+                                                                <option value="3">Nota de Crédito</option>
+                                                                <option value="4">Nota de Débito</option>
+                                                                <option value="6">Retención</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class="col-md-6" id="rowDownloadCompEmi" style="display: none;">
                                             <div class="card">
@@ -1110,8 +1126,10 @@
             const nombremesemitidos = mesSelect.options[mesSelect.selectedIndex].text;
             const anioemitidos = document.getElementById('anioemitidos').value;
             const diaemitidos = document.getElementById('diaemitidos').value;
+            const tipo_comprobante_emitidos = document.getElementById('tipo_comprobante_emitidos').value;
+            console.log(username,password,mesemitidos,anioemitidos,diaemitidos,tipo_comprobante_emitidos)
 
-            if (!username || !password || !mesemitidos || !anioemitidos || !diaemitidos) {
+            if (!username || !password || !mesemitidos || !anioemitidos || !diaemitidos || !tipo_comprobante_emitidos ) {
                 toastr.warning("Por favor, complete todos los campos.", "Advertencia");
             } else {
                 $.ajax({
@@ -1125,6 +1143,7 @@
                         'nombremesemitidos': nombremesemitidos,
                         'diaemitidos': diaemitidos,
                         'directory': valRutaFolder,
+                        'tipo_comprobante_emitidos': tipo_comprobante_emitidos,
                         'action': 'BOTEMITIDOS',
                         'csrfmiddlewaretoken': '{{ csrf_token }}'
                     },

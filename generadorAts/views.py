@@ -263,42 +263,61 @@ def getEstado(request):
     return JsonResponse({'estado': estado})
 
 # Descargar Facturas Recibidas
-def ejecutar_script_botemitidos(username, password, mesemitidos, nombremesemitidos, diaemitidos, directory,anioemitidos):
+def ejecutar_script_botemitidos(username, password, mesemitidos, nombremesemitidos, diaemitidos, directory,anioemitidos,tipo_comprobante_emitidos):
     sendStateEmit('Esperando ejecución.')
     time.sleep(1)
-    try:
-        # Crear Carpeta SRIBOT EN DOCUMENTOS
-        documents_folder = directory
-        os.makedirs(documents_folder, exist_ok=True)
-        # Crear carpeta XML dentro de SRIBOT
-        xml_folder = os.path.join(documents_folder, 'XML', f'{anioemitidos}', f'{nombremesemitidos}', 'EMITIDAS')
-        os.makedirs(xml_folder, exist_ok=True)
+        
+    tipo_comprobante_nombres = {
+        "1": "FacturasE",
+        "2": "LiquidacionesE",
+        "3": "NotasCreditoE",
+        "4": "NotasDebitoE",
+        "6": "RetencionesE"
+    }
 
-        # Crear subcarpetas si no existen
-        subcarpetas = ['FacturasE', 'LiquidacionesE', 'NotasCreditoE', 'NotasDebitoE', 'RetencionesE']
-        for subcarpeta in subcarpetas:
-            os.makedirs(os.path.join(xml_folder, subcarpeta), exist_ok=True)
+    # Crear Carpeta SRIBOT EN DOCUMENTOS
+    documents_folder = directory
+    os.makedirs(documents_folder, exist_ok=True)
 
-        # Configuración del navegador Chrome
-        chrome_options = Options()
-        chrome_options.add_argument("--allow-running-insecure-content")  # Permitir contenido inseguro
-        chrome_options.add_experimental_option("prefs", {
-            "download.default_directory": xml_folder,  # Cambiar la ruta de descarga inicial
-            "download.prompt_for_download": False,
-            "download.directory_upgrade": True,
-            "safebrowsing.enabled": True
-        })
+    xml_folder = os.path.join(documents_folder, 'XML')
+    os.makedirs(xml_folder, exist_ok=True)
 
-        # Configuración del Bot
-        chrome_options.add_extension("C:\\Resolver.crx")
-        # Función para procesar los archivos TXT y generar archivos XML
+    # Configuración del navegador Chrome
+    chrome_options = Options()
+    chrome_options.add_argument("--allow-running-insecure-content")
+    chrome_options.add_experimental_option("prefs", {
+        "download.default_directory": directory,
+        "download.prompt_for_download": False,
+        "download.directory_upgrade": True,
+        "safebrowsing.enabled": True
+    })
+    chrome_options.add_extension(r"C:\Resolver.crx")
+
+    driver = webdriver.Chrome(options=chrome_options)
+
+    def renombrar_archivo_descargado(directory, diaemitidos):
+        time.sleep(10)
+        """Renombra el archivo TXT descargado agregando el día en el nombre del archivo."""
+        for filename in os.listdir(directory):
+            if filename.endswith('.txt'):
+                old_file = os.path.join(directory, filename)
+                new_file = os.path.join(directory, f'{diaemitidos}.txt')
+                os.rename(old_file, new_file)
+                print(f'Archivo renombrado a {new_file}')
+
+                # Mover el archivo a la carpeta correspondiente del tipo de comprobante en RECIBIDAS
+                tipo_comprobante_folder = os.path.join(f"{directory}\\XML\\{anioemitidos}\\{nombremesemitidos}\\EMITIDAS", tipo_comprobante_nombres.get(tipo_comprobante_emitidos, "Desconocido"))
+                shutil.move(new_file, tipo_comprobante_folder)
+                print(f"Archivo {new_file} movido a {tipo_comprobante_folder}", flush=True)
+
+    def procesar_archivos_txt():
         sendStateEmit('Procesando archivo TXT.')
         url = "https://cel.sri.gob.ec/comprobantes-electronicos-ws/AutorizacionComprobantesOffline"
         headers = {
             "Content-Type": "text/xml; charset=utf-8",
             "SOAPAction": ""
         }
-        
+
         def crear_body(clave_acceso):
             return f"""<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ec="http://ec.gob.sri.ws.autorizacion">
             <soapenv:Header/>
@@ -309,14 +328,14 @@ def ejecutar_script_botemitidos(username, password, mesemitidos, nombremesemitid
             </soapenv:Body>
         </soapenv:Envelope>"""
 
-        # Buscar en todas las subcarpetas de la carpeta XML
-        sendStateEmit('Analizando subcarpetas en XML.')
-        time.sleep(1)
-        for root, dirs, files in os.walk(xml_folder):
+        # Buscar en el tipo_comprobante_folder
+        for root, dirs, files in os.walk(os.path.join(tipo_comprobante_folder)):
             archivos_txt = glob.glob(os.path.join(root, "*.txt"))
-            for index, ruta_txt in enumerate(archivos_txt):
+            for ruta_txt in archivos_txt:
+                print(f"Procesando archivo TXT: {ruta_txt}")  # Imprimir el archivo TXT que se está procesando
                 with open(ruta_txt, "r", encoding="latin-1") as file:
                     lines = file.readlines()
+
                 claves_acceso = []
                 for line in lines[1:]:
                     columns = line.split("\t")
@@ -324,16 +343,18 @@ def ejecutar_script_botemitidos(username, password, mesemitidos, nombremesemitid
                         clave_acceso = columns[2].strip()
                         if clave_acceso:
                             claves_acceso.append(clave_acceso)
-                            
-                for indexC, clave_acceso in enumerate(claves_acceso):
+
+                for indexC,clave_acceso in enumerate(claves_acceso):
                     # Verificar si el archivo XML ya existe
                     ruta_archivo = os.path.join(root, f"{clave_acceso}.xml")
                     if os.path.exists(ruta_archivo):
+                        print(f"El archivo {ruta_archivo} ya existe. Saltando...")
+                        sendStateEmit(f"El archivo ya existe, cambiando al siguiente ({indexC+1}/{len(claves_acceso)}).")
                         continue
 
                     body = crear_body(clave_acceso)
                     response = requests.post(url, data=body, headers=headers)
-                    
+
                     if response.status_code == 200:
                         response_xml = ET.fromstring(response.text)
                         ns = {'soap': 'http://schemas.xmlsoap.org/soap/envelope/',
@@ -347,11 +368,14 @@ def ejecutar_script_botemitidos(username, password, mesemitidos, nombremesemitid
                                 if autorizaciones is not None:
                                     autorizacion = autorizaciones.find('autorizacion', ns)
                                     if autorizacion is not None:
+                                    
+                                        
                                         estado = autorizacion.find('estado').text
                                         numero_autorizacion = autorizacion.find('numeroAutorizacion').text
                                         fecha_autorizacion = autorizacion.find('fechaAutorizacion').text
                                         ambiente = autorizacion.find('ambiente').text
                                         comprobante = autorizacion.find('comprobante').text
+
                                         nuevo_xml = f"""<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
                                         <autorizacion>
                                         <estado>{estado}</estado>
@@ -377,18 +401,113 @@ def ejecutar_script_botemitidos(username, password, mesemitidos, nombremesemitid
                                 sendStateEmit('No se encontró el elemento RespuestaAutorizacionComprobante.')
                                 print(f"No se encontró el elemento 'RespuestaAutorizacionComprobante' para la clave {clave_acceso}.")
                         else:
-                            sendStateEmit('No se encontró el elemento autorizacionComprobanteResponse.')
-                            print(f"No se encontró el elemento 'autorizacionComprobanteResponse' para la clave {clave_acceso}.")
-                    else:
-                        sendStateEmit('Error en la consulta')
-                        print(f"Error en la solicitud para la clave {clave_acceso}. Estado: {response.status_code}")
-        
+                            print(f"Error en la solicitud para la clave {clave_acceso}. Estado: {response.status_code}")
         sendStateEmit('Descarga completa.')
         time.sleep(2)
-        return None
-    except Exception as e:
-        sendStateEmit('Error en la ejecución, revisar al consola para mas información.')
-        print("Error en el proceso de ejecución:", str(e))
+
+    try:
+        sendState('Ingresando al portal SRI.')
+        # URL de la página del SRI
+        url = "https://srienlinea.sri.gob.ec/auth/realms/Internet/protocol/openid-connect/auth?client_id=app-sri-claves-angular&redirect_uri=https%3A%2F%2Fsrienlinea.sri.gob.ec%2Fsri-en-linea%2F%2Fcontribuyente%2Fperfil&state=f535d2b5-e613-4f17-8669-fac1a601b292&nonce=089fd62c-1ea9-4a7f-b502-1617eeb0a8ba&response_mode=fragment&response_type=code&scope=openid"
+        driver.get(url)
+        
+        # Ingresar usuario y contraseña
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, "usuario"))
+        ).send_keys(username)
+        print("Usuario ingresado con éxito.")
+        
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, '//*[@id="password"]'))
+        ).send_keys(password)
+        print("Contraseña ingresada con éxito.")
+        
+        WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, '//*[@id="kc-login"]'))
+        ).click()
+        print("Inicio de sesión exitoso.")
+        
+        # Saltarse encuesta si aparece
+        try:
+            WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, '//*[@id="mat-dialog-0"]/sri-modal-perfil/sri-titulo-modal-mat/div/div[2]/div/div[2]/button'))
+            ).click()
+            sendState('Resolviendo encuesta')
+        except TimeoutException:
+            sendState('Accediendo a Comprobantes Emitido')
+        
+        time.sleep(5)  # Esperar para cargar la página
+
+        # Abrir menú y navegar a la sección de Facturación Electrónica
+        WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, '//*[@id="sri-menu"]/span'))
+        ).click()
+        print("Menú desplegable abierto con éxito.")
+        
+        sidebar = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, "mySidebar"))
+        )
+        WebDriverWait(sidebar, 10).until(
+            EC.element_to_be_clickable((By.XPATH, "//*[contains(text(), 'FACTURACIÓN ELECTRÓNICA')]"))
+        ).click()
+        
+        WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, '//*[@id="mySidebar"]/p-panelmenu/div/div[4]/div[2]/div/p-panelmenusub/ul/li[4]/a'))
+        ).click()
+        
+        WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, '//*[@id="mySidebar"]/p-panelmenu/div/div[4]/div[2]/div/p-panelmenusub/ul/li[4]/p-panelmenusub/ul/li[2]/a'))
+        ).click()
+        
+        WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, '//*[@id="consultaDocumentoForm:panelPrincipal"]/ul/li[2]/a'))
+        ).click()
+        
+        # Seleccionar el año
+        fecha_desde_input = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, '//*[@id="frmPrincipal:calendarFechaDesde_input"]'))
+        )
+        
+        fecha_desde_input.clear()
+        fecha_desde_input.send_keys(f'{diaemitidos}/{mesemitidos}/{anioemitidos}')
+        sendState('Ingresando Fecha')
+        tipo_comprobante_select_element = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, 'frmPrincipal:cmbTipoComprobante'))
+        )
+        tipo_comprobante_select = Select(tipo_comprobante_select_element)
+        tipo_comprobante_select.select_by_value(tipo_comprobante_emitidos)
+
+        # Obtener el nombre de la carpeta del tipo de comprobante
+        tipo_comprobante_nombre = tipo_comprobante_nombres.get(tipo_comprobante_emitidos, "Desconocido")
+        tipo_comprobante_folder = os.path.join(f"{directory}\\XML\\{anioemitidos}\\{nombremesemitidos}\\EMITIDAS", tipo_comprobante_nombre)
+        os.makedirs(tipo_comprobante_folder, exist_ok=True)
+        print("Carpeta creada para el tipo de comprobante:", tipo_comprobante_nombre, flush=True)
+        sendState("Carpeta creada para el tipo de comprobante:")
+
+        # Hacer clic en el elemento recaptcha
+        recaptcha_button = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, '//*[@id="btnRecaptcha"]'))
+        )
+        
+        recaptcha_button.click()
+
+        # Esperar que la IA resuelva el captcha
+        sendState('Resolviendo Captcha ...')
+        time.sleep(100)
+
+        listado_button = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, '//*[@id="frmPrincipal:lnkTxtlistado"]'))
+        )
+        listado_button.click()
+        sendState('Descargando Txt ...')
+        
+        # Renombrar y mover archivos descargados
+        renombrar_archivo_descargado(directory, diaemitidos)
+        procesar_archivos_txt()
+
+    finally:
+        driver.quit()
+
 
 def sendStateEmit(text):
     if text == '':
@@ -2256,6 +2375,8 @@ def crearats(request):
         dia = request.POST.get('dia')
         diaemitidos =  request.POST.get('diaemitidos')
         tipo_comprobante = request.POST.get('tipo_comprobante')
+        tipo_comprobante_emitidos = request.POST.get('tipo_comprobante_emitidos')
+        
         directory = request.POST.get('directory')
 
         result_message = ""
@@ -2266,7 +2387,7 @@ def crearats(request):
             result_message = "El script se está ejecutando en segundo plano"
         elif action == 'BOTEMITIDOS':
             thread = threading.Thread(target=ejecutar_script_botemitidos, args=(username, password, mesemitidos, nombremesemitidos, diaemitidos,
-                                                                                 directory,anioemitidos))
+                                                                                 directory,anioemitidos,tipo_comprobante_emitidos))
             thread.start()
             result_message = "El script se está ejecutando en segundo plano"
         elif action == 'ReporteRecibidos':
