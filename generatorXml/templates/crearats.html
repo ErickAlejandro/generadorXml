@@ -1462,10 +1462,10 @@
                 estadoPagEmit.classList.remove('fade');
                 void estadoPagEmit.offsetWidth;
                 estadoPagEmit.classList.add('fade');
-                estadoPagEmit.innerText = data.estado;
-                var estado = data.estado
-                console.log(estado)
-                switch (estado) {
+                estadoPagEmit.innerText = data.estado_emitido;
+                var estados = data.estado_emitido
+                console.log(estados)
+                switch (estados) {
                     case 'Esperando ejecución.':
                         containerLoaderEmit.style.display = "";
                         loaderEmit.style.display = "";
@@ -1473,6 +1473,7 @@
                         svgSuccessEmit.style.display = "none";
                         break;
                     case 'Descarga completa.':
+                    case 'No existe información del día consultado.':    
                         containerLoaderEmit.style.display = "";
                         loaderEmit.style.display = "none";
                         btnEmitidos.disabled = false;
@@ -1489,6 +1490,9 @@
             .catch(error => console.error('Error:', error));
         }
         setInterval(fetchEstadoEmit, 1000);
+
+
+        
     });
 </script>
 

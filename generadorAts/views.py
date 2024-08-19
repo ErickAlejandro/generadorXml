@@ -195,7 +195,16 @@ def ejecutar_script(username, password, mes, nombremesrecibidos, dia, tipo_compr
                     except Exception as e:
                         sendState(f"Error al procesar el archivo {file}: {e}")
 
+                # Eliminar los archivos XML que quedan en la carpeta xml_folder
+                remaining_files = glob.glob(xml_folder + "\\*.xml")
+                for file in remaining_files:
+                    try:
+                        os.remove(file)
+                    except Exception as e:
+                        sendState(f"Error al eliminar el archivo {file}: {e}")
+
                 sendState('Modificando archivos ...')
+
 
             # Función para hacer clic en los enlaces y descargar los archivos XML
             def hacer_clic_en_enlace():
@@ -305,10 +314,19 @@ def ejecutar_script_botemitidos(username, password, mesemitidos, nombremesemitid
                 os.rename(old_file, new_file)
                 print(f'Archivo renombrado a {new_file}')
 
-                # Mover el archivo a la carpeta correspondiente del tipo de comprobante en RECIBIDAS
+                # Mover el archivo a la carpeta correspondiente del tipo de comprobante en EMITIDAS
                 tipo_comprobante_folder = os.path.join(f"{directory}\\XML\\{anioemitidos}\\{nombremesemitidos}\\EMITIDAS", tipo_comprobante_nombres.get(tipo_comprobante_emitidos, "Desconocido"))
+                os.makedirs(tipo_comprobante_folder, exist_ok=True)
+                
+                destination_file = os.path.join(tipo_comprobante_folder, f'{diaemitidos}.txt')
+
+                # Si el archivo ya existe en la carpeta de destino, se sobrescribe
+                if os.path.exists(destination_file):
+                    os.remove(destination_file)
+
                 shutil.move(new_file, tipo_comprobante_folder)
-                print(f"Archivo {new_file} movido a {tipo_comprobante_folder}", flush=True)
+                print(f"Archivo {new_file} movido y sobrescrito en {tipo_comprobante_folder}", flush=True)
+
 
     def procesar_archivos_txt():
         sendStateEmit('Procesando archivo TXT.')
@@ -406,7 +424,7 @@ def ejecutar_script_botemitidos(username, password, mesemitidos, nombremesemitid
         time.sleep(2)
 
     try:
-        sendState('Ingresando al portal SRI.')
+        sendStateEmit('Ingresando al portal SRI.')
         # URL de la página del SRI
         url = "https://srienlinea.sri.gob.ec/auth/realms/Internet/protocol/openid-connect/auth?client_id=app-sri-claves-angular&redirect_uri=https%3A%2F%2Fsrienlinea.sri.gob.ec%2Fsri-en-linea%2F%2Fcontribuyente%2Fperfil&state=f535d2b5-e613-4f17-8669-fac1a601b292&nonce=089fd62c-1ea9-4a7f-b502-1617eeb0a8ba&response_mode=fragment&response_type=code&scope=openid"
         driver.get(url)
@@ -470,7 +488,7 @@ def ejecutar_script_botemitidos(username, password, mesemitidos, nombremesemitid
         
         fecha_desde_input.clear()
         fecha_desde_input.send_keys(f'{diaemitidos}/{mesemitidos}/{anioemitidos}')
-        sendState('Ingresando Fecha')
+        sendStateEmit('Ingresando Fecha')
         tipo_comprobante_select_element = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.ID, 'frmPrincipal:cmbTipoComprobante'))
         )
@@ -482,7 +500,7 @@ def ejecutar_script_botemitidos(username, password, mesemitidos, nombremesemitid
         tipo_comprobante_folder = os.path.join(f"{directory}\\XML\\{anioemitidos}\\{nombremesemitidos}\\EMITIDAS", tipo_comprobante_nombre)
         os.makedirs(tipo_comprobante_folder, exist_ok=True)
         print("Carpeta creada para el tipo de comprobante:", tipo_comprobante_nombre, flush=True)
-        sendState("Carpeta creada para el tipo de comprobante:")
+        sendStateEmit("Carpeta creada para el tipo de comprobante:")
 
         # Hacer clic en el elemento recaptcha
         recaptcha_button = WebDriverWait(driver, 10).until(
@@ -492,18 +510,32 @@ def ejecutar_script_botemitidos(username, password, mesemitidos, nombremesemitid
         recaptcha_button.click()
 
         # Esperar que la IA resuelva el captcha
-        sendState('Resolviendo Captcha ...')
+        sendStateEmit('Resolviendo Captcha ...')
         time.sleep(100)
 
-        listado_button = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, '//*[@id="frmPrincipal:lnkTxtlistado"]'))
-        )
-        listado_button.click()
-        sendState('Descargando Txt ...')
-        
-        # Renombrar y mover archivos descargados
-        renombrar_archivo_descargado(directory, diaemitidos)
-        procesar_archivos_txt()
+        # Condicion para cuando no exista inforamcion
+
+        try:
+            # Intentar localizar el elemento que indica que hay información
+            info_element = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.XPATH, '//*[@id="frmPrincipal:tablaCompEmitidos:j_idt51"]'))
+            )
+            print('se encontro info')
+            # Si se encuentra el elemento, proceder con la descarga del archivo TXT
+            listado_button = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, '//*[@id="frmPrincipal:lnkTxtlistado"]'))
+            )
+            listado_button.click()
+            sendStateEmit('Descargando Txt ...')
+            
+            # Renombrar y mover archivos descargados
+            renombrar_archivo_descargado(directory, diaemitidos)
+            procesar_archivos_txt()
+
+        except TimeoutException:
+            # Si no se encuentra el elemento, indicar que no hay información disponible
+            sendStateEmit('No existe información del día consultado.')
+            driver.quit()
 
     finally:
         driver.quit()
@@ -511,13 +543,13 @@ def ejecutar_script_botemitidos(username, password, mesemitidos, nombremesemitid
 
 def sendStateEmit(text):
     if text == '':
-        cache.set('estado_actual', 'Sin ejecutar')
+        cache.set('estado_actual_emitido', 'Sin ejecutar')
     else:
-        cache.set('estado_actual', text)
+        cache.set('estado_actual_emitido', text)
 
 def getEstadoEmit(request):
-    estado = cache.get('estado_actual', 'Sin ejecutar')
-    return JsonResponse({'estado': estado})
+    estado = cache.get('estado_actual_emitido', 'Sin ejecutar')
+    return JsonResponse({'estado_emitido': estado})
 
 # Crear Reporte Recibidos
 def ejecutar_script_reporterecibidos(directory, nombremesmodal, aniomodal):   
