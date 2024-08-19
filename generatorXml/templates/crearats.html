@@ -1412,6 +1412,7 @@
                 estadoPag.classList.add('fade');
                 estadoPag.innerText = data.estado;
                 var estado = data.estado
+                console.log('Estados Recibidos',estados)
                 switch (estado) {
                     case "Sin ejecutar":
                         btnDownload.disabled = false;
@@ -1464,7 +1465,7 @@
                 estadoPagEmit.classList.add('fade');
                 estadoPagEmit.innerText = data.estado_emitido;
                 var estados = data.estado_emitido
-                console.log(estados)
+                console.log('Estados Emitidos',estados)
                 switch (estados) {
                     case 'Esperando ejecución.':
                         containerLoaderEmit.style.display = "";

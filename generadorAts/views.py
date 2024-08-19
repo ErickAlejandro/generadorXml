@@ -158,11 +158,7 @@ def ejecutar_script(username, password, mes, nombremesrecibidos, dia, tipo_compr
             sendState('Resolviendo Captcha ...')
             time.sleep(100)
 
-            # Descargar listado txt
-            listado_button = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, '//*[@id="frmPrincipal:lnkTxtlistado"]'))
-            )
-            listado_button.click()
+            
             sendState('Consultando comprobantes ...')
 
             # Función para obtener el valor de numeroAutorizacion de un archivo XML
