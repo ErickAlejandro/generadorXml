@@ -82,7 +82,19 @@ DATABASES = {
         'USER': 'Developer',
         'PASSWORD': 'Alejandro03',
         'HOST': 'ERI',
-        'PORT': '',  # Puedes dejar el puerto vacío si estás utilizando el puerto por defecto (1433)
+        'PORT': '',
+        'OPTIONS': {
+            'driver': 'ODBC Driver 18 for SQL Server',
+            'extra_params': 'TrustServerCertificate=yes;',
+        },
+    },
+    'xml_db_content': {
+        'ENGINE': 'mssql',
+        'NAME': 'Xml',
+        'USER': 'Developer',
+        'PASSWORD': 'Alejandro03',
+        'HOST': 'ERI',
+        'PORT': '',
         'OPTIONS': {
             'driver': 'ODBC Driver 18 for SQL Server',
             'extra_params': 'TrustServerCertificate=yes;',

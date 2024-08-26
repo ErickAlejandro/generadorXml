@@ -733,24 +733,26 @@
             togglePassword.querySelector('i').classList.toggle('fa-eye');
             togglePassword.querySelector('i').classList.toggle('fa-eye-slash');
         });
-
+        let found = false;
         passwordInput.addEventListener("input", function () {
             var passwordVal = passwordInput.value
             if (usernameInput.value != '' && passwordVal.length >= 4) {
                 // Funcionalidad
                 users.forEach(function(user){
                     if((usernameInput.value == user.ruc) && (passwordInput.value == user.password)){
+                        found = true;  // Si encuentra una coincidencia, marcamos como encontrado
                         btnNext.disabled = false;
                         rowButtons.style.display = '';
                         textError.style.display = 'none';
-                    }else{
-                        btnNext.disabled = true;
-                        rowButtons.style.display = 'none';
-                        textError.innerHTML = 'Error en el usuario o la contraseña.'
-                        textError.style.color = 'red';
-                        textError.style.display = '';
                     }
-                })
+                });
+                if (!found) {
+                    btnNext.disabled = true;
+                    rowButtons.style.display = 'none';
+                    textError.innerHTML = 'Error en el usuario o la contraseña.';
+                    textError.style.color = 'red';
+                    textError.style.display = '';
+                }
             } else {
                 btnNext.disabled = true;
                 rowButtons.style.display = 'none';
@@ -1127,7 +1129,6 @@
             const anioemitidos = document.getElementById('anioemitidos').value;
             const diaemitidos = document.getElementById('diaemitidos').value;
             const tipo_comprobante_emitidos = document.getElementById('tipo_comprobante_emitidos').value;
-            console.log(username,password,mesemitidos,anioemitidos,diaemitidos,tipo_comprobante_emitidos)
 
             if (!username || !password || !mesemitidos || !anioemitidos || !diaemitidos || !tipo_comprobante_emitidos ) {
                 toastr.warning("Por favor, complete todos los campos.", "Advertencia");
@@ -1412,7 +1413,7 @@
                 estadoPag.classList.add('fade');
                 estadoPag.innerText = data.estado;
                 var estado = data.estado
-                console.log('Estados Recibidos',estados)
+                
                 switch (estado) {
                     case "Sin ejecutar":
                         btnDownload.disabled = false;
@@ -1450,6 +1451,14 @@
                         loaderDownload.style.display = "none";
                         svgSuccess.style.display = "";
                         break;
+                    case "Los comprobantes de esta fecha se encuentran actualizados":
+                        btnDownload.innerHTML = 'Descargar'
+                        contentLoader.style.display = "";
+                        btnDownload.disabled = false;
+                        loader.style.display = "none";
+                        loaderDownload.style.display = "none";
+                        svgSuccess.style.display = "";
+                        break;
                 }
             })
             .catch(error => console.error('Error:', error));
@@ -1465,7 +1474,7 @@
                 estadoPagEmit.classList.add('fade');
                 estadoPagEmit.innerText = data.estado_emitido;
                 var estados = data.estado_emitido
-                console.log('Estados Emitidos',estados)
+                
                 switch (estados) {
                     case 'Esperando ejecución.':
                         containerLoaderEmit.style.display = "";

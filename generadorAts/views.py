@@ -36,6 +36,7 @@ from tkinter.filedialog import asksaveasfilename
 from collections import defaultdict
 import os
 from django.db import connection
+from .models import xmlRegister
 
 # Descargar Facturas Recibidas
 def ejecutar_script(username, password, mes, nombremesrecibidos, dia, tipo_comprobante, directory, anio):
@@ -48,211 +49,215 @@ def ejecutar_script(username, password, mes, nombremesrecibidos, dia, tipo_compr
             "6": "Retenciones"
         }
         sendState('Esperando ejecución')
-        documents_folder = directory
-        os.makedirs(documents_folder, exist_ok=True)
+        # Obtener el nombre de la carpeta del tipo de comprobante
+        tipo_comprobante_nombre = tipo_comprobante_nombres.get(tipo_comprobante, "Desconocido")
+        tipo_comprobante_folder = os.path.join(f"{directory}\\XML\\{anio}\\{nombremesrecibidos}\\RECIBIDAS", tipo_comprobante_nombre)
+        os.makedirs(tipo_comprobante_folder, exist_ok=True)
 
-        xml_folder = os.path.join(documents_folder, 'XML')
-        os.makedirs(xml_folder, exist_ok=True)
+        continue_proccess, dbName, missing_elements = verify_data(tipo_comprobante_folder)
+        sendState('Creando carpetas ...')
 
-        # Configuración del navegador Chrome
-        chrome_options = Options()
-        chrome_options.add_argument("--allow-running-insecure-content")  # Permitir contenido inseguro
-        chrome_options.add_experimental_option("prefs", {
-            "download.default_directory": xml_folder,  # Cambiar la ruta de descarga
-            "download.prompt_for_download": False,
-            "download.directory_upgrade": True,
-            "safebrowsing.enabled": True
-        })
-        chrome_options.add_extension("C:\\Resolver.crx")
-        try:
-            driver = webdriver.Chrome(options=chrome_options)
-        except Exception as e:
-            print(f"Error al iniciar ChromeDriver: {e}", flush=True)
-            sys.exit(1)
-        url = "https://srienlinea.sri.gob.ec/auth/realms/Internet/protocol/openid-connect/auth?client_id=app-sri-claves-angular&redirect_uri=https%3A%2F%2Fsrienlinea.sri.gob.ec%2Fsri-en-linea%2F%2Fcontribuyente%2Fperfil&state=f535d2b5-e613-4f17-8669-fac1a601b292&nonce=089fd62c-1ea9-4f7f-b502-1617eeb0a8ba&response_mode=fragment&response_type=code&scope=openid"
-        try:
-            driver.get(url)
-            # Esperar hasta que el campo de usuario esté presente en la página
-            input_usuario = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.ID, "usuario"))
-            )
+        if continue_proccess == True:
+            documents_folder = directory
+            os.makedirs(documents_folder, exist_ok=True)
 
-            # Ingresar el usuario
-            input_usuario.send_keys(username)
+            xml_folder = os.path.join(documents_folder, 'XML')
+            os.makedirs(xml_folder, exist_ok=True)
 
-            # Esperar hasta que el campo de contraseña esté presente en la página
-            input_password = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.XPATH, '//*[@id="password"]'))
-            )
-
-            # Ingresar la contraseña
-            input_password.send_keys(password)
-
-            # Encontrar el botón de inicio de sesión y hacer clic en él
-            login_button = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, '//*[@id="kc-login"]'))
-            )
-            login_button.click()
-            sendState('Ingresando al portal SRI.')
-
+            # Configuración del navegador Chrome
+            chrome_options = Options()
+            chrome_options.add_argument("--allow-running-insecure-content")  # Permitir contenido inseguro
+            chrome_options.add_experimental_option("prefs", {
+                "download.default_directory": xml_folder,  # Cambiar la ruta de descarga
+                "download.prompt_for_download": False,
+                "download.directory_upgrade": True,
+                "safebrowsing.enabled": True
+            })
+            chrome_options.add_extension("C:\\Resolver.crx")
             try:
-                # Saltarse encuesta 24/04/2024
-                ubicarse = WebDriverWait(driver, 10).until(
-                    EC.element_to_be_clickable(
-                        (By.XPATH, '//*[@id="mat-dialog-0"]/sri-modal-perfil/sri-titulo-modal-mat/div/div[2]/button/span'))
+                driver = webdriver.Chrome(options=chrome_options)
+            except Exception as e:
+                print(f"Error al iniciar ChromeDriver: {e}", flush=True)
+                sys.exit(1)
+            url = "https://srienlinea.sri.gob.ec/auth/realms/Internet/protocol/openid-connect/auth?client_id=app-sri-claves-angular&redirect_uri=https%3A%2F%2Fsrienlinea.sri.gob.ec%2Fsri-en-linea%2F%2Fcontribuyente%2Fperfil&state=f535d2b5-e613-4f17-8669-fac1a601b292&nonce=089fd62c-1ea9-4f7f-b502-1617eeb0a8ba&response_mode=fragment&response_type=code&scope=openid"
+            try:
+                driver.get(url)
+                # Esperar hasta que el campo de usuario esté presente en la página
+                input_usuario = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.ID, "usuario"))
                 )
 
-                ubicarse.click()
-                sendState('Resolviendo encuesta')
-            except TimeoutException:
-                sendState('Accediendo a los comprobantes.')
+                # Ingresar el usuario
+                input_usuario.send_keys(username)
 
-            driver.get("https://srienlinea.sri.gob.ec/tuportal-internet/accederAplicacion.jspa?redireccion=57&idGrupo=55")
+                # Esperar hasta que el campo de contraseña esté presente en la página
+                input_password = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.XPATH, '//*[@id="password"]'))
+                )
 
-            # Seleccionar el año
-            select_anio_element = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.ID, 'frmPrincipal:ano'))
-            )
-            select_anio = Select(select_anio_element)
-            select_anio.select_by_value(anio)
-            sendState('Ingresando Año.')
+                # Ingresar la contraseña
+                input_password.send_keys(password)
 
-            # Seleccionar el mes
-            select_mes_element = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.ID, 'frmPrincipal:mes'))
-            )
-            select_mes = Select(select_mes_element)
-            select_mes.select_by_value(mes)
-            sendState('Ingresando mes.')
+                # Encontrar el botón de inicio de sesión y hacer clic en él
+                login_button = WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable((By.XPATH, '//*[@id="kc-login"]'))
+                )
+                login_button.click()
+                sendState('Ingresando al portal SRI.')
 
-            # Seleccionar el día
-            select_dia_element = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.ID, 'frmPrincipal:dia'))
-            )
-            select_dia = Select(select_dia_element)
-            select_dia.select_by_value(dia)
-            sendState('Ingresando día.')
+                try:
+                    # Saltarse encuesta 24/04/2024
+                    ubicarse = WebDriverWait(driver, 10).until(
+                        EC.element_to_be_clickable(
+                            (By.XPATH, '//*[@id="mat-dialog-0"]/sri-modal-perfil/sri-titulo-modal-mat/div/div[2]/button/span'))
+                    )
 
-            # Seleccionar el tipo de comprobante
-            tipo_comprobante_select_element = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.ID, 'frmPrincipal:cmbTipoComprobante'))
-            )
-            tipo_comprobante_select = Select(tipo_comprobante_select_element)
-            tipo_comprobante_select.select_by_value(tipo_comprobante)
-            sendState('Ingresando tipo de comprobante.')
+                    ubicarse.click()
+                    sendState('Resolviendo encuesta')
+                except TimeoutException:
+                    sendState('Accediendo a los comprobantes.')
 
-            # Obtener el nombre de la carpeta del tipo de comprobante
-            tipo_comprobante_nombre = tipo_comprobante_nombres.get(tipo_comprobante, "Desconocido")
-            tipo_comprobante_folder = os.path.join(f"{directory}\\XML\\{anio}\\{nombremesrecibidos}\\RECIBIDAS", tipo_comprobante_nombre)
-            os.makedirs(tipo_comprobante_folder, exist_ok=True)
-            sendState('Creando carpetas ...')
+                driver.get("https://srienlinea.sri.gob.ec/tuportal-internet/accederAplicacion.jspa?redireccion=57&idGrupo=55")
 
-            # Hacer clic en el elemento recaptcha
-            sendState('Ejecutando Captcha ...')
-            recaptcha_button = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, '//*[@id="btnRecaptcha"]'))
-            )
-            recaptcha_button.click()
+                # Seleccionar el año
+                select_anio_element = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.ID, 'frmPrincipal:ano'))
+                )
+                select_anio = Select(select_anio_element)
+                select_anio.select_by_value(anio)
+                sendState('Ingresando Año.')
 
-            # Esperar que la IA resuelva el captcha
-            sendState('Resolviendo Captcha ...')
-            time.sleep(100)
+                # Seleccionar el mes
+                select_mes_element = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.ID, 'frmPrincipal:mes'))
+                )
+                select_mes = Select(select_mes_element)
+                select_mes.select_by_value(mes)
+                sendState('Ingresando mes.')
 
+                # Seleccionar el día
+                select_dia_element = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.ID, 'frmPrincipal:dia'))
+                )
+                select_dia = Select(select_dia_element)
+                select_dia.select_by_value(dia)
+                sendState('Ingresando día.')
+
+                # Seleccionar el tipo de comprobante
+                tipo_comprobante_select_element = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.ID, 'frmPrincipal:cmbTipoComprobante'))
+                )
+                tipo_comprobante_select = Select(tipo_comprobante_select_element)
+                tipo_comprobante_select.select_by_value(tipo_comprobante)
+                sendState('Ingresando tipo de comprobante.')
+
+                # Hacer clic en el elemento recaptcha
+                sendState('Ejecutando Captcha ...')
+                recaptcha_button = WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable((By.XPATH, '//*[@id="btnRecaptcha"]'))
+                )
+                recaptcha_button.click()
+
+                # Esperar que la IA resuelva el captcha
+                sendState('Resolviendo Captcha ...')
+                time.sleep(80)
+                
+                sendState('Consultando comprobantes ...')
+
+                # Función para obtener el valor de numeroAutorizacion de un archivo XML
+                def obtener_numero_autorizacion(xml_path):
+                    tree = ET.parse(xml_path)
+                    root = tree.getroot()
+                    numero_autorizacion = root.find('.//numeroAutorizacion').text
+                    return numero_autorizacion
+
+                # Función para renombrar los archivos XML descargados
+                def renombrar_xmls():
+                    # Esperar a que los archivos se descarguen completamente
+                    time.sleep(10)
+
+                    # Obtener la lista de archivos XML en el directorio de descargas
+                    files = glob.glob(xml_folder + "\\*.xml")
+
+                    # Iterar sobre cada archivo XML
+                    for file in files:
+                        try:
+                            numero_autorizacion = obtener_numero_autorizacion(file)
+                            new_filename = f"{xml_folder}\\{numero_autorizacion}.xml"
+                            os.rename(file, new_filename)
+                            shutil.move(new_filename, tipo_comprobante_folder)
+                        except Exception as e:
+                            sendState(f"Error al procesar el archivo {file}: {e}")
+
+                    # Eliminar los archivos XML que quedan en la carpeta xml_folder
+                    remaining_files = glob.glob(xml_folder + "\\*.xml")
+                    for file in remaining_files:
+                        try:
+                            os.remove(file)
+                        except Exception as e:
+                            sendState(f"Error al eliminar el archivo {file}: {e}")
+
+                    sendState('Modificando archivos ...')
+
+
+                # Función para hacer clic en los enlaces y descargar los archivos XML
+                def hacer_clic_en_enlace():
+                    paginacion_previa = ""
+                    while True:
+                        try:
+                            # Verificar si es la última página
+                            span_paginacion = driver.find_element(By.XPATH,
+                                                                '/html/body/div[2]/div[2]/div[3]/form[2]/div[5]/div/div[2]/table/tfoot/tr/td/span[3]')
+                            texto_paginacion = span_paginacion.text
+
+                            if paginacion_previa == texto_paginacion:
+                                break  # Si la paginación es la misma que la anterior, salir del bucle
+                            else:
+                                paginacion_previa = texto_paginacion
+
+                            # Encuentra todos los elementos tr dentro de la tabla usando XPath
+                            elementos_tr = driver.find_elements(By.XPATH,
+                                                                "/html/body/div[2]/div[2]/div[3]/form[2]/div[5]/div/div[2]/table/tbody/tr")
+
+                            # Iterar sobre cada enlace y hacer clic
+                            for elemento in elementos_tr:
+                                enlace = elemento.find_element(By.XPATH, 'td[10]//a')
+                                enlace.click()
+                                time.sleep(1)  # Espera 1 segundo antes de continuar
+
+                            # Hacer clic en el enlace de paginación
+                            enlace_siguiente = driver.find_element(By.XPATH,
+                                                                '//*[@id="frmPrincipal:tablaCompRecibidos_paginator_bottom"]/span[4]')
+                            enlace_siguiente.click()
+                            time.sleep(5)  # Espera 5 segundos para cargar la página siguiente
+
+                            # Mover el cursor del mouse sobre el botón de captcha
+                            action = ActionChains(driver)
+                            action.move_to_element(recaptcha_button).perform()
+
+                        except:
+                            break  # Salir del bucle si no hay más páginas
+
+                    # Llamada a la función para renombrar los archivos XML
+                    renombrar_xmls()
+
+                # Llamada a la función para hacer click en los enlaces y descargar los archivos XML
+                sendState('Descargando archivos ...')
+                hacer_clic_en_enlace()
+
+                sendState('Guardando contenido en la base de datos.')
+                # Aqui debe estar la funcion para guardar los registros en la base de datos
+                xml_files = glob.glob(os.path.join(tipo_comprobante_folder, '*.xml'))
+                save_xml_db(dbName, xml_files, missing_elements)
+
+                # Crear una ventana emergente para mostrar el mensaje
+                sendState('Comprobantes descargados exitosamente.')
+
+            except Exception as e:
+                print("Error:", e, flush=True)
+        else:
+            sendState('Los comprobantes de esta fecha se encuentran actualizados.')
             
-            sendState('Consultando comprobantes ...')
-
-            # Función para obtener el valor de numeroAutorizacion de un archivo XML
-            def obtener_numero_autorizacion(xml_path):
-                tree = ET.parse(xml_path)
-                root = tree.getroot()
-                numero_autorizacion = root.find('.//numeroAutorizacion').text
-                return numero_autorizacion
-
-            # Función para renombrar los archivos XML descargados
-            def renombrar_xmls():
-                # Esperar a que los archivos se descarguen completamente
-                time.sleep(10)
-
-                # Obtener la lista de archivos XML en el directorio de descargas
-                files = glob.glob(xml_folder + "\\*.xml")
-
-                # Iterar sobre cada archivo XML
-                for file in files:
-                    try:
-                        # Obtener el valor de numero_autorizacion
-                        numero_autorizacion = obtener_numero_autorizacion(file)
-
-                        # Renombrar el archivo con el valor de numero_autorizacion
-                        new_filename = f"{xml_folder}\\{numero_autorizacion}.xml"
-                        os.rename(file, new_filename)
-
-                        # Mover el archivo a la carpeta correspondiente del tipo de comprobante en RECIBIDAS
-                        shutil.move(new_filename, tipo_comprobante_folder)
-                    except Exception as e:
-                        sendState(f"Error al procesar el archivo {file}: {e}")
-
-                # Eliminar los archivos XML que quedan en la carpeta xml_folder
-                remaining_files = glob.glob(xml_folder + "\\*.xml")
-                for file in remaining_files:
-                    try:
-                        os.remove(file)
-                    except Exception as e:
-                        sendState(f"Error al eliminar el archivo {file}: {e}")
-
-                sendState('Modificando archivos ...')
-
-
-            # Función para hacer clic en los enlaces y descargar los archivos XML
-            def hacer_clic_en_enlace():
-                paginacion_previa = ""
-                while True:
-                    try:
-                        # Verificar si es la última página
-                        span_paginacion = driver.find_element(By.XPATH,
-                                                            '/html/body/div[2]/div[2]/div[3]/form[2]/div[5]/div/div[2]/table/tfoot/tr/td/span[3]')
-                        texto_paginacion = span_paginacion.text
-
-                        if paginacion_previa == texto_paginacion:
-                            break  # Si la paginación es la misma que la anterior, salir del bucle
-                        else:
-                            paginacion_previa = texto_paginacion
-
-                        # Encuentra todos los elementos tr dentro de la tabla usando XPath
-                        elementos_tr = driver.find_elements(By.XPATH,
-                                                            "/html/body/div[2]/div[2]/div[3]/form[2]/div[5]/div/div[2]/table/tbody/tr")
-
-                        # Iterar sobre cada enlace y hacer clic
-                        for elemento in elementos_tr:
-                            enlace = elemento.find_element(By.XPATH, 'td[10]//a')
-                            enlace.click()
-                            time.sleep(1)  # Espera 1 segundo antes de continuar
-
-                        # Hacer clic en el enlace de paginación
-                        enlace_siguiente = driver.find_element(By.XPATH,
-                                                            '//*[@id="frmPrincipal:tablaCompRecibidos_paginator_bottom"]/span[4]')
-                        enlace_siguiente.click()
-                        time.sleep(5)  # Espera 5 segundos para cargar la página siguiente
-
-                        # Mover el cursor del mouse sobre el botón de captcha
-                        action = ActionChains(driver)
-                        action.move_to_element(recaptcha_button).perform()
-
-                    except:
-                        break  # Salir del bucle si no hay más páginas
-
-                # Llamada a la función para renombrar los archivos XML
-                renombrar_xmls()
-
-            # Llamada a la función para hacer clic en los enlaces y descargar los archivos XML
-            sendState('Descargando archivos ...')
-            hacer_clic_en_enlace()
-
-            # Crear una ventana emergente para mostrar el mensaje
-            sendState('Comprobantes descargados exitosamente.')
-
-        except Exception as e:
-            print("Error:", e, flush=True)
-
     except Exception as e:
         print("Excepción al intentar ejecutar el script:", str(e), flush=True)
 
@@ -2474,6 +2479,227 @@ def check_xml_files(request):
 
     return JsonResponse({'status': 'error', 'output': 'Invalid request method.'})
 
+from django.db import connections
+import re
+
+def verify_data(directoryXml):
+    # Consultar y verificar los registros con de la base de datos
+    xml_files = glob.glob(os.path.join(directoryXml, '*.xml'))
+    num_xml_files = len(xml_files)
+    # Informacion de la base de datos
+    parts = directoryXml.split(os.path.sep)
+    directoryDb = os.path.join(*parts[2:])
+    dbName = directoryDb.replace(os.path.sep, '_')
+    continue_proccess = True
+    # Condicion para la creacion de la base de datos
+    with connections['xml_db_content'].cursor() as cursor:
+        cursor.execute(f"""
+            IF OBJECT_ID('{dbName}', 'U') IS NOT NULL
+            BEGIN
+                SELECT 1
+            END
+            ELSE
+            BEGIN
+                SELECT 0
+            END
+        """)
+        resultado = cursor.fetchone()
+        
+        if resultado[0] == 1:
+            print(f"La tabla '{dbName}' ya existe.")
+        else:
+            cursor.execute(f"""
+                CREATE TABLE {dbName} (
+                    id INT PRIMARY KEY IDENTITY,
+                    clave NVARCHAR(255),
+                    contenido xml,
+                    fecha_registro DATETIME, 
+                    fecha_emision DATE, 
+                    hora_emision TIME
+                )
+            """)
+
+    # Ver los registros de la base de datos
+    with connections['xml_db_content'].cursor() as cursor:
+        cursor.execute(f"SELECT * FROM {dbName}")
+        registrosXml = cursor.fetchall()
+    claves = [registro[1] for registro in registrosXml]
+
+    with connections['xml_db_content'].cursor() as cursor:
+        cursor.execute(f"SELECT COUNT(*) FROM {dbName}")
+        resultado = cursor.fetchone()
+        num_registros = resultado[0]
+
+    # Guardar en un arreglo todos los nombres de los archivos para luego compararlos con las claves de acceso en la base de datos
+    if num_registros < num_xml_files:
+        names_files = [os.path.splitext(os.path.basename(file))[0] for file in xml_files]
+        # Buscar que elemento falta en el arreglo de la base de datos, esto con el fin de que se pueda registrar en la base.
+        missing_elements = list(set(names_files) - set(claves))
+        continue_proccess = True
+        return continue_proccess, dbName, missing_elements
+    # En caso de que el numero de registros en la base y la carpeta sean iguales
+    if num_registros == num_xml_files:
+        # Ahora la condicion en caso de que ambos este vacios
+        if num_registros == 0 and num_xml_files == 0:
+            continue_proccess = True
+            missing_elements = []
+            return continue_proccess, dbName, missing_elements
+        else:
+            continue_proccess = False
+            missing_elements = []
+            return continue_proccess, dbName, missing_elements
+    if num_registros >  num_xml_files:
+        # Aqui debe haber un  proceso para generar los xml desde la base a la carpeta
+        continue_proccess = False
+        names_files = [os.path.splitext(os.path.basename(file))[0] for file in xml_files]
+        create_xml(dbName, claves, names_files, directoryXml)
+        missing_elements = []
+        return continue_proccess, dbName, missing_elements
+    
+
+def control_acent(xml, simbolo='�'):
+    reemplazos = {
+        'á': simbolo,
+        'é': simbolo,
+        'í': simbolo,
+        'ó': simbolo,
+        'ú': simbolo,
+        'Á': simbolo,
+        'É': simbolo,
+        'Í': simbolo,
+        'Ó': simbolo,
+        'Ú': simbolo,
+        'ñ': simbolo,
+        'Ñ': simbolo
+    }
+    for acentuada, reemplazo in reemplazos.items():
+        xml = xml.replace(acentuada, reemplazo)
+    return xml
+
+def save_xml_db(dbName, xml_files, missing_array_db):
+    if len(missing_array_db) != 0:
+        filtered_files = [file for file in xml_files if os.path.splitext(os.path.basename(file))[0] in missing_array_db]
+        for file in filtered_files:
+            with open(file, 'r', encoding='utf-8') as f:
+                xml_content_aut = f.read()
+            try:
+                root = ET.fromstring(xml_content_aut)
+            except ET.ParseError as e:
+                print(f"Error en el contenido XML: {e}")
+                continue
+
+            numero_autorizacion = root.find('.//numeroAutorizacion').text
+            cdata_node = root.find('.//comprobante').text
+            try:
+                cdata_root = ET.fromstring(cdata_node)
+            except ET.ParseError as e:
+                print(f"Error al parsear CDATA: {e}")
+                continue
+            fecha_emision_str = cdata_root.find('.//fechaEmision').text
+            fecha_emision = datetime.datetime.strptime(fecha_emision_str, "%d/%m/%Y").date()
+            fecha_registro = datetime.datetime.now()
+            hora_emision = fecha_registro.time()
+            with open(file, 'r', encoding='utf-8') as f:
+                xml_content = f.read()
+            try:
+                xml_content = ET.fromstring(xml_content)
+            except ET.ParseError as e:
+                print(f"Error al parsear CDATA: {e}")
+                continue
+            xml_content = ET.tostring(root, encoding='unicode')
+            xml_content = re.sub(r'<\?xml version="1.0" encoding="UTF-8" standalone="yes"\?>', '', xml_content)
+            xml_content = re.sub(r'<!\[CDATA\[\s*\s*\]\]>', '', xml_content)
+            xml_content = xml_content.replace('&lt;', '<').replace('&gt;', '>')
+            xml_content = xml_content.replace('<?xml version="1.0" encoding="UTF-8"?>', '')
+            # Identificar los caracteres especiales y reemplazarlos
+            xml_content = control_acent(xml_content, '�')
+            # Creación del registro en la base de datos
+            with connections['xml_db_content'].cursor() as cursorSave:
+                sql = f"""
+                INSERT INTO {dbName} (clave, contenido, fecha_registro, fecha_emision, hora_emision)
+                VALUES (%s, CAST(%s AS XML), %s, %s, %s)
+                """
+                cursorSave.execute(sql, (numero_autorizacion, xml_content, fecha_registro, fecha_emision, hora_emision))
+                print(f"Registros filtrados insertados correctamente para {file}")
+    else:
+        for xml_file in xml_files:
+            try:
+                with open(xml_file, 'r', encoding='utf-8') as file:
+                    xml_content_autorizacion = file.read()
+                # Verificacion del XML
+                try:
+                    root = ET.fromstring(xml_content_autorizacion)
+                except ET.ParseError as e:
+                    print(f"Error en el contenido XML: {e}")
+                    continue
+
+                numero_autorizacion = root.find('.//numeroAutorizacion').text
+                cdata_node = root.find('.//comprobante').text
+                try:
+                    cdata_root = ET.fromstring(cdata_node)
+                except ET.ParseError as e:
+                    print(f"Error al parsear CDATA: {e}")
+                    continue
+                fecha_emision_str = cdata_root.find('.//fechaEmision').text
+                fecha_emision = datetime.datetime.strptime(fecha_emision_str, "%d/%m/%Y").date()
+                fecha_registro = datetime.datetime.now()
+                hora_emision = fecha_registro.time()
+                
+                # Registro de XML para poder obtener todo el archivo completo
+                with open(xml_file, 'r', encoding='utf-8') as file:
+                    xml_content = file.read()
+                try:
+                    xml_content = ET.fromstring(xml_content)
+                except ET.ParseError as e:
+                    print(f"Error al parsear CDATA: {e}")
+                    continue
+
+                xml_content = ET.tostring(root, encoding='unicode')
+                xml_content = re.sub(r'<\?xml version="1.0" encoding="UTF-8" standalone="yes"\?>', '', xml_content)
+                xml_content = re.sub(r'<!\[CDATA\[\s*\s*\]\]>', '', xml_content)
+                xml_content = xml_content.replace('&lt;', '<').replace('&gt;', '>')
+                xml_content = xml_content.replace('<?xml version="1.0" encoding="UTF-8"?>', '')
+                # Identificar los caracteres especiales y reemplazarlos
+                xml_content = control_acent(xml_content, '�')
+                # Creación del registro en la base de datos
+                with connections['xml_db_content'].cursor() as cursorSave:
+                    sql = f"""
+                    INSERT INTO {dbName} (clave, contenido, fecha_registro, fecha_emision, hora_emision)
+                    VALUES (%s, CAST(%s AS XML), %s, %s, %s)
+                    """
+                    cursorSave.execute(sql, (numero_autorizacion, xml_content, fecha_registro, fecha_emision, hora_emision))
+                    print(f"Registro insertado correctamente para {xml_file}")
+            except Exception as e:
+                print(f"Error al insertar en la base de datos para {xml_file}: {e}")
+
+def create_xml(dbName, claves, names_files, directoryXml):
+    missing_elements = list(set(claves) - set(names_files))
+    for clave in missing_elements:
+        # Consulta para ver los registros de la base de datos
+        with connections['xml_db_content'].cursor() as cursor:
+            cursor.execute(f"SELECT * FROM {dbName} WHERE clave = '{clave}'")
+            registrosXml = cursor.fetchall()
+
+        content_xml = [registro[2] for registro in registrosXml]
+        # Estructura del XML
+        xml_declaration = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n'
+        contenido_completo = ''.join(content_xml)
+        contenido_completo = xml_declaration + contenido_completo
+        contenido_completo = re.sub(r'(</[^>]+>)', r'\1\n', contenido_completo)
+        contenido_completo = re.sub(
+            r'(<comprobante>)(.*?)(</comprobante>)',
+            r'\1<![CDATA[\2]]>\3',
+            contenido_completo,
+            flags=re.DOTALL
+        )
+
+        nombre_archivo = f"{clave}.xml"
+        ruta_archivo = os.path.join(directoryXml, nombre_archivo)
+
+        with open(ruta_archivo, 'w', encoding='utf-8') as archivo_xml:
+            archivo_xml.write(contenido_completo)
+
+        print(f"Archivo XML creado: {ruta_archivo}")
 
 def check_xml_files_emitidos(request):
     if request.method == 'POST':
