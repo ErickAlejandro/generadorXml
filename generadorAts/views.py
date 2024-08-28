@@ -2450,32 +2450,31 @@ def crearats(request):
 
 def check_xml_files(request):
     if request.method == 'POST':
-        button_id = request.POST.get('button_id')
+        arrayComprobantes = request.POST.get('arrayComprobantes')
         nombremesrecibidos = request.POST.get('nombremesrecibidos')
         directory = request.POST.get('directorys')
-        anio = request.POST.get('anio')
-        
-        full = os.path.join(f"{directory}\\XML",f"{anio}", f"{nombremesrecibidos}",'RECIBIDAS', button_id)
+        anio = request.POST.get('anio')        
+        arrayComprobantes = json.loads(arrayComprobantes)
 
-        # Imprimir el directorio para verificar que es correcto
-        print(f"Directorio a verificar: {full}")
-
-        # Ruta al script y al intérprete Python
-        script_path = os.path.join(os.path.dirname(__file__), '..', 'scripts', 'comprobantesrecibidos.py')
-        python_executable = 'python'  # Cambia esto a la ruta de tu intérprete Python si es necesario
-
-        try:
-            result = subprocess.run([python_executable, script_path, full], capture_output=True, text=True)
-            output = result.stdout.strip()
-            if result.returncode == 0:
-                if "No se encontraron archivos XML" in output or "[WinError 3]" in output:
-                    return JsonResponse({'status': 'error', 'output': output})
+        for comprobante in arrayComprobantes:
+            # Imprimir el directorio para verificar que es correcto
+            full = os.path.join(f"{directory}\\XML",f"{anio}", f"{nombremesrecibidos}",'RECIBIDAS', comprobante)
+            # Ruta al script y al intérprete Python
+            script_path = os.path.join(os.path.dirname(__file__), '..', 'scripts', 'comprobantesrecibidos.py')
+            python_executable = 'python'  # Cambia esto a la ruta de tu intérprete Python si es necesario
+            try:
+                result = subprocess.run([python_executable, script_path, full], capture_output=True, text=True)
+                output = result.stdout.strip()
+                print(result.returncode)
+                if result.returncode == 0:
+                    if "No se encontraron archivos XML" in output or "[WinError 3]" in output:
+                        return JsonResponse({'status': 'error', 'output': output})
+                    else:
+                        return JsonResponse({'status': 'success', 'output': output})
                 else:
-                    return JsonResponse({'status': 'success', 'output': output})
-            else:
-                return JsonResponse({'status': 'error', 'output': result.stderr.strip()})
-        except Exception as e:
-            return JsonResponse({'status': 'error', 'output': str(e)})
+                    return JsonResponse({'status': 'error', 'output': result.stderr.strip()})
+            except Exception as e:
+                return JsonResponse({'status': 'error', 'output': str(e)})
 
     return JsonResponse({'status': 'error', 'output': 'Invalid request method.'})
 
@@ -2703,33 +2702,31 @@ def create_xml(dbName, claves, names_files, directoryXml):
 
 def check_xml_files_emitidos(request):
     if request.method == 'POST':
-        button_id = request.POST.get('button_id')
+        arrayComprobantes = request.POST.get('arrayComprobantes')
         nombremesemitidos = request.POST.get('nombremesemitidos')
         directory = request.POST.get('directorys')
         anioemitidos = request.POST.get('anioemitidos')
+        arrayComprobantes = json.loads(arrayComprobantes)
 
-
-        full = os.path.join(f"{directory}\\XML",f"{anioemitidos}", f"{nombremesemitidos}",'EMITIDAS', button_id)
-        
-        # Imprimir el directorio para verificar que es correcto
-        print(f"Directorio a verificar: {full}")
-
-        # Ruta al script y al intérprete Python
-        script_path = os.path.join(os.path.dirname(__file__), '..', 'scripts', 'comprobantesemitidos.py')
-        python_executable = 'python'  # Cambia esto a la ruta de tu intérprete Python si es necesario
-
-        try:
-            result = subprocess.run([python_executable, script_path, full], capture_output=True, text=True)
-            output = result.stdout.strip()
-            if result.returncode == 0:
-                if "No se encontraron archivos XML" in output or "[WinError 3]" in output:
-                    return JsonResponse({'status': 'error', 'output': output})
+        for comprobante in arrayComprobantes:
+            full = os.path.join(f"{directory}\\XML",f"{anioemitidos}", f"{nombremesemitidos}",'EMITIDAS', comprobante)
+            # Imprimir el directorio para verificar que es correcto
+            print(f"Directorio a verificar: {full}")
+            # Ruta al script y al intérprete Python
+            script_path = os.path.join(os.path.dirname(__file__), '..', 'scripts', 'comprobantesemitidos.py')
+            python_executable = 'python'  # Cambia esto a la ruta de tu intérprete Python si es necesario
+            try:
+                result = subprocess.run([python_executable, script_path, full], capture_output=True, text=True)
+                output = result.stdout.strip()
+                if result.returncode == 0:
+                    if "No se encontraron archivos XML" in output or "[WinError 3]" in output:
+                        return JsonResponse({'status': 'error', 'output': output})
+                    else:
+                        return JsonResponse({'status': 'success', 'output': output})
                 else:
-                    return JsonResponse({'status': 'success', 'output': output})
-            else:
-                return JsonResponse({'status': 'error', 'output': result.stderr.strip()})
-        except Exception as e:
-            return JsonResponse({'status': 'error', 'output': str(e)})
+                    return JsonResponse({'status': 'error', 'output': result.stderr.strip()})
+            except Exception as e:
+                return JsonResponse({'status': 'error', 'output': str(e)})
 
     return JsonResponse({'status': 'error', 'output': 'Invalid request method.'})
 

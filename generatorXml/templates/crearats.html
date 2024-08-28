@@ -184,7 +184,7 @@
                                 </div>
                                 <div class="col-md-3 text-right">
                                     <button id="btnNext" class="btn btn-dark btn-sm"
-                                        style="margin-top: 15px; margin-bottom: 15px;" disabled>
+                                        style="margin-top: 15px; margin-bottom: 15px;">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"
                                             style="fill: white; width: 15px; height: 15px;">
                                             <path
@@ -329,45 +329,6 @@
                                                 <div class="card-body">
                                                     <div class="row g-1">
                                                         <div class="col-md-4">
-                                                            <button type="button" id="Facturas"
-                                                                class="btn btn-outline-danger btn-block mt-3">
-                                                                Facturas
-                                                            </button>
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                            <button type="button" id="Liquidaciones"
-                                                                class="btn btn-outline-danger btn-block mt-3" style="display: none;">
-                                                                Liquidaciones
-                                                            </button>
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                            <button type="button" id="NotasCredito"
-                                                                class="btn btn-outline-danger btn-block mt-3" style="display: none;">
-                                                                Notas de Credito
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row g-1">
-                                                        <div class="col-md-4">
-                                                            <button type="button" id="NotasDebito"
-                                                                class="btn btn-outline-danger btn-block mt-3" style="display: none;">
-                                                                Notas de Debito
-                                                            </button>
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                            <button type="button" id="Retenciones"
-                                                                class="btn btn-outline-danger btn-block mt-3" style="display: none;">
-                                                                Retenciones
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <br>
-                                            <div class="card">
-                                                <div class="card-body">
-                                                    <div class="row g-1">
-                                                        <div class="col-md-4">
                                                             <label for="dia">Seleccione el Año</label>
                                                             <select class="form-control" id="anio" name="anio">
                                                                 {% for year in years %}
@@ -423,7 +384,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-6" id="rowDownloadCompRecib" style="display: none;">
+                                        <div class="col-md-6" id="rowDownloadCompRecib">
                                             <div class="card">
                                                 <div class="card-body">
                                                     <div id="contentLoader" class="loader-container" style="display: none;">
@@ -474,45 +435,6 @@
                                                 <div class="card-body">
                                                     <div class="row g-1">
                                                         <div class="col-md-4">
-                                                            <button type="button" id="FacturasE"
-                                                                class="btn btn-outline-danger btn-block mt-3">
-                                                                Facturas
-                                                            </button>
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                            <button type="button" id="LiquidacionesE"
-                                                                class="btn btn-outline-danger btn-block mt-3" style="display: none;">
-                                                                Liquidaciones
-                                                            </button>
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                            <button type="button" id="NotasCreditoE"
-                                                                class="btn btn-outline-danger btn-block mt-3" style="display: none;">
-                                                                Notas de Credito
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-md-4">
-                                                            <button type="button" id="NotasDebitoE"
-                                                                class="btn btn-outline-danger btn-block mt-3" style="display: none;">
-                                                                Notas de Debito
-                                                            </button>
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                            <button type="button" id="RetencionesE"
-                                                                class="btn btn-outline-danger btn-block mt-3" style="display: none;">
-                                                                Retenciones
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <br>
-                                            <div class="card">
-                                                <div class="card-body">
-                                                    <div class="row g-1">
-                                                        <div class="col-md-4">
                                                             <label for="dia">Seleccione el Año</label>
                                                             <select class="form-control" id="anioemitidos" name="anioemitidos">
                                                                 {% for year in years %}
@@ -549,6 +471,7 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            <br>
                                             <div class="card">
                                                 <div class="card-body">
                                                     <div class="row g-1">
@@ -566,7 +489,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-6" id="rowDownloadCompEmi" style="display: none;">
+                                        <div class="col-md-6" id="rowDownloadCompEmi">
                                             <div class="card">
                                                 <div class="card-body">
                                                     <div class="row">
@@ -740,21 +663,18 @@
                 // Funcionalidad
                 users.forEach(function(user){
                     if((usernameInput.value == user.ruc) && (passwordInput.value == user.password)){
-                        found = true;  // Si encuentra una coincidencia, marcamos como encontrado
-                        btnNext.disabled = false;
+                        found = true;
                         rowButtons.style.display = '';
                         textError.style.display = 'none';
                     }
                 });
                 if (!found) {
-                    btnNext.disabled = true;
                     rowButtons.style.display = 'none';
                     textError.innerHTML = 'Error en el usuario o la contraseña.';
                     textError.style.color = 'red';
                     textError.style.display = '';
                 }
             } else {
-                btnNext.disabled = true;
                 rowButtons.style.display = 'none';
             }
         })
@@ -938,19 +858,6 @@
         const divAnulados = document.getElementById('divAnulados');
         const atsForm = document.getElementById('atsForm');
 
-        // Botones en divEmitidos
-        const btnFacturas = document.getElementById('Facturas');
-        const btnLiquidaciones = document.getElementById('Liquidaciones');
-        const btnNotasCredito = document.getElementById('NotasCredito');
-        const btnNotasDebito = document.getElementById('NotasDebito');
-        const btnRetenciones = document.getElementById('Retenciones');
-        const btnFacturasE = document.getElementById('FacturasE');
-        const btnLiquidacionesE = document.getElementById('LiquidacionesE');
-        const btnNotasCreditoE = document.getElementById('NotasCreditoE');
-        const btnNotasDebitoE = document.getElementById('NotasDebitoE');
-        const btnRetencionesE = document.getElementById('RetencionesE');
-        const autorizacionInput = document.getElementById('autorizacion');
-
         let currentSection = 0;
         const sections = [divIniciarSesion, divRoutes, divRecibidos, divEmitidos, divAnulados];
 
@@ -961,9 +868,6 @@
         }
 
         btnBack.addEventListener('click', () => {
-            if (currentSection != 0) {
-                btnNext.disabled = false;
-            }
             if (currentSection > 0) {
                 currentSection--;
                 showSection(currentSection);
@@ -971,10 +875,6 @@
         });
 
         btnNext.addEventListener('click', () => {
-            btnNext.disabled = true;
-            if (currentSection == 0) {
-                btnNext.disabled = false;
-            }
             if (currentSection == 1) {
                 // Funcionalidad input Ruta
                 if (directoryInput.value == '') {
@@ -1077,6 +977,8 @@
         });
 
         btnDownload.addEventListener('click', () => {
+            let arrayComprobantes = ['Facturas', 'Liquidaciones', 'NotasCredito', 'NotasDebito', 'Retenciones']
+            checkXmlFiles(arrayComprobantes)
             btnDownload.innerHTML = 'Descargando ...'
             btnDownload.disabled = true;
             const username = document.getElementById('username').value;
@@ -1121,6 +1023,8 @@
 
         btnEmitidos.addEventListener('click', () => {
             btnEmitidos.disabled = true;
+            let arrayComprobantes = ['FacturasE', 'LiquidacionesE', 'NotasCreditoE', 'NotasDebitoE', 'RetencionesE']
+            checkXmlFilesEmitidos(arrayComprobantes)
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             const mesSelect = document.getElementById('mesemitidos');
@@ -1191,39 +1095,17 @@
 
 
 
-        function checkXmlFiles(buttonId) {
-            // Condicion para mostrar los botones
-            switch (buttonId) {
-                case 'Facturas':
-                    btnLiquidaciones.style.display = '';
-                    break;
-                case 'Liquidaciones':
-                    btnNotasCredito.style.display = '';
-                    break;
-                case 'NotasCredito':
-                    btnNotasDebito.style.display = '';
-                    break;
-                case 'NotasDebito':
-                    btnRetenciones.style.display = '';
-                    break;
-                case 'Retenciones':
-                    rowDownloadCompRecib.style.display = '';
-                    btnNext.disabled = false;
-                    break;
-                default:
-                    break;
-            }
-
+        function checkXmlFiles(arrayComprobantes) {
             const mesSelect = document.getElementById('mes');
             const mes = mesSelect.value;  // Esto obtiene el valor (número) del mes
             const nombremesrecibidos = mesSelect.options[mesSelect.selectedIndex].text;
             const anio = document.getElementById('anio').value
-
+            const jsonArrayComprobantes = JSON.stringify(arrayComprobantes);
             $.ajax({
                 type: 'POST',
                 url: '{% url "check_xml_files" %}',
                 data: {
-                    'button_id': buttonId,
+                    'arrayComprobantes': jsonArrayComprobantes,
                     'anio': anio,
                     'nombremesrecibidos': nombremesrecibidos,
                     'directorys': valRutaFolder,
@@ -1233,7 +1115,7 @@
                     if (response.status === 'success') {
                         toastr.success(response.output, "Éxito");
                     } else {
-                        const errorMessage = `No se encontró ningún XML dentro de ${buttonId}, descargue los comprobantes y verifique de nuevo.`;
+                        const errorMessage = `No se encontró ningún XML, descargue los comprobantes y verifique de nuevo.`;
                         toastr.error(errorMessage, "Error");
                     }
                 },
@@ -1243,38 +1125,17 @@
             });
         }
 
-        function checkXmlFilesEmitidos(buttonId) {
-            switch (buttonId) {
-                case 'FacturasE':
-                    btnLiquidacionesE.style.display = '';
-                    break;
-                case 'LiquidacionesE':
-                    btnNotasCreditoE.style.display = '';
-                    break;
-                case 'NotasCreditoE':
-                    btnNotasDebitoE.style.display = '';
-                    break;
-                case 'NotasDebitoE':
-                    btnRetencionesE.style.display = '';
-                    break;
-                case 'RetencionesE':
-                    rowDownloadCompEmi.style.display = '';
-                    btnNext.disabled = false;
-                    break;
-                default:
-                    break;
-            }
-
+        function checkXmlFilesEmitidos(arrayComprobantes) {
             const mesSelect = document.getElementById('mesemitidos');
             const mes = mesSelect.value;  // Esto obtiene el valor (número) del mes
             const nombremesemitidos = mesSelect.options[mesSelect.selectedIndex].text;
             const anioemitidos = document.getElementById('anioemitidos').value
-
+            const jsonArrayComprobantes = JSON.stringify(arrayComprobantes);
             $.ajax({
                 type: 'POST',
                 url: '{% url "check_xml_files_recibidos" %}',
                 data: {
-                    'button_id': buttonId,
+                    'arrayComprobantes': jsonArrayComprobantes,
                     'anioemitidos': anioemitidos,
                     'nombremesemitidos': nombremesemitidos,
                     'directorys': valRutaFolder,
@@ -1284,7 +1145,7 @@
                     if (response.status === 'success') {
                         toastr.success(response.output, "Éxito");
                     } else {
-                        const errorMessage = `No se encontró ningún XML dentro de ${buttonId}, descargue los comprobantes y verifique de nuevo.`;
+                        const errorMessage = `No se encontró ningún XML, descargue los comprobantes y verifique de nuevo.`;
                         toastr.error(errorMessage, "Error");
                     }
                 },
@@ -1293,20 +1154,6 @@
                 }
             });
         }
-
-        // Agregar eventos a los botones de divEmitidos
-        btnFacturas.addEventListener('click', () => checkXmlFiles('Facturas'));
-        btnLiquidaciones.addEventListener('click', () => checkXmlFiles('Liquidaciones'));
-        btnNotasCredito.addEventListener('click', () => checkXmlFiles('NotasCredito'));
-        btnNotasDebito.addEventListener('click', () => checkXmlFiles('NotasDebito'));
-        btnRetenciones.addEventListener('click', () => checkXmlFiles('Retenciones'));
-
-        // Agregar eventos a los nuevos botones de divEmitidos que terminan en E (Emitidos)
-        btnFacturasE.addEventListener('click', () => checkXmlFilesEmitidos('FacturasE'));
-        btnLiquidacionesE.addEventListener('click', () => checkXmlFilesEmitidos('LiquidacionesE'));
-        btnNotasCreditoE.addEventListener('click', () => checkXmlFilesEmitidos('NotasCreditoE'));
-        btnNotasDebitoE.addEventListener('click', () => checkXmlFilesEmitidos('NotasDebitoE'));
-        btnRetencionesE.addEventListener('click', () => checkXmlFilesEmitidos('RetencionesE'));
 
         showSection(currentSection);
 
