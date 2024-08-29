@@ -257,6 +257,7 @@ def ejecutar_script(username, password, mes, nombremesrecibidos, dia, tipo_compr
                 print("Error:", e, flush=True)
         else:
             sendState('Los comprobantes de esta fecha se encuentran actualizados.')
+            return
             
     except Exception as e:
         print("Excepción al intentar ejecutar el script:", str(e), flush=True)
@@ -541,6 +542,22 @@ def ejecutar_script_botemitidos(username, password, mesemitidos, nombremesemitid
     finally:
         driver.quit()
 
+def sincronizar_db(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)  # Deserializa el JSON recibido
+        anio = data.get('anio')
+        nombremesrecibidos = data.get('nombremesrecibidos')
+        directorys = data.get('directorys')
+        comprobante = data.get('comprobante')
+        fullDirectory = f"{directorys}\\XML\\{anio}\\{nombremesrecibidos}\\RECIBIDAS\\{comprobante}"
+        continue_proccess, dbName, missing_elements = verify_data(fullDirectory)
+        if continue_proccess == True:
+            xml_files = glob.glob(os.path.join(fullDirectory, '*.xml'))
+            save_xml_db(dbName, xml_files, missing_elements)
+        estado = 'success'
+        return JsonResponse({'estado': estado})
+    else:
+        return JsonResponse({'error': 'Método no permitido'}, status=405)
 
 def sendStateEmit(text):
     if text == '':
@@ -2536,6 +2553,7 @@ def verify_data(directoryXml):
         missing_elements = list(set(names_files) - set(claves))
         continue_proccess = True
         return continue_proccess, dbName, missing_elements
+    
     # En caso de que el numero de registros en la base y la carpeta sean iguales
     if num_registros == num_xml_files:
         # Ahora la condicion en caso de que ambos este vacios
@@ -2547,8 +2565,9 @@ def verify_data(directoryXml):
             continue_proccess = False
             missing_elements = []
             return continue_proccess, dbName, missing_elements
+        
+    # Aqui debe haber un  proceso para generar los xml desde la base a la carpeta
     if num_registros >  num_xml_files:
-        # Aqui debe haber un  proceso para generar los xml desde la base a la carpeta
         continue_proccess = False
         names_files = [os.path.splitext(os.path.basename(file))[0] for file in xml_files]
         create_xml(dbName, claves, names_files, directoryXml)
@@ -2556,21 +2575,13 @@ def verify_data(directoryXml):
         return continue_proccess, dbName, missing_elements
     
 
-def control_acent(xml, simbolo='�'):
+def control_acent(xml):
     reemplazos = {
-        'á': simbolo,
-        'é': simbolo,
-        'í': simbolo,
-        'ó': simbolo,
-        'ú': simbolo,
-        'Á': simbolo,
-        'É': simbolo,
-        'Í': simbolo,
-        'Ó': simbolo,
-        'Ú': simbolo,
-        'ñ': simbolo,
-        'Ñ': simbolo
+        'á': 'simb', 'é': 'simb', 'í': 'simb', 'ó': 'simb', 'ú': 'simb',
+        'Á': 'simb', 'É': 'simb', 'Í': 'simb', 'Ó': 'simb', 'Ú': 'simb',
+        'ñ': 'simb', 'Ñ': 'simb'
     }
+    # Itera sobre los caracteres y reemplaza cada uno con "simb"
     for acentuada, reemplazo in reemplazos.items():
         xml = xml.replace(acentuada, reemplazo)
     return xml
@@ -2579,47 +2590,59 @@ def save_xml_db(dbName, xml_files, missing_array_db):
     if len(missing_array_db) != 0:
         filtered_files = [file for file in xml_files if os.path.splitext(os.path.basename(file))[0] in missing_array_db]
         for file in filtered_files:
-            with open(file, 'r', encoding='utf-8') as f:
-                xml_content_aut = f.read()
             try:
-                root = ET.fromstring(xml_content_aut)
-            except ET.ParseError as e:
-                print(f"Error en el contenido XML: {e}")
-                continue
+                with open(file, 'r', encoding='utf-8') as f:
+                    xml_content_aut = f.read()
+                try:
+                    root = ET.fromstring(xml_content_aut)
+                except ET.ParseError as e:
+                    print(f"Error en el contenido XML: {e}")
+                    continue
 
-            numero_autorizacion = root.find('.//numeroAutorizacion').text
-            cdata_node = root.find('.//comprobante').text
-            try:
-                cdata_root = ET.fromstring(cdata_node)
-            except ET.ParseError as e:
-                print(f"Error al parsear CDATA: {e}")
+                numero_autorizacion = root.find('.//numeroAutorizacion').text
+                cdata_node = root.find('.//comprobante').text
+                try:
+                    cdata_root = ET.fromstring(cdata_node)
+                except ET.ParseError as e:
+                    print(f"Error al parsear CDATA: {e}")
+                    continue
+                fecha_emision_str = cdata_root.find('.//fechaEmision').text
+                fecha_emision = datetime.datetime.strptime(fecha_emision_str, "%d/%m/%Y").date()
+                fecha_registro = datetime.datetime.now()
+                hora_emision = fecha_registro.time()
+                with open(file, 'r', encoding='utf-8') as f:
+                    xml_content = f.read()
+                try:
+                    xml_content = ET.fromstring(xml_content)
+                except ET.ParseError as e:
+                    print(f"Error al parsear CDATA: {e}")
+                    continue
+                xml_content = ET.tostring(root, encoding='unicode')
+                xml_content = re.sub(r'<\?xml version="1.0" encoding="UTF-8" standalone="yes"\?>', '', xml_content)
+                xml_content = re.sub(r'<!\[CDATA\[\s*\s*\]\]>', '', xml_content)
+                xml_content = xml_content.replace('&lt;', '<').replace('&gt;', '>')
+                xml_content = xml_content.replace('<?xml version="1.0" encoding="UTF-8"?>', '')
+                xml_content = xml_content.replace('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>', '')
+                xml_content = xml_content.replace('<?xml version="1.0" encoding="UTF-8" standalone="no"?>', '')
+                xml_content = xml_content.replace('<?xml version="1.0" encoding="utf-8" standalone="no"?>', '')
+                xml_content = xml_content.replace('<?xml version="1.0" encoding="utf-8" standalone="no"?>', '')
+                xml_content = xml_content.replace("<?xml version = '1.0' encoding = 'UTF-8'?>", '')
+                xml_content = xml_content.replace('<?xml version="1.0" encoding="utf-8"?>', '')
+                xml_content = xml_content.replace('<?xml version="1.0" encoding="utf-8" standalone="yes"?>', '')
+                xml_content = xml_content.replace("<?xml version='1.0' encoding='UTF-8'?>", '')
+                # Identificar los caracteres especiales y reemplazarlos
+                xml_content = control_acent(xml_content)
+                # Creación del registro en la base de datos
+                with connections['xml_db_content'].cursor() as cursorSave:
+                    sql = f"""
+                    INSERT INTO {dbName} (clave, contenido, fecha_registro, fecha_emision, hora_emision)
+                    VALUES (%s, CAST(%s AS XML), %s, %s, %s)
+                    """
+                    cursorSave.execute(sql, (numero_autorizacion, xml_content, fecha_registro, fecha_emision, hora_emision))
+                    print(f"Registros filtrados insertados correctamente para {file}")
+            except Exception as e:
+                print(f"Error al registrar datos en la sincronizacion del archivo {file}: {e}")
                 continue
-            fecha_emision_str = cdata_root.find('.//fechaEmision').text
-            fecha_emision = datetime.datetime.strptime(fecha_emision_str, "%d/%m/%Y").date()
-            fecha_registro = datetime.datetime.now()
-            hora_emision = fecha_registro.time()
-            with open(file, 'r', encoding='utf-8') as f:
-                xml_content = f.read()
-            try:
-                xml_content = ET.fromstring(xml_content)
-            except ET.ParseError as e:
-                print(f"Error al parsear CDATA: {e}")
-                continue
-            xml_content = ET.tostring(root, encoding='unicode')
-            xml_content = re.sub(r'<\?xml version="1.0" encoding="UTF-8" standalone="yes"\?>', '', xml_content)
-            xml_content = re.sub(r'<!\[CDATA\[\s*\s*\]\]>', '', xml_content)
-            xml_content = xml_content.replace('&lt;', '<').replace('&gt;', '>')
-            xml_content = xml_content.replace('<?xml version="1.0" encoding="UTF-8"?>', '')
-            # Identificar los caracteres especiales y reemplazarlos
-            xml_content = control_acent(xml_content, '�')
-            # Creación del registro en la base de datos
-            with connections['xml_db_content'].cursor() as cursorSave:
-                sql = f"""
-                INSERT INTO {dbName} (clave, contenido, fecha_registro, fecha_emision, hora_emision)
-                VALUES (%s, CAST(%s AS XML), %s, %s, %s)
-                """
-                cursorSave.execute(sql, (numero_autorizacion, xml_content, fecha_registro, fecha_emision, hora_emision))
-                print(f"Registros filtrados insertados correctamente para {file}")
     else:
         for xml_file in xml_files:
             try:
@@ -2658,8 +2681,16 @@ def save_xml_db(dbName, xml_files, missing_array_db):
                 xml_content = re.sub(r'<!\[CDATA\[\s*\s*\]\]>', '', xml_content)
                 xml_content = xml_content.replace('&lt;', '<').replace('&gt;', '>')
                 xml_content = xml_content.replace('<?xml version="1.0" encoding="UTF-8"?>', '')
+                xml_content = xml_content.replace('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>', '')
+                xml_content = xml_content.replace('<?xml version="1.0" encoding="UTF-8" standalone="no"?>', '')
+                xml_content = xml_content.replace('<?xml version="1.0" encoding="utf-8" standalone="no"?>', '')
+                xml_content = xml_content.replace('<?xml version="1.0" encoding="utf-8" standalone="no"?>', '')
+                xml_content = xml_content.replace("<?xml version = '1.0' encoding = 'UTF-8'?>", '')
+                xml_content = xml_content.replace('<?xml version="1.0" encoding="utf-8"?>', '')
+                xml_content = xml_content.replace('<?xml version="1.0" encoding="utf-8" standalone="yes"?>', '')
+                xml_content = xml_content.replace("<?xml version='1.0' encoding='UTF-8'?>", '')
                 # Identificar los caracteres especiales y reemplazarlos
-                xml_content = control_acent(xml_content, '�')
+                xml_content = control_acent(xml_content)
                 # Creación del registro en la base de datos
                 with connections['xml_db_content'].cursor() as cursorSave:
                     sql = f"""
@@ -2670,6 +2701,7 @@ def save_xml_db(dbName, xml_files, missing_array_db):
                     print(f"Registro insertado correctamente para {xml_file}")
             except Exception as e:
                 print(f"Error al insertar en la base de datos para {xml_file}: {e}")
+                continue
 
 def create_xml(dbName, claves, names_files, directoryXml):
     missing_elements = list(set(claves) - set(names_files))

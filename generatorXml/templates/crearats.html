@@ -23,6 +23,7 @@
         0% {
             opacity: 0;
         }
+
         50% {
             opacity: 1;
         }
@@ -42,100 +43,126 @@
         display: flex;
         align-items: center;
     }
+
     .loader-container {
         display: grid;
         place-items: center;
     }
-    #containerLoaderEmit{
+
+    #containerLoaderEmit {
         display: grid;
         place-items: center;
     }
-    /* HTML: <div class="loader"></div> */
-.loader {
-  width: 50px;
-  aspect-ratio: 1;
-  display: grid;
-  border: 4px solid #0000;
-  border-radius: 50%;
-  border-right-color: #ED1C24;
-  animation: l15 1s infinite linear;
-}
-.loader::before,
-.loader::after {    
-  content: "";
-  grid-area: 1/1;
-  margin: 2px;
-  border: inherit;
-  border-radius: 50%;
-  animation: l15 2s infinite;
-}
-.loader::after {
-  margin: 8px;
-  animation-duration: 3s;
-}
-@keyframes l15{ 
-  100%{transform: rotate(1turn)}
-}
 
-/* HTML: <div class="loader"></div> */
-#loaderDownload {
-  margin-top: 20px;
-  width: 90px;
-  height: 14px;
-  box-shadow: 0 3px 0 #212121;
-  position: relative;
-  display: grid;
-  clip-path: inset(-60px 0 -5px)
-}
-#loaderDownload:after {
-  content: "";
-  position: relative;
-  background: repeating-linear-gradient(90deg,#0000 0 calc(50% - 8px), #313131 0 calc(50% + 8px), #0000 0 100%) 0 0/calc(100%/3) 100%;
-  animation: l6-1 1s infinite;
-} 
-#loaderDownload:before {
-  content: "";
-  position: absolute;
-  width: 14px;
-  aspect-ratio: 1;
-  left: calc(50% - 7px);
-  bottom: 0;
-  border-radius: 50%;
-  background: #ED1C24;
-  animation: l6-2 1s infinite;
-}
-@keyframes l6-1 {
-  50%,100% {background-position: calc(100%/2) 0}
-}
-@keyframes l6-2 {
-  0%,50% {transform:translateY(-80px)}
-}
-/* HTML: <div class="loaderEmit"></div> */
-#loaderEmit {
-  width: 50px;
-  aspect-ratio: 1;
-  display: grid;
-  border: 4px solid #0000;
-  border-radius: 50%;
-  border-right-color: #ED1C24;
-  animation: l15 1s infinite linear;
-}
-#loaderEmit::before,
-#loaderEmit::after {    
-  content: "";
-  grid-area: 1/1;
-  margin: 2px;
-  border: inherit;
-  border-radius: 50%;
-  animation: l15 2s infinite;
-}
-#loaderEmit::after {
-  margin: 8px;
-  animation-duration: 3s;
-}
-@keyframes l15{ 
-  100%{transform: rotate(1turn)}
-}
+    /* HTML: <div class="loader"></div> */
+    .loader {
+        width: 50px;
+        aspect-ratio: 1;
+        display: grid;
+        border: 4px solid #0000;
+        border-radius: 50%;
+        border-right-color: #ED1C24;
+        animation: l15 1s infinite linear;
+    }
+
+    .loader::before,
+    .loader::after {
+        content: "";
+        grid-area: 1/1;
+        margin: 2px;
+        border: inherit;
+        border-radius: 50%;
+        animation: l15 2s infinite;
+    }
+
+    .loader::after {
+        margin: 8px;
+        animation-duration: 3s;
+    }
+
+    @keyframes l15 {
+        100% {
+            transform: rotate(1turn)
+        }
+    }
+
+    /* HTML: <div class="loader"></div> */
+    #loaderDownload {
+        margin-top: 20px;
+        width: 90px;
+        height: 14px;
+        box-shadow: 0 3px 0 #212121;
+        position: relative;
+        display: grid;
+        clip-path: inset(-60px 0 -5px)
+    }
+
+    #loaderDownload:after {
+        content: "";
+        position: relative;
+        background: repeating-linear-gradient(90deg, #0000 0 calc(50% - 8px), #313131 0 calc(50% + 8px), #0000 0 100%) 0 0/calc(100%/3) 100%;
+        animation: l6-1 1s infinite;
+    }
+
+    #loaderDownload:before {
+        content: "";
+        position: absolute;
+        width: 14px;
+        aspect-ratio: 1;
+        left: calc(50% - 7px);
+        bottom: 0;
+        border-radius: 50%;
+        background: #ED1C24;
+        animation: l6-2 1s infinite;
+    }
+
+    @keyframes l6-1 {
+
+        50%,
+        100% {
+            background-position: calc(100%/2) 0
+        }
+    }
+
+    @keyframes l6-2 {
+
+        0%,
+        50% {
+            transform: translateY(-80px)
+        }
+    }
+
+    /* HTML: <div class="loaderEmit"></div> */
+    #loaderEmit {
+        width: 50px;
+        aspect-ratio: 1;
+        display: grid;
+        border: 4px solid #0000;
+        border-radius: 50%;
+        border-right-color: #ED1C24;
+        animation: l15 1s infinite linear;
+    }
+
+    #loaderEmit::before,
+    #loaderEmit::after {
+        content: "";
+        grid-area: 1/1;
+        margin: 2px;
+        border: inherit;
+        border-radius: 50%;
+        animation: l15 2s infinite;
+    }
+
+    #loaderEmit::after {
+        margin: 8px;
+        animation-duration: 3s;
+    }
+
+    @keyframes l15 {
+        100% {
+            transform: rotate(1turn)
+        }
+    }
 </style>
 
 <body style="margin: 0; padding: 0;">
@@ -313,10 +340,12 @@
                                                             style="width: 20px; height: 20px;">
                                                             <path
                                                                 d="M272 384c9.6-31.9 29.5-59.1 49.2-86.2c0 0 0 0 0 0c5.2-7.1 10.4-14.2 15.4-21.4c19.8-28.5 31.4-63 31.4-100.3C368 78.8 289.2 0 192 0S16 78.8 16 176c0 37.3 11.6 71.9 31.4 100.3c5 7.2 10.2 14.3 15.4 21.4c0 0 0 0 0 0c19.8 27.1 39.7 54.4 49.2 86.2l160 0zM192 512c44.2 0 80-35.8 80-80l0-16-160 0 0 16c0 44.2 35.8 80 80 80zM112 176c0 8.8-7.2 16-16 16s-16-7.2-16-16c0-61.9 50.1-112 112-112c8.8 0 16 7.2 16 16s-7.2 16-16 16c-44.2 0-80 35.8-80 80z" />
-                                                        </svg><b> Recomendaciones:</b> Verificar la información de las carpetas
+                                                        </svg><b> Recomendaciones:</b> Verificar la información de las
+                                                        carpetas
                                                         que son necesarias para la generación del ATS.
                                                         <br>
-                                                        <i><b>Click en cada tipo de comprobante para la verificación.</b></i>
+                                                        <i><b>Click en cada tipo de comprobante para la
+                                                                verificación.</b></i>
                                                     </p>
                                                 </div>
                                             </div>
@@ -371,8 +400,10 @@
                                                 <div class="card-body">
                                                     <div class="row g-1">
                                                         <div class="col-md-12">
-                                                            <label for="tipo_comprobante">Seleccione el Tipo de Comprobante</label>
-                                                            <select class="form-control" id="tipo_comprobante" name="tipo_comprobante">
+                                                            <label for="tipo_comprobante">Seleccione el Tipo de
+                                                                Comprobante</label>
+                                                            <select class="form-control" id="tipo_comprobante"
+                                                                name="tipo_comprobante">
                                                                 <option value="1">Facturas</option>
                                                                 <option value="2">Liquidaciónes</option>
                                                                 <option value="3">Nota de Crédito</option>
@@ -387,15 +418,25 @@
                                         <div class="col-md-6" id="rowDownloadCompRecib">
                                             <div class="card">
                                                 <div class="card-body">
-                                                    <div id="contentLoader" class="loader-container" style="display: none;">
+                                                    <div id="contentLoader" class="loader-container"
+                                                        style="display: none;">
                                                         <div class="loader" id="loader"></div>
                                                         <div id="loaderDownload"></div>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" id="svgSuccess" style="width: 60px; height: auto;" viewBox="0 0 512 512"><path d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-111 111-47-47c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64c9.4 9.4 24.6 9.4 33.9 0L369 209z"/></svg>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" id="svgSuccess"
+                                                            style="width: 60px; height: auto;" viewBox="0 0 512 512">
+                                                            <path
+                                                                d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-111 111-47-47c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64c9.4 9.4 24.6 9.4 33.9 0L369 209z" />
+                                                        </svg>
                                                         <h2 id="estadoPag"></h2>
                                                     </div>
                                                     <br>
-                                                    <button type="button" id="btnDownload" class="btn btn-dark btn-block mt-3">
-                                                        Descargar
+                                                    <button type="button" id="btnDownload"
+                                                        class="btn btn-dark btn-block mt-3">
+                                                        Descargar comprobantes
+                                                    </button>
+                                                    <button type="button" id="btnSincronizarRecibidos"
+                                                        class="btn btn-success btn-block mt-3">
+                                                        Sincronizar
                                                     </button>
                                                     <br>
                                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
@@ -408,7 +449,8 @@
                                                         <li>Se abrirá automaticamente el portal del SRI y una ventana
                                                             solicitando el mes, día y tipo de comprobante.</li>
                                                         <li>
-                                                            <i>La interacción del usuario termina en esta parte, se recomienda
+                                                            <i>La interacción del usuario termina en esta parte, se
+                                                                recomienda
                                                                 dejar que el proceso concluya automaticamente</i>
                                                         </li>
                                                     </ol>
@@ -423,7 +465,8 @@
                                             <div class="row g-1">
                                                 <div class="col-md-12">
                                                     <h3>Comprobantes Electronicos Emitidos</h3>
-                                                    <p>Este proceso es dependiente de los archivos que se encuentren descargados.</p>
+                                                    <p>Este proceso es dependiente de los archivos que se encuentren
+                                                        descargados.</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -436,7 +479,8 @@
                                                     <div class="row g-1">
                                                         <div class="col-md-4">
                                                             <label for="dia">Seleccione el Año</label>
-                                                            <select class="form-control" id="anioemitidos" name="anioemitidos">
+                                                            <select class="form-control" id="anioemitidos"
+                                                                name="anioemitidos">
                                                                 {% for year in years %}
                                                                 <option value="{{ year }}">{{ year }}</option>
                                                                 {% endfor %}
@@ -444,7 +488,8 @@
                                                         </div>
                                                         <div class="col-md-4">
                                                             <label for="mes">Seleccione el Mes</label>
-                                                            <select class="form-control" id="mesemitidos" name="mesemitidos">
+                                                            <select class="form-control" id="mesemitidos"
+                                                                name="mesemitidos">
                                                                 <option value="1">Enero</option>
                                                                 <option value="2">Febrero</option>
                                                                 <option value="3">Marzo</option>
@@ -461,7 +506,8 @@
                                                         </div>
                                                         <div class="col-md-4">
                                                             <label for="dia">Seleccione el Día</label>
-                                                            <select class="form-control" id="diaemitidos" name="diaemitidos">
+                                                            <select class="form-control" id="diaemitidos"
+                                                                name="diaemitidos">
                                                                 <option value="0">Todos</option>
                                                                 {% for day in days %}
                                                                 <option value="{{ day }}">{{ day }}</option>
@@ -476,8 +522,10 @@
                                                 <div class="card-body">
                                                     <div class="row g-1">
                                                         <div class="col-md-12">
-                                                            <label for="tipo_comprobante_emitidos">Seleccione el Tipo de Comprobante</label>
-                                                            <select class="form-control" id="tipo_comprobante_emitidos" name="tipo_comprobante_emitidos">
+                                                            <label for="tipo_comprobante_emitidos">Seleccione el Tipo de
+                                                                Comprobante</label>
+                                                            <select class="form-control" id="tipo_comprobante_emitidos"
+                                                                name="tipo_comprobante_emitidos">
                                                                 <option value="1">Facturas</option>
                                                                 <option value="2">Liquidaciónes</option>
                                                                 <option value="3">Nota de Crédito</option>
@@ -497,9 +545,16 @@
                                                             <div id="containerLoaderEmit" style="display: none;">
                                                                 <div id="loaderEmit"></div>
                                                                 <h2 id="estadoPagEmit"></h2>
-                                                                <svg xmlns="http://www.w3.org/2000/svg" id="svgSuccessEmit" style="width: 60px; height: auto;" viewBox="0 0 512 512"><path d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-111 111-47-47c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64c9.4 9.4 24.6 9.4 33.9 0L369 209z"/></svg>
+                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                    id="svgSuccessEmit"
+                                                                    style="width: 60px; height: auto;"
+                                                                    viewBox="0 0 512 512">
+                                                                    <path
+                                                                        d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-111 111-47-47c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64c9.4 9.4 24.6 9.4 33.9 0L369 209z" />
+                                                                </svg>
                                                             </div>
-                                                            <button type="button" id="btnEmitidos" class="btn btn-dark btn-block mt-3">
+                                                            <button type="button" id="btnEmitidos"
+                                                                class="btn btn-dark btn-block mt-3">
                                                                 Descargar
                                                             </button>
                                                         </div>
@@ -507,23 +562,28 @@
                                                     <br>
                                                     <div class="row">
                                                         <div class="col-md-12">
-                                                            <span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
-                                                                style="width: 20px;height: 20px;">
-                                                                <path
-                                                                    d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24l0 112c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-112c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z" />
-                                                            </svg> Nota:</span>
+                                                            <span><svg xmlns="http://www.w3.org/2000/svg"
+                                                                    viewBox="0 0 512 512"
+                                                                    style="width: 20px;height: 20px;">
+                                                                    <path
+                                                                        d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24l0 112c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-112c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z" />
+                                                                </svg> Nota:</span>
                                                             <ol>
                                                                 <li>Ingresar al portal SRI.</li>
-                                                                <li>Dirigirse al apartado de Facturación Electrónica / Producción /
+                                                                <li>Dirigirse al apartado de Facturación Electrónica /
+                                                                    Producción /
                                                                     Consultas / Comprobantes Electrónicos Emitidos.</li>
-                                                                <li>Selecciónar los días a descargar, el tipo de comprobante y
+                                                                <li>Selecciónar los días a descargar, el tipo de
+                                                                    comprobante y
                                                                     consultar.</li>
                                                                 <li>Descargar el archivo .txt y renombrarlo.</li>
-                                                                <li>Mover el archivo descargado dependiendo el tipo de comprobante,
+                                                                <li>Mover el archivo descargado dependiendo el tipo de
+                                                                    comprobante,
                                                                     ejemplo: (c:/ia/SRIBOT/XML/EMITIDAS).</li>
                                                                 <li>Iniciar el BOT.</li>
                                                             </ol>
-                                                            <i>Esto tiene un limite de 10 días permitidos para descargar el archivo.</i>
+                                                            <i>Esto tiene un limite de 10 días permitidos para descargar
+                                                                el archivo.</i>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -609,8 +669,7 @@
                     </div>
                     <div class="row">
                         <div class="col-4">
-                            <button type="button" class="btn btn-danger btn-block"
-                                id="openRecibidos">Recibidos</button>
+                            <button type="button" class="btn btn-danger btn-block" id="openRecibidos">Recibidos</button>
                         </div>
                         <div class="col-4">
                             <button type="button" class="btn btn-danger btn-block" id="openEmitidos">Emitidos</button>
@@ -631,7 +690,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', (event) => {
         var users = JSON.parse('{{ users|safe|escapejs }}');
-        
+
         const passwordInput = document.getElementById('password');
         const togglePassword = document.getElementById('togglePassword');
         const usernameInput = document.getElementById('username');
@@ -640,9 +699,9 @@
         const rowDownloadCompEmi = document.getElementById('rowDownloadCompEmi');
         const directoryInput = document.getElementById('directoryInput');
         const textError = document.getElementById('textError');
+        const btnSincronizarRecibidos = document.getElementById('btnSincronizarRecibidos');
 
         let valRutaFolder;
-
 
         // Funcionalidad de envio a la aplicacion para generar el XML
         btnRedep.addEventListener('click', function () {
@@ -661,8 +720,8 @@
             var passwordVal = passwordInput.value
             if (usernameInput.value != '' && passwordVal.length >= 4) {
                 // Funcionalidad
-                users.forEach(function(user){
-                    if((usernameInput.value == user.ruc) && (passwordInput.value == user.password)){
+                users.forEach(function (user) {
+                    if ((usernameInput.value == user.ruc) && (passwordInput.value == user.password)) {
                         found = true;
                         rowButtons.style.display = '';
                         textError.style.display = 'none';
@@ -896,8 +955,6 @@
             const mesSelect = document.getElementById('mesmodal');
             const mes = mesSelect.value;  // Esto obtiene el valor (número) del mes
             const nombremesmodal = mesSelect.options[mesSelect.selectedIndex].text;
-            console.log('aniomodal', aniomodal)
-            console.log(valRutaFolder)
 
             $('#reportModal').modal('hide');
 
@@ -1034,7 +1091,7 @@
             const diaemitidos = document.getElementById('diaemitidos').value;
             const tipo_comprobante_emitidos = document.getElementById('tipo_comprobante_emitidos').value;
 
-            if (!username || !password || !mesemitidos || !anioemitidos || !diaemitidos || !tipo_comprobante_emitidos ) {
+            if (!username || !password || !mesemitidos || !anioemitidos || !diaemitidos || !tipo_comprobante_emitidos) {
                 toastr.warning("Por favor, complete todos los campos.", "Advertencia");
             } else {
                 $.ajax({
@@ -1063,37 +1120,35 @@
         });
 
         btnCrearAts.addEventListener('click', () => {
-    const aniomodal = document.getElementById('aniomodal').value;
-    const mesSelect = document.getElementById('mesmodal');
-    const mes = mesSelect.value;  // Esto obtiene el valor (número) del mes
-    const nombremesmodal = mesSelect.options[mesSelect.selectedIndex].text;
-    
-    console.log('ats', aniomodal, nombremesmodal);
+            const aniomodal = document.getElementById('aniomodal').value;
+            const mesSelect = document.getElementById('mesmodal');
+            const mes = mesSelect.value;  // Esto obtiene el valor (número) del mes
+            const nombremesmodal = mesSelect.options[mesSelect.selectedIndex].text;
 
-    if (!aniomodal || !mes) {
-        toastr.warning("Por favor, complete todos los campos requeridos.", "Advertencia");
-    } else {
-        $.ajax({
-            type: 'POST',
-            url: atsForm.action,
-            data: {
-                'csrfmiddlewaretoken': '{{ csrf_token }}',
-                'action': 'CrearAts',
-                'directory': valRutaFolder,
-                'aniomodal': aniomodal,
-                'nombremesmodal': nombremesmodal
-            },
-            success: function (response) {
-                toastr.success(response.output, 'Exito');
-            },
-            error: function (response) {
-                toastr.error('Error al iniciar el script.', "Error");
+            console.log('ats', aniomodal, nombremesmodal);
+
+            if (!aniomodal || !mes) {
+                toastr.warning("Por favor, complete todos los campos requeridos.", "Advertencia");
+            } else {
+                $.ajax({
+                    type: 'POST',
+                    url: atsForm.action,
+                    data: {
+                        'csrfmiddlewaretoken': '{{ csrf_token }}',
+                        'action': 'CrearAts',
+                        'directory': valRutaFolder,
+                        'aniomodal': aniomodal,
+                        'nombremesmodal': nombremesmodal
+                    },
+                    success: function (response) {
+                        toastr.success(response.output, 'Exito');
+                    },
+                    error: function (response) {
+                        toastr.error('Error al iniciar el script.', "Error");
+                    }
+                });
             }
         });
-    }
-});
-
-
 
         function checkXmlFiles(arrayComprobantes) {
             const mesSelect = document.getElementById('mes');
@@ -1253,103 +1308,134 @@
 
         function fetchEstado() {
             fetch('/get-estado/')
-            .then(response => response.json())
-            .then(data => {
-                estadoPag.classList.remove('fade');
-                void estadoPag.offsetWidth;
-                estadoPag.classList.add('fade');
-                estadoPag.innerText = data.estado;
-                var estado = data.estado
-                
-                switch (estado) {
-                    case "Sin ejecutar":
-                        btnDownload.disabled = false;
-                        contentLoader.style.display = "none";
-                        loader.style.display = "none";
-                        loaderDownload.style.display = "none";
-                        svgSuccess.style.display = "none";
-                        break
-                    case "Esperando ejecución":
-                        btnDownload.disabled = true;
-                        contentLoader.style.display = "";
-                        loader.style.display = "";
-                        loaderDownload.style.display = "none";
-                        svgSuccess.style.display = "none";
-                        break;
-                    case "Ingresando al portal SRI.":
-                        btnDownload.disabled = true;
-                        contentLoader.style.display = "";
-                        loader.style.display = "";
-                        loaderDownload.style.display = "none";
-                        svgSuccess.style.display = "none";
-                        break;
-                    case "Descargando archivos ...":
-                        btnDownload.disabled = true;
-                        contentLoader.style.display = "";
-                        loader.style.display = "none";
-                        loaderDownload.style.display = "";
-                        svgSuccess.style.display = "none";
-                        break
-                    case "Comprobantes descargados exitosamente.":
-                        btnDownload.innerHTML = 'Descargar'
-                        contentLoader.style.display = "";
-                        btnDownload.disabled = false;
-                        loader.style.display = "none";
-                        loaderDownload.style.display = "none";
-                        svgSuccess.style.display = "";
-                        break;
-                    case "Los comprobantes de esta fecha se encuentran actualizados":
-                        btnDownload.innerHTML = 'Descargar'
-                        contentLoader.style.display = "";
-                        btnDownload.disabled = false;
-                        loader.style.display = "none";
-                        loaderDownload.style.display = "none";
-                        svgSuccess.style.display = "";
-                        break;
-                }
-            })
-            .catch(error => console.error('Error:', error));
+                .then(response => response.json())
+                .then(data => {
+                    estadoPag.classList.remove('fade');
+                    void estadoPag.offsetWidth;
+                    estadoPag.classList.add('fade');
+                    estadoPag.innerText = data.estado;
+                    var estado = data.estado
+
+                    switch (estado) {
+                        case "Sin ejecutar":
+                            btnDownload.disabled = false;
+                            contentLoader.style.display = "none";
+                            loader.style.display = "none";
+                            loaderDownload.style.display = "none";
+                            svgSuccess.style.display = "none";
+                            btnDownload.innerHTML = 'Descargar'
+                            break
+                        case "Esperando ejecución":
+                            btnDownload.disabled = true;
+                            contentLoader.style.display = "";
+                            loader.style.display = "";
+                            loaderDownload.style.display = "none";
+                            svgSuccess.style.display = "none";
+                            break;
+                        case "Ingresando al portal SRI.":
+                            btnDownload.disabled = true;
+                            contentLoader.style.display = "";
+                            loader.style.display = "";
+                            loaderDownload.style.display = "none";
+                            svgSuccess.style.display = "none";
+                            break;
+                        case "Descargando archivos ...":
+                            btnDownload.disabled = true;
+                            contentLoader.style.display = "";
+                            loader.style.display = "none";
+                            loaderDownload.style.display = "";
+                            svgSuccess.style.display = "none";
+                            break
+                        case "Comprobantes descargados exitosamente.":
+                            btnDownload.innerHTML = 'Descargar'
+                            contentLoader.style.display = "";
+                            btnDownload.disabled = false;
+                            loader.style.display = "none";
+                            loaderDownload.style.display = "none";
+                            svgSuccess.style.display = "";
+                            break;
+                        case "Los comprobantes de esta fecha se encuentran actualizados":
+                            btnDownload.innerHTML = 'Descargar'
+                            contentLoader.style.display = "";
+                            btnDownload.disabled = false;
+                            loader.style.display = "none";
+                            loaderDownload.style.display = "none";
+                            svgSuccess.style.display = "";
+                            break;
+                    }
+                })
+                .catch(error => console.error('Error:', error));
         }
         setInterval(fetchEstado, 1000);
 
         function fetchEstadoEmit() {
             fetch('/get-estadoEmit/')
-            .then(response => response.json())
-            .then(data => {
-                estadoPagEmit.classList.remove('fade');
-                void estadoPagEmit.offsetWidth;
-                estadoPagEmit.classList.add('fade');
-                estadoPagEmit.innerText = data.estado_emitido;
-                var estados = data.estado_emitido
-                
-                switch (estados) {
-                    case 'Esperando ejecución.':
-                        containerLoaderEmit.style.display = "";
-                        loaderEmit.style.display = "";
-                        btnEmitidos.disabled = true;
-                        svgSuccessEmit.style.display = "none";
-                        break;
-                    case 'Descarga completa.':
-                    case 'No existe información del día consultado.':    
-                        containerLoaderEmit.style.display = "";
-                        loaderEmit.style.display = "none";
-                        btnEmitidos.disabled = false;
-                        svgSuccessEmit.style.display = "";
-                        break;
-                    case 'Sin ejecutar':
-                        btnEmitidos.disabled = false;
-                        loaderEmit.style.display = "none";
-                        containerLoaderEmit.style.display = "none";
-                        svgSuccessEmit.style.display = "none";
-                        break;
-                }
-            })
-            .catch(error => console.error('Error:', error));
+                .then(response => response.json())
+                .then(data => {
+                    estadoPagEmit.classList.remove('fade');
+                    void estadoPagEmit.offsetWidth;
+                    estadoPagEmit.classList.add('fade');
+                    estadoPagEmit.innerText = data.estado_emitido;
+                    var estados = data.estado_emitido
+
+                    switch (estados) {
+                        case 'Esperando ejecución.':
+                            containerLoaderEmit.style.display = "";
+                            loaderEmit.style.display = "";
+                            btnEmitidos.disabled = true;
+                            svgSuccessEmit.style.display = "none";
+                            break;
+                        case 'Descarga completa.':
+                        case 'No existe información del día consultado.':
+                            containerLoaderEmit.style.display = "";
+                            loaderEmit.style.display = "none";
+                            btnEmitidos.disabled = false;
+                            svgSuccessEmit.style.display = "";
+                            break;
+                        case 'Sin ejecutar':
+                            btnEmitidos.disabled = false;
+                            loaderEmit.style.display = "none";
+                            containerLoaderEmit.style.display = "none";
+                            svgSuccessEmit.style.display = "none";
+                            break;
+                    }
+                })
+                .catch(error => console.error('Error:', error));
         }
         setInterval(fetchEstadoEmit, 1000);
 
+        btnSincronizarRecibidos.addEventListener('click', function () {
+            const mesSelect = document.getElementById('mes');
+            const mes = mesSelect.value;
+            const nombremesrecibidos = mesSelect.options[mesSelect.selectedIndex].text;
+            const anio = document.getElementById('anio').value
+            const comprobante = document.getElementById('tipo_comprobante');
+            const selectedText = comprobante.options[comprobante.selectedIndex].text;
 
-        
+            fetch('/sincronizar_db/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    'anio': anio,
+                    'nombremesrecibidos': nombremesrecibidos,
+                    'directorys': valRutaFolder,
+                    'comprobante': selectedText,
+                })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error en la solicitud');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(data); // Maneja la respuesta aquí
+                })
+                .catch(error => console.error('Error:', error));
+        })
     });
 </script>
 

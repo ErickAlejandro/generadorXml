@@ -11,4 +11,5 @@ urlpatterns = [
     path('get-estado/', views.getEstado, name='get_estado'),
     path('send-stateEmit/', views.sendStateEmit, name='send_state_emit'),
     path('get-estadoEmit/', views.getEstadoEmit, name='get_estado_emit'),
+    path('sincronizar_db/', views.sincronizar_db, name='sincronizar_db'),
 ]
