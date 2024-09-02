@@ -18,20 +18,30 @@
             <div class="card-header">
                 <div class="row">
                     <div class="col-md-10">
-                        <button type="button" style="margin-right: 10px;" id="btnGoGenerateAts" class="btn btn-dark"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style="fill: white; width: 16px;"><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></button>
+                        <button type="button" style="margin-right: 10px;" id="btnGoGenerateAts"
+                            class="btn btn-dark"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"
+                                style="fill: white; width: 16px;">
+                                <path
+                                    d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
+                            </svg></button>
                         Generador XML
                     </div>
                 </div>
             </div>
             <div class="card-body">
-            <div class="row">
-                <div class="col-md-6 text-center">
-                    <button type="button" id="btnGetForm" class="btn btn-dark btn-block">Llenar formulario</button>
+                <div class="row">
+                    <div class="col-md-4 text-center">
+                        <button type="button" id="btnGetForm" class="btn btn-dark btn-block">Llenar formulario</button>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <button type="button" id="btnGetFile" class="btn btn-success btn-block">Transformar archivo XML
+                            (REDEP)</button>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <button type="button" id="btnTransATS" class="btn btn-danger btn-block">Transformar archivo XML
+                            (ATS)</button>
+                    </div>
                 </div>
-                <div class="col-md-6 text-center">
-                    <button type="button" id="btnGetFile" class="btn btn-success btn-block">Transformar archivo XML</button>
-                </div>
-            </div>
             </div>
         </div>
     </div>
@@ -65,13 +75,14 @@
                             <div class="col-md-12">
                                 <div class="input-group">
                                     <div class="custom-file">
-                                      <input type="file" class="custom-file-input" id="inputGetExcel" aria-describedby="inputGroupFileAddon01">
-                                      <label class="custom-file-label" for="inputGetExcel">Escoger archivo</label>
+                                        <input type="file" class="custom-file-input" id="inputGetExcel"
+                                            aria-describedby="inputGroupFileAddon01">
+                                        <label class="custom-file-label" for="inputGetExcel">Escoger archivo</label>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div id="divInfoExcel"  style="display: none;">
+                        <div id="divInfoExcel" style="display: none;">
                             <br>
                             <hr>
                             <h3>Información del Empleador</h3>
@@ -117,212 +128,245 @@
                                 <div class="col-md-12">
                                     <table class="table table-sm table-hover">
                                         <thead>
-                                          <tr>
-                                            <th scope="col">RUC</th>
-                                            <th scope="col">Nombres completos</th>
-                                            <th scope="col">Establecimiento</th>
-                                            <th scope="col">Sueldo y Salarios</th>
-                                            <th scope="col"> Base imponible</th>
-                                            <th scope="col">IR Causado</th>
-                                            <th scope="col">Valor Retenido</th>
-                                          </tr>
+                                            <tr>
+                                                <th scope="col">RUC</th>
+                                                <th scope="col">Nombres completos</th>
+                                                <th scope="col">Establecimiento</th>
+                                                <th scope="col">Sueldo y Salarios</th>
+                                                <th scope="col"> Base imponible</th>
+                                                <th scope="col">IR Causado</th>
+                                                <th scope="col">Valor Retenido</th>
+                                            </tr>
                                         </thead>
                                         <tbody id="tbodyTableEmpleados">
                                             <!-- TABLA DE INFORMACION -->
                                         </tbody>
-                                      </table>
+                                    </table>
                                 </div>
                             </div>
                             <br>
                         </div>
                         <div id="detailEmpleado" style="display: none;">
-                            <button class="btn btn-dark btn-sm" id="btnBack" style="margin-top: 15px; margin-bottom: 15px;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style="fill: white; width: 15px; height: 15px;"><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></button><h2>Detalles de Empleado</h2>
+                            <button class="btn btn-dark btn-sm" id="btnBack"
+                                style="margin-top: 15px; margin-bottom: 15px;"><svg xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 448 512" style="fill: white; width: 15px; height: 15px;">
+                                    <path
+                                        d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
+                                </svg></button>
+                            <h2>Detalles de Empleado</h2>
                             <!-- Botones para las particiones -->
                             <div class="row g-1">
                                 <div class="col-md-3">
-                                    <button type="button" id="btnDatosTrabajador" class="btn btn-link">Datos del trabajador</button>
+                                    <button type="button" id="btnDatosTrabajador" class="btn btn-link">Datos del
+                                        trabajador</button>
                                 </div>
                                 <div class="col-md-3">
                                     <button type="button" id="btnIngresos" class="btn btn-link">Ingresos</button>
                                 </div>
                                 <div class="col-md-3">
-                                    <button type="button" id="btnGastosDeduccionesExo" class="btn btn-link">Gastos, deducciones y exoneraciones</button>
+                                    <button type="button" id="btnGastosDeduccionesExo" class="btn btn-link">Gastos,
+                                        deducciones y exoneraciones</button>
                                 </div>
                                 <div class="col-md-3">
-                                    <button type="button" id="btnResumenImp" class="btn btn-link">Resumen Impositivo</button>
+                                    <button type="button" id="btnResumenImp" class="btn btn-link">Resumen
+                                        Impositivo</button>
                                 </div>
                             </div>
                             <hr>
                             <!-- Informacion de los trabajador -->
-                             <div id="divInfoTrabajador">
+                            <div id="divInfoTrabajador">
                                 <h3>INFORMACIÓN DEL TRABAJADOR</h3>
-                                 <div class="row">
-                                     <div class="col-md-6">
-                                         <label>Beneficio provincia de Galápagos</label>
-                                         <div class="form-check">
-                                             <input class="form-check-input" type="radio" name="exampleRadios" id="radioNoBenGalpg" value="NO">
-                                             <label class="form-check-label" for="radioNoBenGalpg">
-                                               No
-                                             </label>
-                                           </div>
-                                           <div class="form-check">
-                                             <input class="form-check-input" type="radio" name="exampleRadios" id="radioSiBenGalpg" value="SI">
-                                             <label class="form-check-label" for="radioSiBenGalpg">
-                                               Si
-                                             </label>
-                                         </div>
-                                     </div>
-                                     <div class="col-md-6">
-                                         <label>Trabajador con o a cargo de personas con enfermedades catastróficas, raras y/o huérfanas</label>
-                                         <div class="form-check">
-                                             <input class="form-check-input" type="radio" name="exampleRadiosEnfCatastro" id="radioNoEnfCatastro" value="NO">
-                                             <label class="form-check-label" for="radioNoEnfCatastro">
-                                               No
-                                             </label>
-                                           </div>
-                                           <div class="form-check">
-                                             <input class="form-check-input" type="radio" name="exampleRadiosEnfCatastro" id="radioSiEnfCatastro" value="SI">
-                                             <label class="form-check-label" for="radioSiEnfCatastro">
-                                               Si
-                                             </label>
-                                         </div>
-                                     </div>
-                                 </div>
-                                 <div class="row">
-                                     <div class="col-md-6">
-                                         <label>Número de cargas familiares para rebaja de gastos personales</label>
-                                         <select class="custom-select custom-select-sm" id="selectTrabCargFam">
-                                             <option value="" selected>Escoger una opción</option>
-                                             
-                                         </select>
-                                     </div>
-                                     <div class="col-md-6">
-                                         <label>Tipo de identificación del trabajador</label>
-                                         <select class="custom-select custom-select-sm" id="selectTipoIdentEmpleado">
-                                             <option value="" selected>Escoger una opción</option>
-                                             <option value="C">CÉDULA</option>
-                                             <option value="ITE">IDENTIFICACIÓN TRIBUTARIA DEL EXTERIOR</option>
-                                             <option value="P">PASAPORTE</option>
-                                         </select>
-                                     </div>
-                                 </div>
-                                 <div class="row">
-                                     <div class="col-md-3">
-                                         <div class="form-group">
-                                             <label for="inputNumCedulaEmpleado">Número de Identificación del trabajador</label>
-                                             <input type="text" class="form-control form-control-sm" id="inputNumCedulaEmpleado">
-                                         </div>
-                                     </div>
-                                     <div class="col-md-3">
-                                         <div class="form-group">
-                                             <label for="inputApellidoTrabajador">Apellidos del trabajador</label>
-                                             <input type="text" class="form-control form-control-sm" id="inputApellidoTrabajador">
-                                         </div>
-                                     </div>
-                                     <div class="col-md-3">
-                                         <div class="form-group">
-                                             <label for="inputNombreTrabajador">Nombres del trabajador</label>
-                                             <input type="text" class="form-control form-control-sm" id="inputNombreTrabajador">
-                                         </div>
-                                     </div>
-                                     <div class="col-md-3">
-                                         <div class="form-group">
-                                             <label for="inputCodEstablecimiento">Código del establecimiento</label>
-                                             <input type="text" class="form-control form-control-sm" id="inputCodEstablecimiento">
-                                         </div>
-                                     </div>
-                                 </div>
-                                 <div class="row">
-                                     <div class="col-md-4">
-                                         <label>Residencia del trabajador</label>
-                                         <select class="custom-select custom-select-sm" id="selectResidenTrab">
-                                             <option value="" selected>Escoger una opción</option>
-                                             <option value="01">RESIDENTE LOCAL</option>
-                                             <option value="02">RESIDENTE EN EL EXTERIOR</option>
-                                         </select>
-                                     </div>
-                                     <div class="col-md-4">
-                                         <label>País de residencia del trabajador</label>
-                                         <select class="custom-select custom-select-sm" id="selectPaisResidenTrab">
-                                             <option value="" selected>Escoger una opción</option>
-                                             
-                                         </select>
-                                     </div>
-                                     <div class="col-md-4">
-                                         <label>Aplica convenio para evitar doble imposición</label>
-                                         <select class="custom-select custom-select-sm" id="selectApConvEvitDobImposi">
-                                             <option value="NA" selected> </option>
-                                             <option value="CC">CON CONVENIO</option>
-                                             <option value="SC">SIN CONVENIO</option>
-                                         </select>
-                                     </div>
-                                 </div>
-                                 <div class="row">
-                                     <div class="col-md-3">
-                                         <label>Condición del trabajador respecto a discapacidades</label>
-                                         <select class="custom-select custom-select-sm" id="selectCondtrabRespDis">
-                                             <option value="01" selected>NO APLICA</option>
-                                             <option value="02">TRABAJADOR CON DISCAPACIDAD</option>
-                                             <option value="03">TRABAJADOR QUE ACTÚA EN CALIDAD DE SUSTITUTO DE UNA PERSONA CON DISCAPACIDAD</option>
-                                             <option value="04">TRABAJADOR TIENE CÓNYUGE, PAREJA, EN UN ÚNION DE HECHO O HIJO CON DISCAPACIDAD Y SE ENCUENTRA BAJO SU CUIDADO Y/O RESPONSABILIDAD</option>
-                                         </select>
-                                     </div>
-                                     <div class="col-md-3">
-                                         <div class="form-group">
-                                             <label for="inputProceDisc">Porcentaje de discapacidad</label>
-                                             <input type="text" class="form-control form-control-sm" id="inputProceDisc">
-                                         </div>
-                                     </div>
-                                     <div class="col-md-3">
-                                         <label>Tipo de identificación de la persona con discapacidad a quien sustituye o representa</label>
-                                         <select class="custom-select custom-select-sm" id="selectTipIdenPersDisSustRep">
-                                             <option value="N" selected> </option>
-                                             <option value="C">CÉDULA</option>
-                                             <option value="ITE">IDENTIFICACIÓN TRIBUTARIA DEL EXTERIOR</option>
-                                             <option value="P">PASAPORTE</option>
-                                         </select>
-                                     </div>
-                                     <div class="col-md-3">
-                                         <div class="form-group">
-                                             <label for="inputNumIdentificacionPerDisSusRep">Número de Identificación de la persona con discapacidad a quien sustituye o representa</label>
-                                             <input type="text" class="form-control form-control-sm" id="inputNumIdentificacionPerDisSusRep">
-                                         </div>
-                                     </div>
-                                 </div>
-                             </div>
-                             <div id="divIngresos" style="display: none;">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label>Beneficio provincia de Galápagos</label>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="exampleRadios"
+                                                id="radioNoBenGalpg" value="NO">
+                                            <label class="form-check-label" for="radioNoBenGalpg">
+                                                No
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="exampleRadios"
+                                                id="radioSiBenGalpg" value="SI">
+                                            <label class="form-check-label" for="radioSiBenGalpg">
+                                                Si
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label>Trabajador con o a cargo de personas con enfermedades catastróficas,
+                                            raras y/o huérfanas</label>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="exampleRadiosEnfCatastro"
+                                                id="radioNoEnfCatastro" value="NO">
+                                            <label class="form-check-label" for="radioNoEnfCatastro">
+                                                No
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="exampleRadiosEnfCatastro"
+                                                id="radioSiEnfCatastro" value="SI">
+                                            <label class="form-check-label" for="radioSiEnfCatastro">
+                                                Si
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label>Número de cargas familiares para rebaja de gastos personales</label>
+                                        <select class="custom-select custom-select-sm" id="selectTrabCargFam">
+                                            <option value="" selected>Escoger una opción</option>
+
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label>Tipo de identificación del trabajador</label>
+                                        <select class="custom-select custom-select-sm" id="selectTipoIdentEmpleado">
+                                            <option value="" selected>Escoger una opción</option>
+                                            <option value="C">CÉDULA</option>
+                                            <option value="ITE">IDENTIFICACIÓN TRIBUTARIA DEL EXTERIOR</option>
+                                            <option value="P">PASAPORTE</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="inputNumCedulaEmpleado">Número de Identificación del
+                                                trabajador</label>
+                                            <input type="text" class="form-control form-control-sm"
+                                                id="inputNumCedulaEmpleado">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="inputApellidoTrabajador">Apellidos del trabajador</label>
+                                            <input type="text" class="form-control form-control-sm"
+                                                id="inputApellidoTrabajador">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="inputNombreTrabajador">Nombres del trabajador</label>
+                                            <input type="text" class="form-control form-control-sm"
+                                                id="inputNombreTrabajador">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="inputCodEstablecimiento">Código del establecimiento</label>
+                                            <input type="text" class="form-control form-control-sm"
+                                                id="inputCodEstablecimiento">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label>Residencia del trabajador</label>
+                                        <select class="custom-select custom-select-sm" id="selectResidenTrab">
+                                            <option value="" selected>Escoger una opción</option>
+                                            <option value="01">RESIDENTE LOCAL</option>
+                                            <option value="02">RESIDENTE EN EL EXTERIOR</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label>País de residencia del trabajador</label>
+                                        <select class="custom-select custom-select-sm" id="selectPaisResidenTrab">
+                                            <option value="" selected>Escoger una opción</option>
+
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label>Aplica convenio para evitar doble imposición</label>
+                                        <select class="custom-select custom-select-sm" id="selectApConvEvitDobImposi">
+                                            <option value="NA" selected> </option>
+                                            <option value="CC">CON CONVENIO</option>
+                                            <option value="SC">SIN CONVENIO</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <label>Condición del trabajador respecto a discapacidades</label>
+                                        <select class="custom-select custom-select-sm" id="selectCondtrabRespDis">
+                                            <option value="01" selected>NO APLICA</option>
+                                            <option value="02">TRABAJADOR CON DISCAPACIDAD</option>
+                                            <option value="03">TRABAJADOR QUE ACTÚA EN CALIDAD DE SUSTITUTO DE UNA
+                                                PERSONA CON DISCAPACIDAD</option>
+                                            <option value="04">TRABAJADOR TIENE CÓNYUGE, PAREJA, EN UN ÚNION DE HECHO O
+                                                HIJO CON DISCAPACIDAD Y SE ENCUENTRA BAJO SU CUIDADO Y/O RESPONSABILIDAD
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="inputProceDisc">Porcentaje de discapacidad</label>
+                                            <input type="text" class="form-control form-control-sm" id="inputProceDisc">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label>Tipo de identificación de la persona con discapacidad a quien sustituye o
+                                            representa</label>
+                                        <select class="custom-select custom-select-sm" id="selectTipIdenPersDisSustRep">
+                                            <option value="N" selected> </option>
+                                            <option value="C">CÉDULA</option>
+                                            <option value="ITE">IDENTIFICACIÓN TRIBUTARIA DEL EXTERIOR</option>
+                                            <option value="P">PASAPORTE</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="inputNumIdentificacionPerDisSusRep">Número de Identificación de
+                                                la persona con discapacidad a quien sustituye o representa</label>
+                                            <input type="text" class="form-control form-control-sm"
+                                                id="inputNumIdentificacionPerDisSusRep">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="divIngresos" style="display: none;">
                                 <h3>INGRESOS</h3>
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="inputSueldosSalarios">Sueldos y salarios</label>
-                                            <input type="number" class="form-control form-control-sm" id="inputSueldosSalarios">
+                                            <input type="number" class="form-control form-control-sm"
+                                                id="inputSueldosSalarios">
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="inputSobreComiBonosOtrIng">Sobresueldos, comisiones, bonos y otros ingresos gravados</label>
-                                            <input type="number" class="form-control form-control-sm" id="inputSobreComiBonosOtrIng">
+                                            <label for="inputSobreComiBonosOtrIng">Sobresueldos, comisiones, bonos y
+                                                otros ingresos gravados</label>
+                                            <input type="number" class="form-control form-control-sm"
+                                                id="inputSobreComiBonosOtrIng">
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="inputPartUtil">Participación utilidades</label>
-                                            <input type="number" class="form-control form-control-sm" id="inputPartUtil">
+                                            <input type="number" class="form-control form-control-sm"
+                                                id="inputPartUtil">
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="inputIngGravGenEmp">Ingresos gravados generados con otros empleadores</label>
-                                            <input type="number" class="form-control form-control-sm" id="inputIngGravGenEmp">
+                                            <label for="inputIngGravGenEmp">Ingresos gravados generados con otros
+                                                empleadores</label>
+                                            <input type="number" class="form-control form-control-sm"
+                                                id="inputIngGravGenEmp">
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="inputImpRentAsuEmp">Impuestos a la renta asumido por este empleador</label>
-                                            <input type="number" class="form-control form-control-sm" id="inputImpRentAsuEmp">
+                                            <label for="inputImpRentAsuEmp">Impuestos a la renta asumido por este
+                                                empleador</label>
+                                            <input type="number" class="form-control form-control-sm"
+                                                id="inputImpRentAsuEmp">
                                         </div>
                                     </div>
                                     <div class="col-md-4">
@@ -336,38 +380,45 @@
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="inputDecCuaSue">Décimo cuarto sueldo</label>
-                                            <input type="number" class="form-control form-control-sm" id="inputDecCuaSue">
+                                            <input type="number" class="form-control form-control-sm"
+                                                id="inputDecCuaSue">
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="inputFondoRes">Fondo de reserva</label>
-                                            <input type="number" class="form-control form-control-sm" id="inputFondoRes">
+                                            <input type="number" class="form-control form-control-sm"
+                                                id="inputFondoRes">
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="inputComEcoSalDig">Compensación Económica Salario Digno</label>
-                                            <input type="number" class="form-control form-control-sm" id="inputComEcoSalDig">
+                                            <input type="number" class="form-control form-control-sm"
+                                                id="inputComEcoSalDig">
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="inputOtrRelDepConsMatGravImpRen">Otros ingresos en relación de dependencia que no constituyen materia gravada de impuesto a la renta</label>
-                                            <input type="number" class="form-control form-control-sm" id="inputOtrRelDepConsMatGravImpRen">
+                                            <label for="inputOtrRelDepConsMatGravImpRen">Otros ingresos en relación de
+                                                dependencia que no constituyen materia gravada de impuesto a la
+                                                renta</label>
+                                            <input type="number" class="form-control form-control-sm"
+                                                id="inputOtrRelDepConsMatGravImpRen">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="ingGravEmp">Ingresos gravados con este empleador</label>
-                                            <input type="number" class="form-control form-control-sm" id="ingGravEmp" readonly>
+                                            <input type="number" class="form-control form-control-sm" id="ingGravEmp"
+                                                readonly>
                                         </div>
                                     </div>
                                 </div>
-                             </div>
-                             <div id="divGastos" style="display: none;">
+                            </div>
+                            <div id="divGastos" style="display: none;">
                                 <h3>GASTOS, DEDUCCIONES y EXONERACIONES</h3>
                                 <div class="row">
                                     <div class="col-md-4">
@@ -380,14 +431,18 @@
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="inputApoPerIesEmp">Aporte personal IESS con este empleador (únicamente pagado por el trabajador)</label>
-                                            <input type="number" class="form-control form-control-sm" id="inputApoPerIesEmp">
+                                            <label for="inputApoPerIesEmp">Aporte personal IESS con este empleador
+                                                (únicamente pagado por el trabajador)</label>
+                                            <input type="number" class="form-control form-control-sm"
+                                                id="inputApoPerIesEmp">
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="inputApoPerIesOtrEmp">Aporte personal IESS con otros empleadores (únicamente pagado por el trabajador)</label>
-                                            <input type="number" class="form-control form-control-sm" id="inputApoPerIesOtrEmp">
+                                            <label for="inputApoPerIesOtrEmp">Aporte personal IESS con otros empleadores
+                                                (únicamente pagado por el trabajador)</label>
+                                            <input type="number" class="form-control form-control-sm"
+                                                id="inputApoPerIesOtrEmp">
                                         </div>
                                     </div>
                                 </div>
@@ -396,7 +451,8 @@
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="inputVivienda">Vivienda</label>
-                                            <input type="number" class="form-control form-control-sm" id="inputVivienda">
+                                            <input type="number" class="form-control form-control-sm"
+                                                id="inputVivienda">
                                         </div>
                                     </div>
                                     <div class="col-md-4">
@@ -408,7 +464,8 @@
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="inputEducacionArtCult">Educación Arte y Cultura</label>
-                                            <input type="number" class="form-control form-control-sm" id="inputEducacionArtCult">
+                                            <input type="number" class="form-control form-control-sm"
+                                                id="inputEducacionArtCult">
                                         </div>
                                     </div>
                                 </div>
@@ -416,13 +473,15 @@
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="inputAlimentacion">Alimentación</label>
-                                            <input type="number" class="form-control form-control-sm" id="inputAlimentacion">
+                                            <input type="number" class="form-control form-control-sm"
+                                                id="inputAlimentacion">
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="inputVestimenta">Vestimenta</label>
-                                            <input type="number" class="form-control form-control-sm" id="inputVestimenta">
+                                            <input type="number" class="form-control form-control-sm"
+                                                id="inputVestimenta">
                                         </div>
                                     </div>
                                     <div class="col-md-4">
@@ -437,58 +496,99 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="inputDiscapacidad">Discapacidad</label>
-                                            <input type="number" class="form-control form-control-sm" id="inputDiscapacidad">
+                                            <input type="number" class="form-control form-control-sm"
+                                                id="inputDiscapacidad">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="inputTerceraEdad">Tercera Edad</label>
-                                            <input type="number" class="form-control form-control-sm" id="inputTerceraEdad">
+                                            <input type="number" class="form-control form-control-sm"
+                                                id="inputTerceraEdad">
                                         </div>
                                     </div>
                                 </div>
-                             </div>
-                             <div id="divResumenImp" style="display: none;">
+                            </div>
+                            <div id="divResumenImp" style="display: none;">
                                 <h3>RESUMEN IMPOSITIVO</h3>
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="inputBasImpGrav">Base Imponible gravada</label>
-                                            <input type="number" class="form-control form-control-sm" id="inputBasImpGrav" readonly>
+                                            <input type="number" class="form-control form-control-sm"
+                                                id="inputBasImpGrav" readonly>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="inputImpRenCau">Impuesto a la renta causado</label>
-                                            <input type="number" class="form-control form-control-sm" id="inputImpRenCau" readonly>
+                                            <input type="number" class="form-control form-control-sm"
+                                                id="inputImpRenCau" readonly>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="inputValImpRetAsuOtrEmpPerDec">Valor del impuesto retenido y asumido por otros empleadores durante el periodo declarado</label>
-                                            <input type="number" class="form-control form-control-sm" id="inputValImpRetAsuOtrEmpPerDec">
+                                            <label for="inputValImpRetAsuOtrEmpPerDec">Valor del impuesto retenido y
+                                                asumido por otros empleadores durante el periodo declarado</label>
+                                            <input type="number" class="form-control form-control-sm"
+                                                id="inputValImpRetAsuOtrEmpPerDec">
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="inputValImpAsuEmp">Valor del impuesto asumido por este empleador</label>
-                                            <input type="number" class="form-control form-control-sm" id="inputValImpAsuEmp">
+                                            <label for="inputValImpAsuEmp">Valor del impuesto asumido por este
+                                                empleador</label>
+                                            <input type="number" class="form-control form-control-sm"
+                                                id="inputValImpAsuEmp">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="inputValImpRetTrabEmp">Valor del impuesto retenido al trabajador por este empleador</label>
-                                            <input type="number" class="form-control form-control-sm" id="inputValImpRetTrabEmp">
+                                            <label for="inputValImpRetTrabEmp">Valor del impuesto retenido al trabajador
+                                                por este empleador</label>
+                                            <input type="number" class="form-control form-control-sm"
+                                                id="inputValImpRetTrabEmp">
                                         </div>
                                     </div>
                                 </div>
-                             </div>
+                            </div>
                         </div>
                     </div>
                     <div class="card-footer">
-                        <button class="btn btn-dark" id="btnGenerateXSL" style="display: none;">Generar archivo XSL</button>
+                        <button class="btn btn-dark" id="btnGenerateXSL" style="display: none;">Generar archivo
+                            XSL</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container" id="containerFormATS" style="display: none;">
+        <br>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card" style="margin-bottom: 20px;">
+                    <div class="card-header">Formulario ATS</div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="inputGroupFileAddon01">Subir xsl ATS</span>
+                                    </div>
+                                    <div class="custom-file">
+                                        <input type="file" class="custom-file-input" id="inputUpdateAts"
+                                            aria-describedby="inputGroupFileAddon01">
+                                        <label class="custom-file-label" for="inputUpdateAts">Escoger archivo</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-dark" id="btnGenerateXmlAts" style="display: none;">Generar archivo
+                            XSL</button>
                     </div>
                 </div>
             </div>
@@ -499,13 +599,16 @@
 <!-- Script General -->
 <script>
     const btnGetForm = document.getElementById("btnGetForm");
-    const btnGetFile = document.getElementById("btnGetFile")
+    const btnGetFile = document.getElementById("btnGetFile");
+    const btnTransATS = document.getElementById("btnTransATS");
+
     const containerFormRDEP = document.getElementById("containerFormRDEP");
     const containerXML = document.getElementById("containerXML");
+    const containerFormATS = document.getElementById("containerFormATS");
     const btnGoGenerateAts = document.getElementById("btnGoGenerateAts");
 
     const rowBtnSuccess = document.getElementById("rowBtnSuccess");
-    
+
     const divInfoExcel = document.getElementById("divInfoExcel");
     const inputIdEmpleadorRuc = document.getElementById("inputIdEmpleadorRuc");
     const inputRazonSocial = document.getElementById("inputRazonSocial");
@@ -576,45 +679,55 @@
     const inputValImpRetAsuOtrEmpPerDec = document.getElementById("inputValImpRetAsuOtrEmpPerDec");
     const inputValImpAsuEmp = document.getElementById("inputValImpAsuEmp");
     const inputValImpRetTrabEmp = document.getElementById("inputValImpRetTrabEmp");
+    const inputUpdateAts = document.getElementById("inputUpdateAts");
 
     const btnGenerateXSL = document.getElementById("btnGenerateXSL");
 
-    btnGetForm.addEventListener("click", function(){
+
+    btnGetForm.addEventListener("click", function () {
         containerFormRDEP.style.display = "";
+        containerXML.style.display = "none";
+        containerFormATS.style.display = "none";
+    })
+
+    btnGetFile.addEventListener("click", function () {
+        containerFormRDEP.style.display = "none";
+        containerXML.style.display = "";
+        containerFormATS.style.display = "none";
+    })
+
+    btnTransATS.addEventListener("click", function () {
+        containerFormATS.style.display = "";
+        containerFormRDEP.style.display = "none";
         containerXML.style.display = "none";
     })
 
-    btnGetFile.addEventListener("click", function(){
-        containerFormRDEP.style.display = "none";
-        containerXML.style.display = "";
-    })
-
-    btnBack.addEventListener("click", function(){
+    btnBack.addEventListener("click", function () {
         detailEmpleado.style.display = "none";
         divInfoExcel.style.display = "";
     })
 
     // Funciona que carga el los selects
-    for(i = 2006; i <= 2024; i++){
+    for (i = 2006; i <= 2024; i++) {
         const option = document.createElement("option");
         option.value = i;
         option.text = i;
         inputSelectAnio.appendChild(option)
     }
     // Funcionamiento desde 1 a 5 o más
-    for(i = 0; i<= 5; i++){
+    for (i = 0; i <= 5; i++) {
         const option = document.createElement("option");
-        if(i == 5){
+        if (i == 5) {
             option.text = "5 o más";
             option.value = "5+";
-        }else{
+        } else {
             option.value = i;
             option.text = i;
         }
         selectTrabCargFam.appendChild(option);
     }
     // Funcionalidad para el boton de regreso
-    btnGoGenerateAts.addEventListener("click", function(){
+    btnGoGenerateAts.addEventListener("click", function () {
         window.location.href = "/";
     })
 
@@ -810,47 +923,47 @@
         { nombre: "Zimbabue", codigo: "263" }
     ];
 
-    btnDatosTrabajador.addEventListener("click", function(){
+    btnDatosTrabajador.addEventListener("click", function () {
         divInfoTrabajador.style.display = "";
         divIngresos.style.display = "none";
         divGastos.style.display = "none";
         divResumenImp.style.display = "none";
     });
-    btnIngresos.addEventListener("click", function(){
+    btnIngresos.addEventListener("click", function () {
         divIngresos.style.display = "";
         divInfoTrabajador.style.display = "none";
         divGastos.style.display = "none";
         divResumenImp.style.display = "none";
     });
-    btnGastosDeduccionesExo.addEventListener("click", function(){
+    btnGastosDeduccionesExo.addEventListener("click", function () {
         divGastos.style.display = "";
         divIngresos.style.display = "none";
         divInfoTrabajador.style.display = "none";
         divResumenImp.style.display = "none";
     });
-    btnResumenImp.addEventListener("click", function(){
+    btnResumenImp.addEventListener("click", function () {
         divResumenImp.style.display = "";
         divGastos.style.display = "none";
         divIngresos.style.display = "none";
         divInfoTrabajador.style.display = "none";
     })
 
-    paisesConCodigos.forEach(pais =>{
+    paisesConCodigos.forEach(pais => {
         const option = document.createElement("option");
         option.value = pais.codigo;
         option.textContent = pais.nombre;
         selectPaisResidenTrab.appendChild(option)
     });
 
-    function generateInfoEmpresa(array, arrayContent){
-        if(array.length != 0 && arrayContent.length != 0){
-            inputRazonSocial.disabled = false; 
+    function generateInfoEmpresa(array, arrayContent) {
+        if (array.length != 0 && arrayContent.length != 0) {
+            inputRazonSocial.disabled = false;
             inputDireccion.disabled = false;
             divInfoExcel.style.display = "";
-            
+
             // Carga de tablas
-            Object.keys(arrayContent).forEach(key =>{
-                if(arrayContent[key][8] == '' || (arrayContent[key][9] == undefined && arrayContent[key][10] == undefined )){
+            Object.keys(arrayContent).forEach(key => {
+                if (arrayContent[key][8] == '' || (arrayContent[key][9] == undefined && arrayContent[key][10] == undefined)) {
                     return;
                 }
                 const row = document.createElement("tr");
@@ -875,39 +988,39 @@
                 // Funcionalidad y estilo de la fila
                 row.style.cursor = "pointer";
                 row.style.textAlign = "center";
-                
+
                 // Restricciones en caso de que alguna informacion de la empresa se encuentre vacio
                 const empleado = arrayContent[key];
-                for(let i = 0; i < empleado.length; i++){
+                for (let i = 0; i < empleado.length; i++) {
                     switch (i) {
                         case 0:
-                            if(empleado[i] == "" || empleado[i] == undefined){
+                            if (empleado[i] == "" || empleado[i] == undefined) {
                                 const propField = prompt("No se ha encontrado el RUC de la empresa, por favor ingresar: ")
                                 // Agregar la funcion para que en todo el arreglo se cambien los datos del ruc
-                                arrayContent = changeFieldEmpleador(arrayContent, i, propField, (i+1))
-                            }else{
+                                arrayContent = changeFieldEmpleador(arrayContent, i, propField, (i + 1))
+                            } else {
                                 break;
                             }
                         case 1:
-                            if(empleado[i] == "" || empleado[i] == undefined){
+                            if (empleado[i] == "" || empleado[i] == undefined) {
                                 const propField = prompt("No se ha encontrado el año, por favor ingresar: ")
                                 // Agregar la funcion para que en todo el arreglo se cambien los datos del ruc
-                                arrayContent = changeFieldEmpleador(arrayContent, i, propField, (i+1))
-                            }else{
+                                arrayContent = changeFieldEmpleador(arrayContent, i, propField, (i + 1))
+                            } else {
                                 break;
                             }
                         case 2:
-                            if(empleado[i] == "" || empleado[i] == undefined){
+                            if (empleado[i] == "" || empleado[i] == undefined) {
                                 const propField = alertSelected('No se ha encontrado el tipo de Empleador:\n1. PRIVADO O MIXTO \n2. PÚBLICO O IFIS \n', ['PRIVADO_MIXTO', 'PUBLICO_IFIS']);
-                                arrayContent = changeFieldEmpleador(arrayContent, i, propField, (i+1))
-                            }else{
+                                arrayContent = changeFieldEmpleador(arrayContent, i, propField, (i + 1))
+                            } else {
                                 break;
                             }
                         case 3:
-                            if(empleado[i] == "" || empleado[i] == undefined){
+                            if (empleado[i] == "" || empleado[i] == undefined) {
                                 const propField = alertSelected('No se ha encontrado el tipo de ente de Seguro Social:\n1. IESS \n2. ISSFA/USSPOL \n', ['IESS', 'ISSFA_USSPOL']);
-                                arrayContent = changeFieldEmpleador(arrayContent, i, propField, (i+1))
-                            }else{
+                                arrayContent = changeFieldEmpleador(arrayContent, i, propField, (i + 1))
+                            } else {
                                 break;
                             }
                     }
@@ -915,12 +1028,12 @@
                 // Condicion individual para el beneficiario a galapagos
                 var infoBenGalp = arrayContent[key][4];
                 var fullName = `${arrayContent[key][9]} ${arrayContent[key][10]}`
-                if(infoBenGalp != 'NO' || infoBenGalp != 'SI' || infoBenGalp != ''){
-                    const propField = alertSelected(`El valor del beneficio provincia de galapagos para el empleado (${arrayContent[key][8]} ${fullName}) es incorrecto, cambiar con:\n1. NO \n2. SI`, ['NO','SI'])
+                if (infoBenGalp != 'NO' || infoBenGalp != 'SI' || infoBenGalp != '') {
+                    const propField = alertSelected(`El valor del beneficio provincia de galapagos para el empleado (${arrayContent[key][8]} ${fullName}) es incorrecto, cambiar con:\n1. NO \n2. SI`, ['NO', 'SI'])
                     arrayContent[key][4] = propField
                 }
                 var infoEnfCatastro = arrayContent[key][5];
-                if(infoEnfCatastro != 'NO' || infoEnfCatastro != 'SI' || infoEnfCatastro != ''){
+                if (infoEnfCatastro != 'NO' || infoEnfCatastro != 'SI' || infoEnfCatastro != '') {
                     const propField = alertSelected(`El valor de la información si el trabajador esta a cargo de personas con enfermedades catastróficas, raras y/o huérfanas del empleado (${arrayContent[key][8]} ${fullName}) es incorrecto, cambiar con: \n1. NO \n2. SI`, ['NO', 'SI'])
                     arrayContent[key][5] = propField
                 }
@@ -928,15 +1041,15 @@
                 // Condicion en caso de que el salario no corresponda con la base imponible
                 var aporteIess = arrayContent[key][31];
                 var porcentajeIess = parseFloat(arrayContent[key][19]) * 0.0945;
-                if(aporteIess === porcentajeIess){
+                if (aporteIess === porcentajeIess) {
                     alert("El procentaje corresponde correctamente con el salario definido.")
-                }else{
+                } else {
                     let messageContinueWithPorcenta = confirm(`En la fila ${key} el valor del porcentaje IESS no corresponde con el 9.45% del valor del salario ${salario}.Desea corregirlo ?`)
-                    if(confirm){
+                    if (confirm) {
                         alert("Se ha corregido los valores de Aporte a IESS.")
                         arrayContent[key][31] = porcentajeIess;
                         arrayContent[key][41] = arrayContent[key][19] + arrayContent[key][20] + arrayContent[key][21] + arrayContent[key][22] - (arrayContent[key][31] + arrayContent[key][32])
-                    }else{
+                    } else {
                         alert("No se ha realizado ningun cambio, continuando operación ...")
                     }
                 }
@@ -946,120 +1059,120 @@
                 inputSelectAnio.value = empleado[1];
                 selectTipoEmpleador.value = empleado[2];
                 selectSeguridadSocial.value = empleado[3];
-                
+
                 // Funcionalidad de la fila
-                row.addEventListener("click", function(){
+                row.addEventListener("click", function () {
                     const infoEmpleado = arrayContent[key];
 
                     detailEmpleado.style.display = "";
                     divInfoExcel.style.display = "none";
-                    
+
                     // Llenar el formulario
-                    if(infoEmpleado[4] == "NO"){
+                    if (infoEmpleado[4] == "NO") {
                         radioNoBenGalpg.checked = true
                         radioSiBenGalpg.checked = false
-                    }else{
+                    } else {
                         radioSiBenGalpg.checked = true
                         radioNoBenGalpg.checked = false
                     }
                     // Funcionalidad del check en caso de que su valor cambie
-                    radioNoBenGalpg.addEventListener("change", function(){
-                        if(this.checked){
+                    radioNoBenGalpg.addEventListener("change", function () {
+                        if (this.checked) {
                             arrayContent[key][4] = "NO"
                         }
                     })
-                    radioSiBenGalpg.addEventListener("change", function(){
-                        if(this.checked){
+                    radioSiBenGalpg.addEventListener("change", function () {
+                        if (this.checked) {
                             arrayContent[key][4] = "SI"
                         }
                     })
-                    if(infoEmpleado[5] == "NO"){
+                    if (infoEmpleado[5] == "NO") {
                         radioNoEnfCatastro.checked = true;
                         radioSiEnfCatastro.checked = false;
-                    }else{
+                    } else {
                         radioSiEnfCatastro.checked = true;
                         radioNoEnfCatastro.checked = false;
                     }
-                    radioNoEnfCatastro.addEventListener("change", function(){
-                        if(this.checked){
+                    radioNoEnfCatastro.addEventListener("change", function () {
+                        if (this.checked) {
                             arrayContent[key][5] = "NO"
                         }
                     })
-                    radioSiEnfCatastro.addEventListener("change", function(){
-                        if(this.checked){
+                    radioSiEnfCatastro.addEventListener("change", function () {
+                        if (this.checked) {
                             arrayContent[key][5] = "SI"
                         }
                     })
 
                     selectTrabCargFam.value = "";
                     selectTrabCargFam.value = infoEmpleado[6];
-                    selectTrabCargFam.addEventListener("change", function(){
+                    selectTrabCargFam.addEventListener("change", function () {
                         arrayContent[key][6] = selectTrabCargFam.value
                     })
 
                     selectTipoIdentEmpleado.value = "";
                     selectTipoIdentEmpleado.value = infoEmpleado[7];
-                    selectTipoIdentEmpleado.addEventListener("change", function(){
+                    selectTipoIdentEmpleado.addEventListener("change", function () {
                         arrayContent[key][7] = selectTipoIdentEmpleado.value;
                     });
 
                     inputNumCedulaEmpleado.value = ""
                     inputNumCedulaEmpleado.value = infoEmpleado[8];
-                    inputNumCedulaEmpleado.addEventListener("input", function(){
-                        arrayContent[key][8] =  inputNumCedulaEmpleado.value;
+                    inputNumCedulaEmpleado.addEventListener("input", function () {
+                        arrayContent[key][8] = inputNumCedulaEmpleado.value;
                     })
 
                     inputApellidoTrabajador.value = "";
                     inputApellidoTrabajador.value = infoEmpleado[9];
-                    inputApellidoTrabajador.addEventListener("input", function(){
+                    inputApellidoTrabajador.addEventListener("input", function () {
                         arrayContent[key][9] = inputApellidoTrabajador.value;
                     })
 
                     inputNombreTrabajador.value = "";
                     inputNombreTrabajador.value = infoEmpleado[10];
-                    inputNombreTrabajador.addEventListener("input", function(){
+                    inputNombreTrabajador.addEventListener("input", function () {
                         arrayContent[key][10] = inputNombreTrabajador.value;
                     })
 
                     inputCodEstablecimiento.value = "";
                     inputCodEstablecimiento.value = infoEmpleado[11];
-                    inputCodEstablecimiento.addEventListener("input", function(){
+                    inputCodEstablecimiento.addEventListener("input", function () {
                         arrayContent[key][11] = inputCodEstablecimiento.value;
                     })
 
                     selectResidenTrab.value = "";
                     selectResidenTrab.value = infoEmpleado[12];
-                    selectResidenTrab.addEventListener("change", function(){
+                    selectResidenTrab.addEventListener("change", function () {
                         arrayContent[key][12] = selectResidenTrab.value;
                     })
 
                     selectPaisResidenTrab.value = "";
                     selectPaisResidenTrab.value = infoEmpleado[13];
-                    selectPaisResidenTrab.addEventListener("change", function(){
+                    selectPaisResidenTrab.addEventListener("change", function () {
                         arrayContent[key][13] = selectPaisResidenTrab.value;
                     })
-                    
+
                     selectApConvEvitDobImposi.value = "";
                     selectApConvEvitDobImposi.value = infoEmpleado[14];
-                    selectApConvEvitDobImposi.addEventListener("change", function(){
+                    selectApConvEvitDobImposi.addEventListener("change", function () {
                         arrayContent[key][14] = selectApConvEvitDobImposi.value;
                     })
 
                     selectCondtrabRespDis.value = "";
                     selectCondtrabRespDis.value = infoEmpleado[15];
-                    selectCondtrabRespDis.addEventListener("change", function(){
+                    selectCondtrabRespDis.addEventListener("change", function () {
                         arrayContent[key][15] = selectCondtrabRespDis.value
                     })
 
                     inputProceDisc.value = "";
                     inputProceDisc.value = infoEmpleado[16];
-                    inputProceDisc.addEventListener("input", function(){
+                    inputProceDisc.addEventListener("input", function () {
                         arrayContent[key][16] = inputProceDisc.value
                     })
-                    
+
                     selectTipIdenPersDisSustRep.value = "";
                     selectTipIdenPersDisSustRep.value = infoEmpleado[17];
-                    selectTipIdenPersDisSustRep.addEventListener("change", function(){
+                    selectTipIdenPersDisSustRep.addEventListener("change", function () {
                         arrayContent[key][17] = selectTipIdenPersDisSustRep.value;
                     })
 
@@ -1090,33 +1203,33 @@
                     inputDeciTer.value = "";
                     var decimoTer = parseFloat(infoEmpleado[24]);
                     inputDeciTer.value = decimoTer.toFixed(2);
-                    inputDeciTer.addEventListener("input", function(){
+                    inputDeciTer.addEventListener("input", function () {
                         arrayContent[key][24] = inputDeciTer.value;
                     })
 
                     inputDecCuaSue.value = "";
                     var decimoCuar = parseFloat(infoEmpleado[25])
                     inputDecCuaSue.value = decimoCuar.toFixed(2);
-                    inputDecCuaSue.addEventListener("input", function(){
+                    inputDecCuaSue.addEventListener("input", function () {
                         arrayContent[key][25] = inputDecCuaSue.value
                     })
 
                     inputFondoRes.value = "";
                     var fondoRes = parseFloat(infoEmpleado[26]);
                     inputFondoRes.value = fondoRes.toFixed(2);
-                    inputFondoRes.addEventListener("input", function(){
+                    inputFondoRes.addEventListener("input", function () {
                         arrayContent[key][26] = inputFondoRes.value;
                     })
 
                     inputComEcoSalDig.value = "";
                     inputComEcoSalDig.value = infoEmpleado[27];
-                    inputComEcoSalDig.addEventListener("input", function(){
+                    inputComEcoSalDig.addEventListener("input", function () {
                         arrayContent[key][27] = inputComEcoSalDig.value;
                     })
 
                     inputOtrRelDepConsMatGravImpRen.value = "";
                     inputOtrRelDepConsMatGravImpRen.value = infoEmpleado[28];
-                    inputOtrRelDepConsMatGravImpRen.addEventListener("input", function(){
+                    inputOtrRelDepConsMatGravImpRen.addEventListener("input", function () {
                         arrayContent[key][28] = inputOtrRelDepConsMatGravImpRen.value;
                     })
 
@@ -1128,7 +1241,7 @@
                     inputApoPerIesOtrEmp.value = "";
                     inputApoPerIesOtrEmp.value = infoEmpleado[32];
                     ValApoPerIesOtrEmp = inputApoPerIesOtrEmp.value;
-                    
+
                     // Valor total para ing Grav Emp
                     totalVal = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valImpRentAsuEmp;
                     totalValResImp = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valIngGravGenEmp + valImpRentAsuEmp - (valApoPerIessConEstEmp + ValApoPerIesOtrEmp)
@@ -1139,60 +1252,60 @@
                     // GASTOS, DEDUCCIONES Y EXONERACIONES
                     selectSisSalNet.value = "";
                     selectSisSalNet.value = infoEmpleado[30];
-                    selectSisSalNet.addEventListener("change", function(){
+                    selectSisSalNet.addEventListener("change", function () {
                         arrayContent[key][30] = selectSisSalNet.value;
                     })
 
                     inputVivienda.value = "";
                     inputVivienda.value = infoEmpleado[33];
-                    inputVivienda.addEventListener("input", function(){
+                    inputVivienda.addEventListener("input", function () {
                         arrayContent[key][33] = inputVivienda.value;
                     })
 
                     inputSalud.value = "";
                     inputSalud.value = infoEmpleado[34];
-                    inputSalud.addEventListener("input", function(){
+                    inputSalud.addEventListener("input", function () {
                         arrayContent[key][34] = inputSalud.value;
                     })
 
                     inputEducacionArtCult.value = "";
                     inputEducacionArtCult.value = infoEmpleado[35];
-                    inputEducacionArtCult.addEventListener("input", function(){
+                    inputEducacionArtCult.addEventListener("input", function () {
                         arrayContent[key][35] = inputEducacionArtCult.value;
                     })
 
                     inputAlimentacion.value = "";
                     inputAlimentacion.value = infoEmpleado[36];
-                    inputAlimentacion.addEventListener("input", function(){
+                    inputAlimentacion.addEventListener("input", function () {
                         arrayContent[key][36] = inputAlimentacion.value;
                     })
 
                     inputVestimenta.value = "";
                     inputVestimenta.value = infoEmpleado[37];
-                    inputVestimenta.addEventListener("input", function(){
+                    inputVestimenta.addEventListener("input", function () {
                         arrayContent[key][37] = inputVestimenta.value;
                     })
 
                     inputTurismo.value = "";
                     inputTurismo.value = infoEmpleado[38];
-                    inputTurismo.addEventListener("input", function(){
+                    inputTurismo.addEventListener("input", function () {
                         arrayContent[key][38] = inputTurismo.value;
                     })
 
                     inputDiscapacidad.value = "";
                     inputDiscapacidad.value = infoEmpleado[39];
-                    inputDiscapacidad.addEventListener("input", function(){
+                    inputDiscapacidad.addEventListener("input", function () {
                         arrayContent[key][39] = inputDiscapacidad.value;
                     })
 
                     inputTerceraEdad.value = "";
                     inputTerceraEdad.value = infoEmpleado[40];
-                    inputTerceraEdad.addEventListener("input", function(){
+                    inputTerceraEdad.addEventListener("input", function () {
                         arrayContent[key][40] = inputTerceraEdad.value;
                     })
 
                     // Funcionalidad de los inputs para el calculo -----------------------------
-                    inputSueldosSalarios.addEventListener("input", function(){
+                    inputSueldosSalarios.addEventListener("input", function () {
                         valSueldoSalarios = parseFloat(inputSueldosSalarios.value == "" ? 0 : inputSueldosSalarios.value);
                         totalVal = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valImpRentAsuEmp;
                         totalVal = totalVal.toFixed(2);
@@ -1202,10 +1315,10 @@
                         inputBasImpGrav.value = totalValResImp;
                         arrayContent[key][19] = inputSueldosSalarios.value;
                         arrayContent[key][29] = totalVal;
-                        arrayContent[key][41] =  totalValResImp
+                        arrayContent[key][41] = totalValResImp
                         arrayContent[key][31] = inputApoPerIesEmp.value;
                     });
-                    inputSobreComiBonosOtrIng.addEventListener("input", function(){
+                    inputSobreComiBonosOtrIng.addEventListener("input", function () {
                         valSobreComiBonosOtrIng = parseFloat(inputSobreComiBonosOtrIng.value == "" ? 0 : inputSobreComiBonosOtrIng.value);
                         totalVal = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valImpRentAsuEmp;
                         totalVal = totalVal.toFixed(2);
@@ -1213,12 +1326,12 @@
                         totalValResImp = totalValResImp.toFixed(2)
                         ingGravEmp.value = totalVal;
                         inputBasImpGrav.value = totalValResImp;
-                        arrayContent[key][20] =  inputSobreComiBonosOtrIng.value;
+                        arrayContent[key][20] = inputSobreComiBonosOtrIng.value;
                         arrayContent[key][29] = totalVal;
-                        arrayContent[key][41] =  totalValResImp
+                        arrayContent[key][41] = totalValResImp
                         arrayContent[key][31] = inputApoPerIesEmp.value;
                     });
-                    inputPartUtil.addEventListener("input", function(){
+                    inputPartUtil.addEventListener("input", function () {
                         valPartUtil = parseFloat(inputPartUtil.value == "" ? 0 : inputPartUtil.value);
                         totalVal = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valImpRentAsuEmp;
                         totalVal = totalVal.toFixed(2);
@@ -1228,25 +1341,25 @@
                         inputBasImpGrav.value = totalValResImp;
                         arrayContent[key][21] = inputPartUtil.value;
                         arrayContent[key][29] = totalVal;
-                        arrayContent[key][41] =  totalValResImp;
+                        arrayContent[key][41] = totalValResImp;
                         arrayContent[key][31] = inputApoPerIesEmp.value;
                     });
-                    inputIngGravGenEmp.addEventListener("input", function(){
+                    inputIngGravGenEmp.addEventListener("input", function () {
                         valIngGravGenEmp = parseFloat(inputIngGravGenEmp.value == "" ? 0 : inputIngGravGenEmp.value);
                         totalValResImp = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valIngGravGenEmp + valImpRentAsuEmp - (valApoPerIessConEstEmp + ValApoPerIesOtrEmp);
                         totalValResImp = totalValResImp.toFixed(2);
                         inputBasImpGrav.value = totalValResImp;
                         arrayContent[key][22] = inputIngGravGenEmp.value;
-                        arrayContent[key][41] =  totalValResImp;
+                        arrayContent[key][41] = totalValResImp;
                         arrayContent[key][31] = inputApoPerIesEmp.value;
                     })
-                    inputBasImpGrav.addEventListener("input", function(){
+                    inputBasImpGrav.addEventListener("input", function () {
                         valIngGravGenEmp = parseFloat(inputBasImpGrav.value == "" ? 0 : inputBasImpGrav.value);
                         totalValResImp = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valIngGravGenEmp + valImpRentAsuEmp - (valApoPerIessConEstEmp + ValApoPerIesOtrEmp);
                         totalValResImp = totalValResImp.toFixed(2);
                         inputBasImpGrav.value = totalValResImp;
                     });
-                    inputImpRentAsuEmp.addEventListener("input", function(){
+                    inputImpRentAsuEmp.addEventListener("input", function () {
                         valImpRentAsuEmp = parseFloat(inputImpRentAsuEmp.value == "" ? 0 : inputImpRentAsuEmp.value);
                         totalVal = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valImpRentAsuEmp;
                         totalVal = totalVal.toFixed(2);
@@ -1256,10 +1369,10 @@
                         inputBasImpGrav.value = totalValResImp;
                         arrayContent[key][23] = inputImpRentAsuEmp.value;
                         arrayContent[key][29] = totalVal;
-                        arrayContent[key][41] =  totalValResImp;
+                        arrayContent[key][41] = totalValResImp;
                         arrayContent[key][31] = inputApoPerIesEmp.value;
                     });
-                    inputApoPerIesEmp.addEventListener("input", function(){
+                    inputApoPerIesEmp.addEventListener("input", function () {
                         valApoPerIessConEstEmp = parseFloat(inputApoPerIesEmp.value == "" ? 0 : inputApoPerIesEmp.value);
                         totalVal = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valImpRentAsuEmp;
                         totalVal = totalVal.toFixed(2);
@@ -1269,10 +1382,10 @@
                         ingGravEmp.value = totalVal;
                         arrayContent[key][23] = inputImpRentAsuEmp.value;
                         arrayContent[key][29] = totalVal;
-                        arrayContent[key][41] =  totalValResImp;
+                        arrayContent[key][41] = totalValResImp;
                         arrayContent[key][31] = inputApoPerIesEmp.value;
                     });
-                    inputApoPerIesOtrEmp.addEventListener("input", function(){
+                    inputApoPerIesOtrEmp.addEventListener("input", function () {
                         ValApoPerIesOtrEmp = parseFloat(inputApoPerIesOtrEmp.value == "" ? 0 : inputApoPerIesOtrEmp.value);
                         totalVal = valSueldoSalarios + valSobreComiBonosOtrIng + valPartUtil + valImpRentAsuEmp;
                         totalVal = totalVal.toFixed(2);
@@ -1282,7 +1395,7 @@
                         ingGravEmp.value = totalVal;
                         arrayContent[key][23] = inputImpRentAsuEmp.value;
                         arrayContent[key][29] = totalVal;
-                        arrayContent[key][41] =  totalValResImp;
+                        arrayContent[key][41] = totalValResImp;
                         arrayContent[key][32] = inputApoPerIesOtrEmp.value;
                     })
 
@@ -1292,25 +1405,25 @@
 
                     inputImpRenCau.value = "";
                     inputImpRenCau.value = infoEmpleado[42];
-                    inputImpRenCau.addEventListener("input", function(){
+                    inputImpRenCau.addEventListener("input", function () {
                         arrayContent[key][42] = inputImpRenCau.value;
                     })
 
                     inputValImpRetAsuOtrEmpPerDec.value = "";
                     inputValImpRetAsuOtrEmpPerDec.value = infoEmpleado[45];
-                    inputValImpRetAsuOtrEmpPerDec.addEventListener("input", function(){
+                    inputValImpRetAsuOtrEmpPerDec.addEventListener("input", function () {
                         arrayContent[key][45] = inputValImpRetAsuOtrEmpPerDec.value;
                     })
 
                     inputValImpAsuEmp.value = "";
                     inputValImpAsuEmp.value = infoEmpleado[46];
-                    inputValImpAsuEmp.addEventListener("input", function(){
+                    inputValImpAsuEmp.addEventListener("input", function () {
                         arrayContent[key][46] = inputValImpAsuEmp.value;
                     })
 
                     inputValImpRetTrabEmp.value = "";
                     inputValImpRetTrabEmp.value = infoEmpleado[47];
-                    inputValImpRetTrabEmp.addEventListener("input", function(){
+                    inputValImpRetTrabEmp.addEventListener("input", function () {
                         arrayContent[key][47] = inputValImpRetTrabEmp.value;
                     })
                 });
@@ -1328,7 +1441,7 @@
             console.log(arrayContent)
             // Funcionalidad del boton para generar el XLS
             btnGenerateXSL.style.display = "";
-            btnGenerateXSL.addEventListener("click", function(){
+            btnGenerateXSL.addEventListener("click", function () {
                 var wb = XLSX.utils.book_new();
                 wb.Props = {
                     Title: `Informe ${inputRazonSocial.value == "" ? inputIdEmpleadorRuc.value : inputRazonSocial.value}`,
@@ -1357,40 +1470,40 @@
                 XLSX.utils.book_append_sheet(wb, ws, "Reporte");
                 XLSX.writeFile(wb, `${inputRazonSocial.value == "" ? "SN" : inputRazonSocial.value}.xlsx`);
             })
-        }else{
+        } else {
             btnGenerateXSL.style.display = "none";
             alert("El archivo no contiene datos que se puedan utilizar")
         }
     }
 
-    function changeFieldEmpleador(obj, position, newField, propierty){
+    function changeFieldEmpleador(obj, position, newField, propierty) {
         let array
-        Object.keys(obj).forEach(prop =>{
+        Object.keys(obj).forEach(prop => {
             array = obj[prop]
             array[position] = newField
         })
-        return(obj)
+        return (obj)
     }
 
-    function alertSelected( info,arrayOptions){
+    function alertSelected(info, arrayOptions) {
         var userChoice = prompt(info);
         var result;
-        if(userChoice != ''){
-            switch(userChoice) {
-                    case '1':
-                        result = arrayOptions[0];
-                        break;
-                    case '2':
-                        result = arrayOptions[1];
-                        break;
-                }
-        }else{
+        if (userChoice != '') {
+            switch (userChoice) {
+                case '1':
+                    result = arrayOptions[0];
+                    break;
+                case '2':
+                    result = arrayOptions[1];
+                    break;
+            }
+        } else {
             result = arrayOptions[0];
         }
         return result;
     }
 
-    
+
 </script>
 
 <!-- Script para el formulario de generacion del Excel para el cliente -->
@@ -1399,14 +1512,14 @@
 </script>
 
 <!-- Script para tomar un archivo excel -->
- <script>
+<script>
     const inputGetExcel = document.getElementById("inputGetExcel");
 
-    inputGetExcel.addEventListener("change", function(event){
+    inputGetExcel.addEventListener("change", function (event) {
         const file = event.target.files[0];
         const reader = new FileReader();
 
-        reader.onload = function(event) {
+        reader.onload = function (event) {
             const data = new Uint8Array(event.target.result);
             const workbook = XLSX.read(data, { type: 'array' });
             const firstSheetName = workbook.SheetNames[0];
@@ -1422,17 +1535,18 @@
                 const rowValues = rowData.map(value => value);
                 rowsObject[rowIndex] = rowValues; // Usar rowIndex para las filas a partir de 1
             }
-            
+
             generateInfoEmpresa(arrayCabecera, rowsObject)
         };
         reader.readAsArrayBuffer(file);
     });
- </script>
+</script>
 
 <!-- Script para el generador de XML -->
 <script>
     const btnGenerateXml = document.getElementById('btnGenerateXml');
     const inputAddFile = document.getElementById('inputAddFile');
+    const btnGenerateXmlAts = document.getElementById('btnGenerateXmlAts');
 
     btnGenerateXml.addEventListener('click', function () {
         if (inputAddFile.files.length > 0) {
@@ -1605,6 +1719,314 @@
         document.body.removeChild(a);
     }
 
+    // Creacionn del XML
+    let contentXmlAtsFile = ''
+    function padToThreeChars(value) {
+        const str = String(value);
+        return str.length >= 3 ? str : str + '0'.repeat(3 - str.length);
+    }
+    function padToThreeCharsStar(value) {
+        return String(value).padStart(3, '0');
+    }
+    function adjustLength(value) {
+        const strValue = String(value);
+        if (strValue.length === 12) {
+            return `0${strValue}`; 
+        } else if (strValue.length === 9) {
+            return `0${strValue}`; 
+        }
+        return strValue;
+    }
+    function formatToTwoDecimals(value) {
+        const numberValue = parseFloat(value); 
+        if (!isNaN(numberValue)) {
+            return numberValue.toFixed(2);
+        }
+        return '0.00'; 
+    }
+    // Funcion del nuevo excel
+    inputUpdateAts.addEventListener('change', function () {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                // Leer la primera hoja del archivo
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                // Convertir la hoja a JSON
+                const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
+                
+                // Objeto con las propiedades de la empresa
+                const propiedadesEmpresa = jsonData.map(obj => {
+                    const entradas = Object.entries(obj).slice(0, 8);
+                    const objeto = Object.fromEntries(entradas);
+                    if (objeto.IdInformante) {
+                        objeto.IdInformante = `0${objeto.IdInformante}`;
+                        objeto.numEstabRuc = `00${objeto.numEstabRuc}`;
+                        objeto.Mes = `0${objeto.Mes}`;
+                    }
+                    return objeto;
+                });
+                let propiedadEmpresa = propiedadesEmpresa[0]
+                let contentXmlEmpresa = contentXmlAts(propiedadEmpresa)
+                contentXmlAtsFile += contentXmlEmpresa
+                // Propiedades para las compras, pago del Exterior y air
+                const propiedadesCompras = jsonData.map(obj => {
+                    const entradas = Object.entries(obj).slice(8, 31);
+                    const objeto = Object.fromEntries(entradas);
+                    if (objeto.codSustento) {
+                        objeto.codSustento = `0${objeto.codSustento}`;
+                        objeto.idProv = adjustLength(objeto.idProv);
+                        objeto.tpIdProv = `0${objeto.tpIdProv}`;
+                        objeto.tipoComprobante = `0${objeto.tipoComprobante}`;
+                        objeto.establecimiento = padToThreeCharsStar(objeto.establecimiento);
+                        objeto.puntoEmision = padToThreeChars(objeto.puntoEmision);
+                        objeto.baseImponible = formatToTwoDecimals(objeto.baseImponible);
+                        objeto.valorRetServicios = formatToTwoDecimals(objeto.valorRetServicios);
+                        objeto.montoIva = formatToTwoDecimals(objeto.montoIva);
+                        objeto.baseImpGrav = formatToTwoDecimals(objeto.baseImpGrav);
+                    }
+                    return objeto;
+                });
+                const propiedadesPagoExt = jsonData.map(obj => {
+                    const entradas = Object.entries(obj).slice(31, 35);
+                    const objeto = Object.fromEntries(entradas);
+                    if(objeto.pagoLocExt){
+                        objeto.pagoLocExt = `0${objeto.pagoLocExt}`
+                    }
+                    return objeto;
+                });
+                const propiedadesFormasPagoCompr = jsonData.map(obj => {
+                    const entradas = Object.entries(obj).slice(44, 45);
+                    return Object.fromEntries(entradas);
+                });
+                const propiedadesAir = jsonData.map(obj => {
+                    const entradas = Object.entries(obj).slice(35, 39);
+                    const objeto = Object.fromEntries(entradas);
+                    if(objeto.baseImpAir){
+                        objeto.baseImpAir = formatToTwoDecimals(objeto.baseImpAir)
+                    }
+                    if(objeto.valRetAir){
+                        objeto.valRetAir = formatToTwoDecimals(objeto.valRetAir)
+                    }
+                    return objeto;
+                });
+                const propiedadesComprasTwo = jsonData.map(obj => {
+                    const entradas = Object.entries(obj).slice(39, 44);
+                    const objeto = Object.fromEntries(entradas);
+                    if(objeto.estabRetencion1 == ''){
+                        objeto.estabRetencion1 = undefined
+                    }else{
+                        let estb = String(objeto.estabRetencion1)
+                        objeto.estabRetencion1 = estb.padStart(3, '0');
+                    }
+                    return objeto;
+                });
+                let contentCompras = contentXmlCompras(propiedadesCompras, propiedadesPagoExt, propiedadesFormasPagoCompr ,propiedadesAir, propiedadesComprasTwo)
+                // Contenido para las etiquetas de ventas, formas de pago
+                const propiedadesVentas = jsonData.map(obj => {
+                    const entradas = Object.entries(obj).slice(50, 63);
+                    const entradasModificadas = entradas.map(([key, value]) => {
+                        if (key === 'tipoComprobante2') {
+                            return ['tipoComprobante', value];
+                        } else if (key === 'baseNoGraIva3') {
+                            return ['baseNoGraIva', value];
+                        } else if (key === 'baseImponible4') {
+                            return ['baseImponible', value];
+                        } else if (key === 'baseImpGrav5') {
+                            return ['baseImpGrav', value];
+                        } else if (key === 'montoIva6') {
+                            return ['montoIva', value];
+                        } else if (key === 'montoIce7') {
+                            return ['montoIce', value];
+                        }
+                        return [key, value];
+                    });
+                    const objeto = Object.fromEntries(entradasModificadas);
+                    if (objeto.tpIdCliente) {
+                        objeto.tpIdCliente = `0${objeto.tpIdCliente}`;
+                        objeto.baseImponible = parseFloat(objeto.baseImponible).toFixed(2);
+                    }
+                    return objeto;
+                });
+                const propiedadesFormasPago = jsonData.map(obj => {
+                    const entradas = Object.entries(obj).slice(63, 64);
+                    const entradasModificadas = entradas.map(([key, value]) => {
+                        if (key === 'formaPago8') {
+                            return ['formaPago', value];
+                        } 
+                        return [key, value];
+                    });
+                    return Object.fromEntries(entradasModificadas);
+                });
+                let contentVentas = contentXmlVentas(propiedadesVentas, propiedadesFormasPago)
+                const propiedadesVentasEstablecimiento = jsonData.map(obj => {
+                    const entradas = Object.entries(obj).slice(64, 66);
+                    return Object.fromEntries(entradas);
+                });
+                const establecimientos = {};
+                propiedadesVentasEstablecimiento.forEach(obj => {
+                    const { codEstab, ventasEstab } = obj;
+                    const ventas = parseFloat(ventasEstab) || 0;
+                    if (establecimientos[codEstab]) {
+                        establecimientos[codEstab] += ventas;
+                    } else {
+                        establecimientos[codEstab] = ventas;
+                    }
+                });
+                let sumatoriasEstab = Object.entries(establecimientos).map(([codEstab, ventasEstab]) => ({
+                    codEstab: `${codEstab == '' ? '' : '00'+codEstab}`,
+                    ventasEstab
+                }));
+                let contentVentEstab = contentXmlVentEstab(sumatoriasEstab);
+                contentXmlAtsFile = contentXmlAtsFile.replace('compras', contentCompras);
+                contentXmlAtsFile = contentXmlAtsFile.replace('ventas', contentVentas);
+                contentXmlAtsFile = contentXmlAtsFile.replace('ventEstb', contentVentEstab);
+                btnGenerateXmlAts.style.display = '';
+            };
+
+            reader.readAsArrayBuffer(file);
+        }
+    });
+
+    btnGenerateXmlAts.addEventListener('click', function(){
+        const blob = new Blob([contentXmlAtsFile], { type: 'text/xml' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'ATS.xml';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    })
+
+    function contentXmlAts(obj){
+        let xml = '<?xml version="1.0" encoding="UTF-8"?>';
+        xml += '\n<iva>'
+        for (const [key, value] of Object.entries(obj)) {
+            xml += `\n    <${key}>${sanitizeXML(value)}</${key}>`;
+        }
+        xml += '\ncompras'
+        xml += '\nventas'
+        xml += '\nventEstb'
+        xml += '\n</iva>'
+        return xml;
+    }
+
+    function contentXmlCompras(array, arrayPagExt, arrayFormasPag,arrayAir, array2){
+        let xml = '    <compras>'
+        array.forEach((obj, index) => {
+            const hasValidValues = Object.values(obj).some(
+                value => value !== null && value !== undefined && value !== ''
+            );
+            if (hasValidValues) {
+                xml += `\n        <detalleCompras>`;
+                for (const [key, value] of Object.entries(obj)) {
+                    xml += `\n            <${key}>${sanitizeXML(value)}</${key}>`;
+                }
+                // Añadido pago al exterior
+                if (arrayPagExt[index]) {
+                    xml += `\n            <pagoExterior>`;
+                    for (const [key, value] of Object.entries(arrayPagExt[index])) {
+                        xml += `\n                <${key}>${sanitizeXML(value)}</${key}>`;
+                    }
+                    xml += `\n            </pagoExterior>`;
+                }
+                if(arrayFormasPag[index]){
+                    xml += `\n            <formasDePago>`;
+                    for (const [key, value] of Object.entries(arrayFormasPag[index])) {
+                        xml += `\n                <${key}>${sanitizeXML(value)}</${key}>`;
+                    }
+                    xml += `\n            </formasDePago>`;
+                }
+                const hasValidAir= arrayAir[index] && Object.values(arrayAir[index]).some(
+                    value => value !== null && value !== undefined && value !== ''
+                );
+                if(hasValidAir){
+                    // Añadido air
+                    if(arrayAir[index]){
+                        xml += `\n            <air>`;
+                        xml += `\n                <detalleAir>`;
+                        for (const [key, value] of Object.entries(arrayAir[index])) {
+                            xml += `\n                    <${key}>${sanitizeXML(value)}</${key}>`;
+                        }
+                        xml += `\n                </detalleAir>`;
+                        xml += `\n            </air>`;
+                    }
+                }
+                const hasValidArray2= array2[index] && Object.values(array2[index]).some(
+                    value => value !== null && value !== undefined && value !== ''
+                );
+                if (hasValidArray2) {
+                    // Añadir segunda parte de las compras
+                    if(array2[index]){
+                        for (const [key, value] of Object.entries(array2[index])) {
+                            xml += `\n            <${key}>${sanitizeXML(value)}</${key}>`;
+                        }
+                    }
+                }
+                xml += '\n        </detalleCompras>';
+            }
+        })
+        xml += '\n    </compras>'
+        return xml;
+    }
+
+    function contentXmlVentas(array, arrayFormPag){
+        let xml = '    <ventas>'
+            array.forEach((obj, index) => {
+            const hasValidValues = Object.values(obj).some(
+                value => value !== null && value !== undefined && value !== ''
+            );
+            if (hasValidValues) {
+                xml += `\n        <detalleVentas>`;
+                for (const [key, value] of Object.entries(obj)) {
+                    xml += `\n            <${key}>${sanitizeXML(value)}</${key}>`;
+                }
+                    xml += `\n            <formasDePago>`;
+                    for (const [key, value] of Object.entries(arrayFormPag[index])) {
+                        if (value !== null && value !== undefined && value !== '') {
+                            xml += `\n                <${key}>${sanitizeXML(value)}</${key}>`;
+                        }
+                    }
+                xml += `\n            </formasDePago>`;
+                xml += '\n        </detalleVentas>';
+            }
+        });
+
+        xml += '\n    </ventas>'
+        return xml
+    }
+
+    function contentXmlVentEstab(array){
+        let xml = '    <ventasEstablecimiento>'
+        array.forEach((obj, index) => {
+            const hasValidValues = Object.values(obj).some(
+                value => value !== null && value !== undefined && value !== '' && value != '0'
+            );
+            if (hasValidValues) {
+                xml += `\n        <ventaEst>`;
+                // Agregar las propiedades del objeto
+                for (const [key, value] of Object.entries(obj)) {
+                    xml += `\n            <${key}>${sanitizeXML(value)}</${key}>`;
+                }
+                xml += '\n        </ventaEst>';
+            }
+        })
+        xml += '\n    </ventasEstablecimiento>'
+        return xml
+    }
+
+    function sanitizeXML(value) {
+        if (value == null) return '';
+        return String(value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&apos;');
+    }
 </script>
 
 </html>
