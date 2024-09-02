@@ -580,7 +580,7 @@
                                     <div class="custom-file">
                                         <input type="file" class="custom-file-input" id="inputUpdateAts"
                                             aria-describedby="inputGroupFileAddon01">
-                                        <label class="custom-file-label" for="inputUpdateAts">Escoger archivo</label>
+                                        <label class="custom-file-label" id="labelAts" for="inputUpdateAts">Escoger archivo</label>
                                     </div>
                                 </div>
                             </div>
@@ -588,7 +588,7 @@
                     </div>
                     <div class="card-footer">
                         <button class="btn btn-dark" id="btnGenerateXmlAts" style="display: none;">Generar archivo
-                            XSL</button>
+                            XML</button>
                     </div>
                 </div>
             </div>
@@ -680,6 +680,7 @@
     const inputValImpAsuEmp = document.getElementById("inputValImpAsuEmp");
     const inputValImpRetTrabEmp = document.getElementById("inputValImpRetTrabEmp");
     const inputUpdateAts = document.getElementById("inputUpdateAts");
+    const labelAts = document.getElementById('labelAts');
 
     const btnGenerateXSL = document.getElementById("btnGenerateXSL");
 
@@ -1749,6 +1750,7 @@
         const file = event.target.files[0];
         if (file) {
             const reader = new FileReader();
+            labelAts.textContent = file.name;
             reader.onload = function (e) {
                 const data = new Uint8Array(e.target.result);
                 const workbook = XLSX.read(data, { type: 'array' });
@@ -1769,9 +1771,12 @@
                     }
                     return objeto;
                 });
+
                 let propiedadEmpresa = propiedadesEmpresa[0]
+                console.log(propiedadEmpresa)
                 let contentXmlEmpresa = contentXmlAts(propiedadEmpresa)
                 contentXmlAtsFile += contentXmlEmpresa
+
                 // Propiedades para las compras, pago del Exterior y air
                 const propiedadesCompras = jsonData.map(obj => {
                     const entradas = Object.entries(obj).slice(8, 31);
@@ -1787,6 +1792,8 @@
                         objeto.valorRetServicios = formatToTwoDecimals(objeto.valorRetServicios);
                         objeto.montoIva = formatToTwoDecimals(objeto.montoIva);
                         objeto.baseImpGrav = formatToTwoDecimals(objeto.baseImpGrav);
+                        objeto.valRetServ100 = formatToTwoDecimals(objeto.valRetServ100);
+                        objeto.valorRetBienes = formatToTwoDecimals(objeto.valorRetBienes);
                     }
                     return objeto;
                 });
