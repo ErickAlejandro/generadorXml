@@ -1548,6 +1548,75 @@
     const btnGenerateXml = document.getElementById('btnGenerateXml');
     const inputAddFile = document.getElementById('inputAddFile');
     const btnGenerateXmlAts = document.getElementById('btnGenerateXmlAts');
+    // Arreglo para el orden y los elementos
+    let campos = [
+        "TipoIDInformante",
+        "IdInformante",
+        "razonSocial",
+        "Anio",
+        "Mes",
+        "numEstabRuc",
+        "totalVentas",
+        "codigoOperativo",
+        "codSustento",
+        "tpIdProv",
+        "idProv",
+        "tipoComprobante",
+        "fechaRegistro",
+        "establecimiento",
+        "puntoEmision",
+        "secuencial",
+        "fechaEmision",
+        "autorizacion",
+        "baseNoGraIva",
+        "baseImponible",
+        "baseImpGrav",
+        "baseImpExe",
+        "montoIce",
+        "montoIva",
+        "valRetBien10",
+        "valRetServ20",
+        "valorRetBienes",
+        "valRetServ50",
+        "valorRetServicios",
+        "valRetServ100",
+        "totbasesImpReemb",
+        "pagoLocExt",
+        "paisEfecPago",
+        "aplicConvDobTrib",
+        "pagExtSujRetNorLeg",
+        "codRetAir",
+        "baseImpAir",
+        "porcentajeAir",
+        "valRetAir",
+        "estabRetencion1",
+        "ptoEmiRetencion1",
+        "secRetencion1",
+        "autRetencion1",
+        "fechaEmiRet1",
+        "formaPago",
+        "docModificado",
+        "estabModificado",
+        "ptoEmiModificado",
+        "secModificado",
+        "autModificado",
+        "tpIdCliente",
+        "idCliente",
+        "parteRelVtas",
+        "tipoComprobante2",
+        "tipoEmision",
+        "numeroComprobantes",
+        "baseNoGraIva3",
+        "baseImponible4",
+        "baseImpGrav5",
+        "montoIva6",
+        "montoIce7",
+        "valorRetIva",
+        "valorRetRenta",
+        "formaPago8",
+        "codEstab",
+        "ventasEstab"
+    ]
 
     btnGenerateXml.addEventListener('click', function () {
         if (inputAddFile.files.length > 0) {
@@ -1745,6 +1814,7 @@
         }
         return '0.00'; 
     }
+    
     // Funcion del nuevo excel
     inputUpdateAts.addEventListener('change', function () {
         const file = event.target.files[0];
@@ -1759,9 +1829,48 @@
                 const worksheet = workbook.Sheets[firstSheetName];
                 // Convertir la hoja a JSON
                 const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
-                
+                // Comparacion de las propiedades: Nombres, tamaño y posición
+                let result = '';
+                const adjustedArray = [];
+                jsonData.forEach((obj, index) => {
+                    const adjustedObj = {};
+                    const actualProperties = Object.keys(obj);
+                    if (actualProperties.length !== campos.length) {
+                        result += `Número de propiedades incorrecto. Esperado: ${campos.length}, Actual: ${actualProperties.length}\n`;
+                    };
+                    actualProperties.forEach((prop, propIndex) => {
+                        if (campos[propIndex] !== prop) {
+                            result += `Fila ${index + 1}: Discrepancia en la posición ${propIndex + 1}. Esperado: ${campos[propIndex]}, Actual: ${prop}\n`;
+                        }
+                    });
+                    // Ajuste de las propiedades
+                    campos.forEach(prop => {
+                        adjustedObj[prop] = obj.hasOwnProperty(prop) ? obj[prop] : '';
+                    });
+                    adjustedArray.push(adjustedObj);
+                })
+                console.log(result || 'Todas las propiedades están correctas en posición, nombre y número.');
+                let groupByAutorizacion = adjustedArray.reduce((acc, obj) => {
+                    if (acc[obj.autorizacion]) {
+                        acc[obj.autorizacion].push(obj);
+                    } else {
+                        acc[obj.autorizacion] = [obj];
+                    }
+                    return acc;
+                }, {});
+                const duplicatesObj = Object.values(groupByAutorizacion).filter(group => group.length > 1);
+                const filteredDuplicates = duplicatesObj.map(group =>
+                    group.map(obj => ({
+                        autorizacion: obj.autorizacion,
+                        codRetAir: obj.codRetAir,
+                        baseImpAir: obj.baseImpAir,
+                        porcentajeAir: obj.porcentajeAir,
+                        valRetAir: obj.valRetAir
+                    }))
+                );
+                console.log(filteredDuplicates)
                 // Objeto con las propiedades de la empresa
-                const propiedadesEmpresa = jsonData.map(obj => {
+                const propiedadesEmpresa = adjustedArray.map(obj => {
                     const entradas = Object.entries(obj).slice(0, 8);
                     const objeto = Object.fromEntries(entradas);
                     if (objeto.IdInformante) {
@@ -1773,12 +1882,11 @@
                 });
 
                 let propiedadEmpresa = propiedadesEmpresa[0]
-                console.log(propiedadEmpresa)
                 let contentXmlEmpresa = contentXmlAts(propiedadEmpresa)
                 contentXmlAtsFile += contentXmlEmpresa
 
                 // Propiedades para las compras, pago del Exterior y air
-                const propiedadesCompras = jsonData.map(obj => {
+                const propiedadesCompras = adjustedArray.map(obj => {
                     const entradas = Object.entries(obj).slice(8, 31);
                     const objeto = Object.fromEntries(entradas);
                     if (objeto.codSustento) {
@@ -1797,7 +1905,7 @@
                     }
                     return objeto;
                 });
-                const propiedadesPagoExt = jsonData.map(obj => {
+                const propiedadesPagoExt = adjustedArray.map(obj => {
                     const entradas = Object.entries(obj).slice(31, 35);
                     const objeto = Object.fromEntries(entradas);
                     if(objeto.pagoLocExt){
@@ -1805,11 +1913,11 @@
                     }
                     return objeto;
                 });
-                const propiedadesFormasPagoCompr = jsonData.map(obj => {
+                const propiedadesFormasPagoCompr = adjustedArray.map(obj => {
                     const entradas = Object.entries(obj).slice(44, 45);
                     return Object.fromEntries(entradas);
                 });
-                const propiedadesAir = jsonData.map(obj => {
+                const propiedadesAir = adjustedArray.map(obj => {
                     const entradas = Object.entries(obj).slice(35, 39);
                     const objeto = Object.fromEntries(entradas);
                     if(objeto.baseImpAir){
@@ -1820,7 +1928,7 @@
                     }
                     return objeto;
                 });
-                const propiedadesComprasTwo = jsonData.map(obj => {
+                const propiedadesComprasTwo = adjustedArray.map(obj => {
                     const entradas = Object.entries(obj).slice(39, 44);
                     const objeto = Object.fromEntries(entradas);
                     if(objeto.estabRetencion1 == ''){
@@ -1831,9 +1939,10 @@
                     }
                     return objeto;
                 });
-                let contentCompras = contentXmlCompras(propiedadesCompras, propiedadesPagoExt, propiedadesFormasPagoCompr ,propiedadesAir, propiedadesComprasTwo)
+                // Aqui se agrega la informacion de las compras, adicionalmente se compara para ver los campos duplicados de AIR
+                let contentCompras = contentXmlCompras(propiedadesCompras, propiedadesPagoExt, propiedadesFormasPagoCompr ,propiedadesAir, propiedadesComprasTwo, filteredDuplicates)
                 // Contenido para las etiquetas de ventas, formas de pago
-                const propiedadesVentas = jsonData.map(obj => {
+                const propiedadesVentas = adjustedArray.map(obj => {
                     const entradas = Object.entries(obj).slice(50, 63);
                     const entradasModificadas = entradas.map(([key, value]) => {
                         if (key === 'tipoComprobante2') {
@@ -1858,7 +1967,7 @@
                     }
                     return objeto;
                 });
-                const propiedadesFormasPago = jsonData.map(obj => {
+                const propiedadesFormasPago = adjustedArray.map(obj => {
                     const entradas = Object.entries(obj).slice(63, 64);
                     const entradasModificadas = entradas.map(([key, value]) => {
                         if (key === 'formaPago8') {
@@ -1869,7 +1978,7 @@
                     return Object.fromEntries(entradasModificadas);
                 });
                 let contentVentas = contentXmlVentas(propiedadesVentas, propiedadesFormasPago)
-                const propiedadesVentasEstablecimiento = jsonData.map(obj => {
+                const propiedadesVentasEstablecimiento = adjustedArray.map(obj => {
                     const entradas = Object.entries(obj).slice(64, 66);
                     return Object.fromEntries(entradas);
                 });
@@ -1921,7 +2030,7 @@
         return xml;
     }
 
-    function contentXmlCompras(array, arrayPagExt, arrayFormasPag,arrayAir, array2){
+    function contentXmlCompras(array, arrayPagExt, arrayFormasPag,arrayAir, array2, airDuplicate){
         let xml = '    <compras>'
         array.forEach((obj, index) => {
             const hasValidValues = Object.values(obj).some(
