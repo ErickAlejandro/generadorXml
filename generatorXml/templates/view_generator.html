@@ -580,7 +580,8 @@
                                     <div class="custom-file">
                                         <input type="file" class="custom-file-input" id="inputUpdateAts"
                                             aria-describedby="inputGroupFileAddon01">
-                                        <label class="custom-file-label" id="labelAts" for="inputUpdateAts">Escoger archivo</label>
+                                        <label class="custom-file-label" id="labelAts" for="inputUpdateAts">Escoger
+                                            archivo</label>
                                     </div>
                                 </div>
                             </div>
@@ -1797,32 +1798,53 @@
         document.body.removeChild(a);
     }
 
-    // Creacionn del XML
+    // Creacion del XML
     let contentXmlAtsFile = ''
-    function padToThreeChars(value) {
-        const str = String(value);
-        return str.length >= 3 ? str : str + '0'.repeat(3 - str.length);
-    }
-    function padToThreeCharsStar(value) {
-        return String(value).padStart(3, '0');
-    }
-    function adjustLength(value) {
-        const strValue = String(value);
-        if (strValue.length === 12) {
-            return `0${strValue}`; 
-        } else if (strValue.length === 9) {
-            return `0${strValue}`; 
+    // Funciones ---------------------------------------------
+    function adjustIdLength(id) {
+        const idStr = id.toString();
+        if (idStr.length == 9) {
+            return '0' + idStr;
+        } else if (idStr.length == 12) {
+            return '0' + idStr;
         }
-        return strValue;
+        return idStr;
     }
-    function formatToTwoDecimals(value) {
-        const numberValue = parseFloat(value); 
-        if (!isNaN(numberValue)) {
-            return numberValue.toFixed(2);
+    function formatNumber(num) {
+        // Convertir el número a una cadena para verificar su longitud
+        let numStr = num.toString();
+        // Verificar si el número tiene solo un dígito
+        if (numStr.length === 1) {
+            // Agregar un 0 delante del número
+            return '0' + numStr;
+        } else {
+            // Devolver el número tal cual si tiene más de un dígito
+            return numStr;
         }
-        return '0.00'; 
     }
-    
+    function formatToThreeDigits(num) {
+        // Convertir el número a una cadena para manejar su longitud
+        let numStr = num.toString();
+
+        // Asegurarse de que la cadena tenga 3 dígitos
+        while (numStr.length < 3) {
+            numStr = '0' + numStr;
+        }
+
+        return numStr;
+    }
+    function formatNumberWithTwoDecimals(number) {
+        if (isNaN(number)) {
+            throw new Error('Input must be a number');
+        }
+        return Number(number).toFixed(2);
+    }
+    function modifyValue(value) {
+        // Ejemplo de función que aplica algún tipo de transformación
+        // Aquí puedes aplicar cualquier lógica de modificación que necesites
+        return Number(value).toFixed(2); // Ejemplo: redondear a dos decimales
+    }
+
     // Funcion del nuevo excel
     inputUpdateAts.addEventListener('change', function () {
         const file = event.target.files[0];
@@ -1837,209 +1859,105 @@
                 const worksheet = workbook.Sheets[firstSheetName];
                 // Convertir la hoja a JSON
                 const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
-                // Comparacion de las propiedades: Nombres, tamaño y posición
-                let result = '';
-                const adjustedArray = [];
-                const modifiedPropertiesMap = {};
-                jsonData.forEach((obj, index) => {
-                    const adjustedObj = {};
-                    const actualProperties = Object.keys(obj);
-                    if (actualProperties.length !== campos.length) {
-                        result += `Número de propiedades incorrecto. Esperado: ${campos.length}, Actual: ${actualProperties.length}\n`;
-                    };
-                    actualProperties.forEach((prop, propIndex) => {
-                        if (campos[propIndex] !== prop) {
-                            result += `Fila ${index + 1}: Discrepancia en la posición ${propIndex + 1}. Esperado: ${campos[propIndex]}, Actual: ${prop}\n`;
-                        }
-                    });
-                    // Ajuste de las propiedades
-                    campos.forEach(prop => {
-                        adjustedObj[prop] = obj.hasOwnProperty(prop) ? obj[prop] : '';
-                    });
-                    if (adjustedObj.tipoComprobante == 4) {
-                        const modifiedObj = {};
-                        const modifiedProps = ['docModificado', 'estabModificado', 'ptoEmiModificado', 'secModificado', 'autModificado'];
-                        modifiedProps.forEach(prop => {
-                            if (obj.hasOwnProperty(prop)) {
-                                let value = obj[prop];
-                                if (prop === 'docModificado' && value) {
-                                    value = value.toString().padStart(2, '0');
-                                }
-                                if (prop === 'estabModificado' && value) {
-                                    value = value.toString().padStart(3, '0');
-                                }
-                                if (prop === 'ptoEmiModificado' && value) {
-                                    value = value.toString().padStart(3, '0');
-                                }
-                                modifiedObj[prop] = value;
-                            }
-                        });
-                        if (Object.keys(modifiedObj).length > 0) {
-                            const secuencial = adjustedObj.secuencial;
-                            if (!modifiedPropertiesMap[secuencial]) {
-                                modifiedPropertiesMap[secuencial] = [];
-                            }
-                            modifiedPropertiesMap[secuencial].push(modifiedObj);
-                        }
+
+                // Propiedades generales de la EMPRESA
+                const propertiesCompras = [
+                    'codSustento', 'tpIdProv', 'idProv', 'tipoComprobante', 'fechaRegistro', 'establecimiento', 'puntoEmision', 'secuencial', 'fechaEmision', 'autorizacion', 'baseNoGraIva', 'baseImponible', 'baseImpGrav', 'baseImpExe', 'montoIce', 'montoIva', 'valRetBien10', 'valRetServ20', 'valorRetBienes', 'valRetServ50', 'valorRetServicios', 'valRetServ100', 'totbasesImpReemb', 'pagoLocExt', 'paisEfecPago', 'aplicConvDobTrib', 'pagExtSujRetNorLeg', 'codRetAir', 'baseImpAir', 'porcentajeAir', 'valRetAir', 'docModificado', 'estabModificado', 'ptoEmiModificado', 'secModificado', 'autModificado', 'formaPago', 'estabRetencion1', 'ptoEmiRetencion1', 'secRetencion1', 'autRetencion1', 'fechaEmiRet1'
+                ]
+                const propertiesVentas = [
+                    'tpIdCliente', 'idCliente', 'parteRelVtas', 'tipoComprobante2', 'tipoEmision', 'numeroComprobantes', 'baseNoGraIva3', 'baseImponible4', 'baseImpGrav5', 'montoIva6', 'montoIce7', 'valorRetIva', 'valorRetRenta', 'formaPago8'
+                ]
+                const propertiesVentasEstab = [
+                    'codEstab', 'ventasEstab'
+                ]
+                const objEnterprise = jsonData.map(obj => ({
+                    TipoIDInformante: obj.TipoIDInformante,
+                    IdInformante: adjustIdLength(obj.IdInformante),
+                    razonSocial: obj.razonSocial,
+                    Anio: obj.Anio,
+                    Mes: formatNumber(obj.Mes),
+                    numEstabRuc: formatToThreeDigits(obj.numEstabRuc),
+                    totalVentas: obj.totalVentas,
+                    codigoOperativo: obj.codigoOperativo
+                }));
+
+                // Propiedades para las compras ----------------------------------------------------
+                const objCompras = jsonData.map(obj => {
+                    return Object.fromEntries(
+                        Object.entries(obj).filter(([key]) => propertiesCompras.includes(key))
+                    );
+                });
+                const groupedByProperties = objCompras.reduce((acc, obj) => {
+                    const key = [
+                        obj.secuencial,
+                        obj.codSustento,
+                        obj.idProv,
+                        obj.tipoComprobante,
+                        obj.establecimiento
+                    ].join('|');
+                    if (!acc[key]) {
+                        acc[key] = [];
                     }
-                    adjustedArray.push(adjustedObj);
-                })
-                // console.log(result || 'Todas las propiedades están correctas en posición, nombre y número.');
-                // console.log('Arreglo de objetos con propiedades modificadas:', modifiedPropertiesMap);
-                // Agrupacion de autorizacion y autorizacion1
-                let groupedDataAutyRet = adjustedArray.reduce((acc, obj) => {
-                    const key = `${obj.secuencial}_${obj.autorizacion}_${obj.autRetencion1}`;
-                    if (acc[key]) {
-                        acc[key].push(obj);
-                    } else {
-                        acc[key] = [obj];
-                    }
+                    acc[key].push(obj);
                     return acc;
                 }, {})
-                // Filtrar solo los archivos necesarios para la construccion del contenido de XML de AIR
-                for (const key in groupedDataAutyRet) {
-                    groupedDataAutyRet[key] = groupedDataAutyRet[key].map(obj => ({
-                        codRetAir: obj.codRetAir,
-                        baseImpAir: formatToTwoDecimals(obj.baseImpAir),
-                        porcentajeAir: obj.porcentajeAir,
-                        valRetAir: formatToTwoDecimals(obj.valRetAir)
-                    }));
-                }
-                // Transformar los objetos a el contenido del XML
-                let contentAir = contentXmlAir(groupedDataAutyRet)
-                // Objeto con las propiedades de la empresa
-                const propiedadesEmpresa = adjustedArray.map(obj => {
-                    const entradas = Object.entries(obj).slice(0, 8);
-                    const objeto = Object.fromEntries(entradas);
-                    if (objeto.IdInformante) {
-                        objeto.IdInformante = `0${objeto.IdInformante}`;
-                        objeto.numEstabRuc = `00${objeto.numEstabRuc}`;
-                        objeto.Mes = objeto.Mes.toString().padStart(2, '0');
+                const contentCompras = contentXmlCompras(groupedByProperties)
+                // Propiedades para las ventas --------------------------------------------------
+                const objVentas = jsonData.map(obj => {
+                    return Object.fromEntries(
+                        Object.entries(obj).filter(([key]) => propertiesVentas.includes(key))
+                    );
+                });
+                const groupedByPropertiesVentas = objVentas.reduce((acc, obj) => {
+                    const key = [
+                        obj.tipoComprobante2,
+                        obj.idCliente,
+                    ].join('|');
+                    if (!acc[key]) {
+                        acc[key] = [];
                     }
-                    return objeto;
+                    acc[key].push(obj);
+                    return acc;
+                }, {})
+                let contentVentas = contentXmlVentas(groupedByPropertiesVentas);
+                contentVentas = contentVentas.replace(/<formaPago8>/g, '<formaPago>');
+                contentVentas = contentVentas.replace(/<\/formaPago8>/g, '</formaPago>');
+                contentVentas = contentVentas.replace(/<tipoComprobante2>/g, '<tipoComprobante>');
+                contentVentas = contentVentas.replace(/<\/tipoComprobante2>/g, '</tipoComprobante>');
+                contentVentas = contentVentas.replace(/<baseNoGraIva3>/g, '<baseNoGraIva>');
+                contentVentas = contentVentas.replace(/<\/baseNoGraIva3>/g, '</baseNoGraIva>');
+                contentVentas = contentVentas.replace(/<baseImponible4>/g, '<baseImponible>');
+                contentVentas = contentVentas.replace(/<\/baseImponible4>/g, '</baseImponible>');
+                contentVentas = contentVentas.replace(/<baseImpGrav5>/g, '<baseImpGrav>');
+                contentVentas = contentVentas.replace(/<\/baseImpGrav5>/g, '</baseImpGrav>');
+                contentVentas = contentVentas.replace(/<montoIva6>/g, '<montoIva>');
+                contentVentas = contentVentas.replace(/<\/montoIva6>/g, '</montoIva>');
+                contentVentas = contentVentas.replace(/<montoIce7>/g, '<montoIce>');
+                contentVentas = contentVentas.replace(/<\/montoIce7>/g, '</montoIce>');
+                // Ventas del establecimiento
+                const objVentasEstab = jsonData.map(obj => {
+                    return Object.fromEntries(
+                        Object.entries(obj).filter(([key]) => propertiesVentasEstab.includes(key))
+                    );
                 });
-
-                let propiedadEmpresa = propiedadesEmpresa[0]
-                let contentXmlEmpresa = contentXmlAts(propiedadEmpresa)
-                contentXmlAtsFile += contentXmlEmpresa
-
-                // Propiedades para las compras, pago del Exterior y air
-                const propiedadesCompras = adjustedArray.map(obj => {
-                    const entradas = Object.entries(obj).slice(8, 31);
-                    const objeto = Object.fromEntries(entradas);
-                    if (objeto.codSustento) {
-                        objeto.codSustento = `0${objeto.codSustento}`;
-                        objeto.idProv = adjustLength(objeto.idProv);
-                        objeto.tpIdProv = `0${objeto.tpIdProv}`;
-                        objeto.tipoComprobante = objeto.tipoComprobante.toString().padStart(2, '0');
-                        objeto.establecimiento = padToThreeCharsStar(objeto.establecimiento);
-                        objeto.puntoEmision = padToThreeChars(objeto.puntoEmision);
-                        objeto.baseImponible = formatToTwoDecimals(objeto.baseImponible);
-                        objeto.valorRetServicios = formatToTwoDecimals(objeto.valorRetServicios);
-                        objeto.montoIva = formatToTwoDecimals(objeto.montoIva);
-                        objeto.baseImpGrav = formatToTwoDecimals(objeto.baseImpGrav);
-                        objeto.valRetServ100 = formatToTwoDecimals(objeto.valRetServ100);
-                        objeto.valorRetBienes = formatToTwoDecimals(objeto.valorRetBienes);
+                const groupedByPropertiesVentasEstab = objVentasEstab.reduce((acc, obj) => {
+                    const key = [
+                        obj.tipoComprobante2,
+                        obj.idCliente,
+                    ].join('|');
+                    if (!acc[key]) {
+                        acc[key] = [];
                     }
-                    return objeto;
-                });
-                const propiedadesPagoExt = adjustedArray.map(obj => {
-                    const entradas = Object.entries(obj).slice(31, 35);
-                    const objeto = Object.fromEntries(entradas);
-                    if(objeto.pagoLocExt){
-                        objeto.pagoLocExt = `0${objeto.pagoLocExt}`
-                    }
-                    return objeto;
-                });
-                const propiedadesFormasPagoCompr = adjustedArray.map(obj => {
-                    const entradas = Object.entries(obj).slice(44, 45);
-                    const newObj = Object.fromEntries(entradas);
-                    for (const [key, value] of Object.entries(newObj)) {
-                        if (value === null || value === undefined || value === '') {
-                            newObj[key] = 20;
-                        }
-                        if (key === 'formaPago' && typeof newObj[key] === 'number') {
-                            newObj[key] = newObj[key] < 10 ? `0${newObj[key]}` : newObj[key].toString();
-                        }
-                    }
-                    return newObj;
-                });
-                const propiedadesComprasTwo = adjustedArray.map(obj => {
-                    const entradas = Object.entries(obj).slice(39, 44);
-                    const objeto = Object.fromEntries(entradas);
-                    if(objeto.estabRetencion1 == ''){
-                        objeto.estabRetencion1 = undefined
-                    }else{
-                        let estb = String(objeto.estabRetencion1)
-                        objeto.estabRetencion1 = estb.padStart(3, '0');
-                    }
-                    return objeto;
-                });
-                // Aqui se agrega la informacion de las compras, adicionalmente se compara para ver los campos duplicados de AIR
-                let contentCompras = contentXmlCompras(propiedadesCompras, propiedadesPagoExt, propiedadesFormasPagoCompr , contentAir, propiedadesComprasTwo, modifiedPropertiesMap)
-                console.log(contentCompras)
-                // Contenido para las etiquetas de ventas, formas de pago
-                const propiedadesVentas = adjustedArray.map(obj => {
-                    const entradas = Object.entries(obj).slice(50, 63);
-                    const entradasModificadas = entradas.map(([key, value]) => {
-                        if (key === 'tipoComprobante2') {
-                            return ['tipoComprobante', value];
-                        } else if (key === 'baseNoGraIva3') {
-                            return ['baseNoGraIva', value];
-                        } else if (key === 'baseImponible4') {
-                            return ['baseImponible', value];
-                        } else if (key === 'baseImpGrav5') {
-                            return ['baseImpGrav', value];
-                        } else if (key === 'montoIva6') {
-                            return ['montoIva', value];
-                        } else if (key === 'montoIce7') {
-                            return ['montoIce', value];
-                        }
-                        return [key, value];
-                    });
-                    const objeto = Object.fromEntries(entradasModificadas);
-                    if (objeto.tpIdCliente) {
-                        objeto.tpIdCliente = `0${objeto.tpIdCliente}`;
-                        objeto.baseImponible = parseFloat(objeto.baseImponible).toFixed(2);
-                        objeto.idCliente = adjustLength(objeto.idCliente)
-                        objeto.valorRetRenta = formatToTwoDecimals(objeto.valorRetRenta)
-                    }
-                    return objeto;
-                });
-                const uniquePropiedadesVentas = Array.from(new Set(propiedadesVentas.map(obj => JSON.stringify(obj)))).map(jsonString => JSON.parse(jsonString));
-                const propiedadesFormasPago = adjustedArray.map(obj => {
-                    const entradas = Object.entries(obj).slice(63, 64);
-                    const entradasModificadas = entradas.map(([key, value]) => {
-                        if (key === 'formaPago8') {
-                            return ['formaPago', value];
-                        } 
-                        return [key, value];
-                    });
-                    return Object.fromEntries(entradasModificadas);
-                });
-                let contentVentas = contentXmlVentas(uniquePropiedadesVentas, propiedadesFormasPago)
-                const propiedadesVentasEstablecimiento = adjustedArray.map(obj => {
-                    const entradas = Object.entries(obj).slice(64, 66);
-                    return Object.fromEntries(entradas);
-                });
-                const establecimientos = {};
-                propiedadesVentasEstablecimiento.forEach(obj => {
-                    const { codEstab, ventasEstab } = obj;
-                    const ventas = parseFloat(ventasEstab) || 0;
-                    if (establecimientos[codEstab]) {
-                        establecimientos[codEstab] += ventas;
-                    } else {
-                        establecimientos[codEstab] = ventas;
-                    }
-                });
-                let sumatoriasEstab = Object.entries(establecimientos).map(([codEstab, ventasEstab]) => ({
-                    codEstab: `${codEstab == '' ? '' : '00'+codEstab}`,
-                    ventasEstab
-                }));
-                let contentVentEstab = contentXmlVentEstab(sumatoriasEstab);
-                contentXmlAtsFile = contentXmlAtsFile.replace('compras', contentCompras);
-                contentXmlAtsFile = contentXmlAtsFile.replace('ventas', contentVentas);
-                contentXmlAtsFile = contentXmlAtsFile.replace('ventEstb', contentVentEstab);
+                    acc[key].push(obj);
+                    return acc;
+                }, {})
+                const contentVentasEstablecimiento = contentXmlVentEstab(groupedByPropertiesVentasEstab)
+                // Creacion del contenido del XML
+                let contentXml = contentXmlAts(objEnterprise[0])
+                contentXml = contentXml.replace('compras', contentCompras)
+                contentXml = contentXml.replace('ventas', contentVentas)
+                contentXml = contentXml.replace('ventEstb', contentVentasEstablecimiento)
+                contentXmlAtsFile = contentXml
                 btnGenerateXmlAts.style.display = '';
             };
 
@@ -2047,7 +1965,7 @@
         }
     });
 
-    btnGenerateXmlAts.addEventListener('click', function(){
+    btnGenerateXmlAts.addEventListener('click', function () {
         const blob = new Blob([contentXmlAtsFile], { type: 'text/xml' });
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
@@ -2058,7 +1976,7 @@
     })
 
     // Funcion para transformar los objetos a un contenido XML
-    function contentXmlAir(groupedDataAutyRet){
+    function contentXmlAir(groupedDataAutyRet) {
         const result = {};
         for (const [key, objects] of Object.entries(groupedDataAutyRet)) {
             const xmlArray = objects.map(obj => {
@@ -2074,7 +1992,7 @@
         return result;
     }
 
-    function contentXmlAts(obj){
+    function contentXmlAts(obj) {
         let xml = '<?xml version="1.0" encoding="UTF-8"?>';
         xml += '\n<iva>'
         for (const [key, value] of Object.entries(obj)) {
@@ -2087,156 +2005,248 @@
         return xml;
     }
 
-    function synchronizeArrays(array, array2) {
-        const seen = new Set();
-        const uniqueArray = [];
-        const synchronizedArray2 = [];
-        // Recorrer 'array2' y 'array' al mismo tiempo usando el índice
-        array.forEach((item, index) => {
-            if (!seen.has(item.secuencial)) {
-                // Si 'secuencial' no ha sido visto, añadirlo al conjunto y guardar ambos objetos
-                seen.add(item.secuencial);
-                uniqueArray.push(item);
-                synchronizedArray2.push(array2[index]);
+    function deletEmpty(obj) {
+        const filteredObj = {};
+        for (const key in obj) {
+            if (obj.hasOwnProperty(key) && key != "" && key != "||||" && key != "|") {
+                filteredObj[key] = obj[key];
             }
-        });
-        return { uniqueArray, synchronizedArray2 };
+        }
+        return filteredObj
     }
 
-    function contentXmlCompras(array, arrayPagExt, arrayFormasPag, contentAir, array2, objNotasCredi){
-        let xml = '    <compras>'
-        const { uniqueArray, synchronizedArray2 } = synchronizeArrays(array, array2);
-        
-        uniqueArray.forEach((obj, index) => {
-            const hasValidValues = Object.values(obj).some(
-                value => value !== null && value !== undefined && value !== ''
-            );
-            if (hasValidValues) {
+    function contentXmlCompras(objCompras) {
+        let xml = '    <compras>';
+        let objComprasClear = deletEmpty(objCompras);
+
+        for (const key in objComprasClear) {
+            if (objComprasClear.hasOwnProperty(key)) {
+                const items = objComprasClear[key];
+                let itemGenera = items[0]
+                let tipoComprobante = itemGenera.tipoComprobante
+                // Propiedades de la primera parte del detalle de las compras
                 xml += `\n        <detalleCompras>`;
-                for (const [key, value] of Object.entries(obj)) {
-                    xml += `\n            <${key}>${sanitizeXML(value)}</${key}>`;
+                const propertiesCompras1 = [
+                    'codSustento', 'tpIdProv', 'idProv', 'tipoComprobante', 'fechaRegistro',
+                    'establecimiento', 'puntoEmision', 'secuencial', 'fechaEmision',
+                    'autorizacion', 'baseNoGraIva', 'baseImponible', 'baseImpGrav',
+                    'baseImpExe', 'montoIce', 'montoIva', 'valRetBien10', 'valRetServ20',
+                    'valorRetBienes', 'valRetServ50', 'valorRetServicios', 'valRetServ100',
+                    'totbasesImpReemb'
+                ];
+                if (items.length > 0) {
+                    propertiesCompras1.forEach(prop => {
+                        let value = items[0][prop];
+                        if (prop == 'codSustento' && value != null) {
+                            value = formatNumber(value);
+                        }
+                        if (prop == 'tpIdProv' && value != null) {
+                            value = formatNumber(value);
+                        }
+                        if (prop == 'valorRetServicios' && value != null) {
+                            value = formatNumberWithTwoDecimals(value);
+                        }
+                        if (prop == 'idProv' && value != null) {
+                            value = adjustIdLength(value);
+                        }
+                        if (prop == 'tipoComprobante' && value != null) {
+                            value = formatNumber(value);
+                        }
+                        if (prop == 'establecimiento' && value != null) {
+                            value = formatToThreeDigits(value);
+                        }
+                        if (prop == 'montoIva' && value != null) {
+                            value = formatNumberWithTwoDecimals(value);
+                        }
+                        if (prop == 'baseImponible' && value != null) {
+                            value = formatNumberWithTwoDecimals(value);
+                        }
+                        if (prop == 'baseImpGrav' && value != null) {
+                            value = formatNumberWithTwoDecimals(value);
+                        }
+                        if (prop == 'puntoEmision' && value != null) {
+                            value = formatToThreeDigits(value);
+                        }
+                        if (prop == 'valRetServ100' && value != null) {
+                            value = formatNumberWithTwoDecimals(value);
+                        }
+                        if (prop == 'valorRetBienes' && value != null) {
+                            value = formatNumberWithTwoDecimals(value);
+                        }
+                        if (items[0][prop] != null) {
+                            xml += `\n            <${prop}>${sanitizeXML(value)}</${prop}>`;
+                        }
+                    });
                 }
-                // Añadido pago al exterior
-                if (arrayPagExt[index]) {
-                    xml += `\n            <pagoExterior>`;
-                    for (const [key, value] of Object.entries(arrayPagExt[index])) {
-                        xml += `\n                <${key}>${sanitizeXML(value)}</${key}>`;
-                    }
-                    xml += `\n            </pagoExterior>`;
+                // Pago al exterior
+                xml += `\n            <pagoExterior>`;
+                const propertiesPagoExt = ['pagoLocExt', 'paisEfecPago', 'aplicConvDobTrib', 'pagExtSujRetNorLeg'];
+                if (items.length > 0) {
+                    propertiesPagoExt.forEach(prop => {
+                        let value = items[0][prop];
+                        if (prop == 'pagoLocExt' && value != null) {
+                            value = formatNumber(value);
+                        }
+                        if (items[0][prop] != null) {
+                            xml += `\n                <${prop}>${sanitizeXML(value)}</${prop}>`;
+                        }
+                    });
                 }
-                if(arrayFormasPag[index]){
-                    xml += `\n            <formasDePago>`;
-                    for (const [key, value] of Object.entries(arrayFormasPag[index])) {
-                        xml += `\n                <${key}>${sanitizeXML(value)}</${key}>`;
-                    }
-                    xml += `\n            </formasDePago>`;
+                xml += `\n            </pagoExterior>`;
+                // Formas de pago
+                xml += `\n            <formasDePago>`;
+                const propertiesFormaPago = ['formaPago'];
+                if (items.length > 0) {
+                    propertiesFormaPago.forEach(prop => {
+                        const value = items[0][prop];
+                        xml += `\n                <${prop}>${sanitizeXML(value != null && value !== '' ? value : (tipoComprobante != 4 ? '20' : formatNumber(1)))}</${prop}>`;
+                    });
                 }
-                // Aqui debe contruir el contenido xml correspondiente
-                const autorizacion = obj.autorizacion;
-                const secuencial = obj.secuencial;
-                const autRetencion1 = array2[index] ? array2[index].autRetencion1 : null;
-                const contentKey = `${secuencial}_${autorizacion}_${autRetencion1}`;
-                if (contentAir[contentKey]) {
-                    const hasValidCodRetAir = contentAir[contentKey].some(obj => obj.codRetAir && obj.codRetAir.trim() !== '');
-                    if (hasValidCodRetAir) {
-                        xml += `\n            <air>`;
-                        contentAir[contentKey].forEach(airContent => {
-                            xml += `\n                ${airContent}`;
-                        });
-                        xml += `\n            </air>`;
-                    }
-                }
-                const hasValidArray2= synchronizedArray2[index] && Object.values(synchronizedArray2[index]).some(
-                    value => value !== null && value !== undefined && value !== ''
-                );
-                // Funcionalidad en caso de que los valores no tengan retencion y sea una NOTA DE CREDITO
-                if (obj.tipoComprobante == 4) {
-                    const syncObj = synchronizedArray2[index];
-                    const hasEmptyOrUndefinedFields = 
-                        !syncObj.autRetencion1 || syncObj.autRetencion1.trim() === '' ||
-                        !syncObj.secRetencion1 || syncObj.secRetencion1.trim() === '' ||
-                        !syncObj.formaPago || syncObj.formaPago.trim() === '';
-                    if (hasEmptyOrUndefinedFields) {
-                        const notasCredi = objNotasCredi[secuencial] || [];
-                        if (notasCredi.length > 0) {
-                            notasCredi.forEach(note => {
-                                for (const [key, value] of Object.entries(note)) {
-                                    xml += `\n            <${key}>${sanitizeXML(value)}</${key}>`;
+                xml += `\n            </formasDePago>`;
+                // Iteracion para las propiedades AIR
+                if (tipoComprobante != 4) {
+                    xml += `\n            <air>`;
+                    const airProperties = ['codRetAir', 'baseImpAir', 'porcentajeAir', 'valRetAir'];
+                    items.forEach(item => {
+                        const airValues = airProperties.map(prop => item[prop]);
+                        if (airValues.some(value => value != null)) {
+                            xml += `\n                <detalleAir>`;
+                            airProperties.forEach(prop => {
+                                let value = item[prop];
+                                if (value != null) {
+                                    if (prop == 'valRetAir') {
+                                        value = formatNumberWithTwoDecimals(value);
+                                    }
+                                    if (prop == 'baseImpAir') {
+                                        value = formatNumberWithTwoDecimals(value);
+                                    }
+                                    xml += `\n                    <${prop}>${sanitizeXML(value)}</${prop}>`;
                                 }
                             });
+                            xml += `\n                </detalleAir>`;
                         }
-                    }
-                }else{
-                    if (hasValidArray2) {
-                        // Añadir segunda parte de las compras
-                        if(synchronizedArray2[index]){
-                            for (const [key, value] of Object.entries(synchronizedArray2[index])) {
-                                xml += `\n            <${key}>${sanitizeXML(value)}</${key}>`;
-                            }
-                        }
-                    }
+                    })
+                    xml += `\n            </air>`;
                 }
-                xml += '\n        </detalleCompras>';
+                // Segunda parte de las compras, en caso de que sea diferente de NC o 4 el tipo de comprobante las propiedades cambian cambian
+                let propertiesCompras2
+                if (tipoComprobante != 4) {
+                    propertiesCompras2 = ['estabRetencion1', 'ptoEmiRetencion1', 'secRetencion1', 'autRetencion1', 'fechaEmiRet1']
+                } else {
+                    propertiesCompras2 = ['docModificado', 'estabModificado', 'ptoEmiModificado', 'secModificado', 'autModificado']
+                }
+                if (items.length > 0) {
+                    propertiesCompras2.forEach(prop => {
+                        let value = items[0][prop];
+                        if (prop == 'docModificado' && value != null) {
+                            value = formatNumber(value);
+                        }
+                        if (prop == 'estabModificado' && value != null) {
+                            value = formatToThreeDigits(value);
+                        }
+                        if (prop == 'estabRetencion1' && value != null) {
+                            value = formatToThreeDigits(value);
+                        }
+                        if (prop == 'ptoEmiModificado' && value != null) {
+                            value = formatToThreeDigits(value);
+                        }
+                        if (value != null && value != '' && value != "000") {
+                            xml += `\n            <${prop}>${sanitizeXML(value)}</${prop}>`;
+                        }
+                    });
+                }
+
+                xml += `\n        </detalleCompras>`;
             }
-        })
+        }
         xml += '\n    </compras>'
         return xml;
     }
 
-    
-    function contentXmlVentas(array, arrayFormPag){
+    function contentXmlVentas(objVentas) {
         let xml = '    <ventas>'
-            array.forEach((obj, index) => {
-            if (obj.tipoComprobante !== null && obj.tipoComprobante !== undefined) {
-                const tipoComprobanteStr = obj.tipoComprobante.toString();
-                if (tipoComprobanteStr.length === 1) {
-                    obj.tipoComprobante = '0' + tipoComprobanteStr;
-                }
-            }
+        let objVentasClear = deletEmpty(objVentas);
 
-            const hasValidValues = Object.values(obj).some(
-                value => value !== null && value !== undefined && value !== ''
-            );
-            if (hasValidValues) {
-                xml += `\n        <detalleVentas>`;
-                for (const [key, value] of Object.entries(obj)) {
-                    xml += `\n            <${key}>${sanitizeXML(value)}</${key}>`;
-                }
-                if (obj.tipoComprobante != "04") {
-                    xml += `\n            <formasDePago>`;
-                    if (!arrayFormPag[0].formaPago || arrayFormPag[0].formaPago === '') {
-                        arrayFormPag[0].formaPago = '20';
-                    }
-                    for (const [key, value] of Object.entries(arrayFormPag[0])) {
-                        if (value !== null && value !== undefined && value !== '') {
-                            xml += `\n                <${key}>${sanitizeXML(value)}</${key}>`;
+        for (const key in objVentasClear) {
+            if (objVentasClear.hasOwnProperty(key)) {
+                const items = objVentasClear[key];
+                let itemGenera = items[0]
+                let tipoComprobante = itemGenera.tipoComprobante2
+
+                const propertiesVentas = ['tpIdCliente', 'idCliente', 'parteRelVtas', 'tipoComprobante2', 'tipoEmision', 'numeroComprobantes', 'baseNoGraIva3', 'baseImponible4', 'baseImpGrav5', 'montoIva6', 'montoIce7', 'valorRetIva', 'valorRetRenta']
+                const propertiesFormaPago = ['formaPago8']
+
+                const airValues = propertiesVentas.map(prop => itemGenera[prop]);
+                if (airValues.some(value => value != null)) {
+                    xml += `\n        <detalleVentas>`;
+                    propertiesVentas.forEach(prop => {
+                        let value = itemGenera[prop];
+                        if (prop == 'tipoComprobante2' && value != null) {
+                            value = formatNumber(value);
                         }
+                        if (prop == 'tpIdCliente' && value != null) {
+                            value = formatNumber(value);
+                        }
+                        if (prop == 'idCliente' && value != null) {
+                            value = adjustIdLength(value);
+                        }
+                        if (prop == 'baseImponible4' && value != null) {
+                            value = formatNumberWithTwoDecimals(value);
+                        }
+                        if (prop == 'baseNoGraIva3' && value != null) {
+                            value = formatNumberWithTwoDecimals(value);
+                        }
+                        if (prop == 'codEstab' && value != null) {
+                            value = formatToThreeDigits(value);
+                        }
+                        if (prop == 'valorRetRenta' && value != null) {
+                            value = formatNumberWithTwoDecimals(value);
+                        }
+                        if (value != null) {
+                            xml += `\n            <${prop}>${sanitizeXML(value)}</${prop}>`;
+                        }
+                    });
+                    // Formas de pago
+                    let formasDePagoXml = '';
+                    propertiesFormaPago.forEach(prop => {
+                        const value = itemGenera[prop];
+                        if (value != null && value != '') {
+                            formasDePagoXml += `\n                <${prop}>${sanitizeXML(value)}</${prop}>`;
+                        }
+                    });
+                    if (formasDePagoXml) {
+                        xml += `\n            <formasDePago>${formasDePagoXml}\n            </formasDePago>`;
                     }
-                    xml += `\n            </formasDePago>`;
+                    xml += `\n        </detalleVentas>`;
                 }
-                xml += '\n        </detalleVentas>';
             }
-        });
+        }
 
         xml += '\n    </ventas>'
         return xml
     }
 
-    function contentXmlVentEstab(array){
+    function contentXmlVentEstab(objVentasEstab) {
         let xml = '    <ventasEstablecimiento>'
-        array.forEach((obj, index) => {
-            const hasValidValues = Object.values(obj).some(
-                value => value !== null && value !== undefined && value !== '' && value != '0'
-            );
-            if (hasValidValues) {
+        for (const key in objVentasEstab) {
+            if (objVentasEstab.hasOwnProperty(key)) {
+                const items = objVentasEstab[key];
+                const propertiesVentasEstab = ['codEstab', 'ventasEstab']
                 xml += `\n        <ventaEst>`;
-                // Agregar las propiedades del objeto
-                for (const [key, value] of Object.entries(obj)) {
-                    xml += `\n            <${key}>${sanitizeXML(value)}</${key}>`;
+                if (items.length > 0) {
+                    propertiesVentasEstab.forEach(prop => {
+                        let value = items[0][prop];
+                        if (prop == 'codEstab' && value != null) {
+                            value = formatToThreeDigits(value);
+                        }
+                        if (items[0][prop] != null) {
+                            xml += `\n            <${prop}>${sanitizeXML(value)}</${prop}>`;
+                        }
+                    });
                 }
-                xml += '\n        </ventaEst>';
+                xml += `\n        </ventaEst>`;
             }
-        })
+        }
         xml += '\n    </ventasEstablecimiento>'
         return xml
     }
